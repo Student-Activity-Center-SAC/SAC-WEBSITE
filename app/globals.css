@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --crimson:         #8B0000;
+  --crimson-dk:      #5B0000;
+  --crimson-lt:      #B91C1C;
+  --gold:            #8B0000;
+  --gold-dk:         #5B0000;
+  --gold-lt:         #B91C1C;
+
+  /* Surfaces */
+  --surface-dark:    #0A0A0F;
+  --surface-mid:     #111118;
+  --surface-muted:   #F7F7F8;
+  --surface-white:   #FFFFFF;
+
+  /* Text */
+  --text-primary:    #0D0D0D;
+  --text-secondary:  #3F3F46;
+  --text-muted:      #71717A;
+  --text-subtle:     #A1A1AA;
+  --text-invert:     #FFFFFF;
+
+  /* Border */
+  --border:          #E4E4E7;
+  --border-mid:      #D4D4D8;
+
+  /* Domain colours */
+  --tec:             #8B0000;
+  --lch:             #B91C1C;
+  --hwb:             #7C0000;
+  --eso:             #991B1B;
+  --iie:             #C53030;
+
+  /* Legacy compat (used by existing API/admin pages) */
+  --background:      #FFFFFF;
+  --foreground:      #0D0D0D;
+  --primary:         #8B0000;
+  --primary-dark:    #5B0000;
+  --primary-light:   #B91C1C;
+  --accent:          #8B0000;
+  --accent-dark:     #5B0000;
+  --muted:           #F4F4F5;
+  --muted-foreground: #71717A;
+  --border-legacy:   #E4E4E7;
+  --card:            #FFFFFF;
+  --card-foreground: #0D0D0D;
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────────────── */
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+    background-color:        var(--surface-white);
+    color:                   var(--text-primary);
+    font-family:             var(--font-sans, system-ui, -apple-system, 'Segoe UI', Helvetica, sans-serif);
+    line-height:             1.65;
+    -webkit-font-smoothing:  antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  ::selection {
+    background-color: var(--crimson);
+    color: #fff;
+  }
+}
+
+/* ─── Keyframe Animations ────────────────────────────────────────────────── */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Utility Animation Classes ─────────────────────────────────────────── */
+
+.animate-fade-up         { animation: fade-up      0.65s ease both; }
+.animate-fade-in         { animation: fade-in      0.5s  ease both; }
+.animate-slide-down      { animation: slide-down   0.35s ease both; }
+.animate-scale-in        { animation: scale-in     0.3s  ease both; }
+.animate-bounce-gentle   { animation: bounce-gentle 1.8s ease-in-out infinite; }
+.animate-marquee         { animation: marquee      30s   linear infinite; }
+
+/* ─── Delay helpers ──────────────────────────────────────────────────────── */
+.delay-100  { animation-delay: 0.1s; }
+.delay-200  { animation-delay: 0.2s; }
+.delay-300  { animation-delay: 0.3s; }
+.delay-400  { animation-delay: 0.4s; }
+.delay-500  { animation-delay: 0.5s; }
+
+/* ─── Section divider ────────────────────────────────────────────────────── */
+.section-rule {
+  width: 48px;
+  height: 3px;
+  background: var(--crimson);
+  border-radius: 999px;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
