@@ -1,6 +1,6 @@
 ﻿import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn } from '../_components/FadeIn';
 
 export const revalidate = 0;
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function NewsPage() {
-  const { data } = await supabase
+  const { data } = await db
     .from('news_articles')
     .select('*')
     .order('sort_order', { ascending: true })

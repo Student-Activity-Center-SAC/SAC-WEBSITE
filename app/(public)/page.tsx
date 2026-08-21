@@ -1,10 +1,11 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { DOMAINS } from '@/lib/content/domains';
 import { DEMO_CLUBS, DOMAIN_META } from '@/lib/demo-data';
 import { FadeIn } from './_components/FadeIn';
+import StatCounter from './_components/StatCounter';
 import { getHomepageEvents } from '@/lib/data/homepage';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,31 +16,35 @@ export const metadata = {
 };
 
 const JOURNEY_STEPS = [
-  { title: 'Discover',     description: 'Explore your interests across five domains and twenty-five clubs. Find the community that matches who you are — or who you want to become.' },
-  { title: 'Participate',  description: 'Join activities, competitions, workshops, and programmes that go beyond the curriculum. Every participation builds real-world experience.' },
-  { title: 'Develop',      description: 'Build competencies that employers and institutions recognise — technical, creative, leadership, and interpersonal skills that define the complete professional.' },
-  { title: 'Lead',         description: 'Take responsibility within your club — as a coordinator, team leader, or domain representative. Leadership at SAC is earned through performance, not appointment.' },
-  { title: 'Create',       description: 'Build something that matters: a product, a performance, a project, a venture. SAC gives you the platform, the mentors, and the collaborators you need.' },
-  { title: 'Impact',       description: 'Carry your experience beyond campus — in your career, your community, and your commitment to the values KL SAC instilled in you.' },
+  { title: 'Discover',    description: 'Explore your interests across five domains and twenty-five clubs. Find the community that matches who you are — or who you want to become.' },
+  { title: 'Participate', description: 'Join activities, competitions, workshops, and programmes that go beyond the curriculum. Every participation builds real-world experience.' },
+  { title: 'Develop',     description: 'Build competencies that employers and institutions recognise — technical, creative, leadership, and interpersonal skills that define the complete professional.' },
+  { title: 'Lead',        description: 'Take responsibility within your club — as a coordinator, team leader, or domain representative. Leadership at SAC is earned through performance, not appointment.' },
+  { title: 'Create',      description: 'Build something that matters: a product, a performance, a project, a venture. SAC gives you the platform, the mentors, and the collaborators you need.' },
+  { title: 'Impact',      description: 'Carry your experience beyond campus — in your career, your community, and your commitment to the values KL SAC instilled in you.' },
 ];
 
 export default async function HomePage() {
-  const [events, storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes] = await Promise.all([
+  const [events, storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, councilRes, partnersRes] = await Promise.all([
     getHomepageEvents(5),
-    supabase.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
-    supabase.from('site_settings').select('key, value'),
-    supabase.from('news_articles').select('slug, title, excerpt, photo_url, category, date').gt('homepage_order', 0).order('homepage_order', { ascending: true }).limit(3),
-    supabase.from('domains').select('slug, code, name, tagline, color, accent_bg').order('sort_order', { ascending: true }),
-    supabase.from('clubs').select('domain_code, slug, name'),
-    supabase.from('sac_stats').select('key, value'),
+    db.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
+    db.from('site_settings').select('key, value'),
+    db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').gt('homepage_order', 0).order('homepage_order', { ascending: true }).limit(3),
+    db.from('domains').select('slug, code, name, tagline, color, accent_bg').order('sort_order', { ascending: true }),
+    db.from('clubs').select('domain_code, slug, name'),
+    db.from('sac_stats').select('key, value'),
+    db.from('council_members').select('*').order('sort_order', { ascending: true }).limit(9),
+    db.from('partners').select('*'),
   ]);
 
-  const stories = storiesRes.data ?? [];
+  const stories      = storiesRes.data ?? [];
   const newsArticles = newsRes.data ?? [];
-  const domains = domainsRes.data ?? [];
+  const domains      = domainsRes.data ?? [];
+  const leaders      = councilRes.data ?? [];
+  const partners     = partnersRes.data ?? [];
   const settingsMap: Record<string, string> = {};
   (settingsRes.data ?? []).forEach((s: any) => { if (s.value) settingsMap[s.key] = s.value; });
-  const heroVideoUrl = settingsMap['hero_video_url'] || '/hero.mp4';
+  const heroVideoUrl = settingsMap['hero_video_url'] || 'https://pub-2172d3960f064d32b43c4d6ba9a3135d.r2.dev/hero.mp4';
   const featuredStory = stories.find(s => s.homepage_order === 1) ?? null;
   const sideStories   = stories.filter(s => (s.homepage_order ?? 0) > 1).slice(0, 2);
 
@@ -56,17 +61,16 @@ export default async function HomePage() {
   const statStudents   = sacStatsMap['students']   ?? 0;
   const statActivities = sacStatsMap['activities'] ?? 0;
 
-  const today   = new Date().toISOString().split('T')[0];
+  const today          = new Date().toISOString().split('T')[0];
   const upcomingEvents = events.filter((e: any) => e.activity_date >= today).slice(0, 5);
 
   return (
     <>
-      {/* ══════════════════════════════════════════════════════════ HERO ══ */}
+      {/* ══════════════════════════════════════════════════════ HERO ══ */}
       <section
-        className="relative flex items-center justify-start overflow-hidden"
-        style={{ minHeight: '100svh', background: '#0A0A0F' }}>
+        className="relative flex items-end overflow-hidden"
+        style={{ minHeight: '100svh', background: '#150404' }}>
 
-        {/* Video background */}
         <video
           autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover"
@@ -74,245 +78,327 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        {/* Gradient overlays */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(105deg, rgba(5,5,8,0.88) 0%, rgba(5,5,8,0.65) 45%, rgba(5,5,8,0.25) 75%, rgba(5,5,8,0.1) 100%)' }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 h-40"
-          style={{ background: 'linear-gradient(to top, rgba(5,5,8,0.6) 0%, transparent 100%)' }}
-          aria-hidden="true"
-        />
+        {/* Gradient overlay — bottom-anchored like turbo-giggle */}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(to top, rgba(15,2,2,0.92) 0%, rgba(15,2,2,0.55) 45%, rgba(15,2,2,0.3) 100%)' }}
+          aria-hidden="true" />
 
         {/* Content */}
-        <div className="relative z-10 w-full px-6 sm:px-12 xl:px-20 w-full pt-24 pb-20">
-          <div className="max-w-2xl">
+        <div className="hero-content relative z-10 w-full max-w-6xl mx-auto px-5 sm:px-6 pb-16 sm:pb-24 pt-24">
 
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 mb-8 animate-fade-in">
-              <span
-                className="h-px w-8"
-                style={{ background: '#8B0000' }} />
-              <span
-                className="text-[10px] font-black tracking-[0.25em] uppercase"
-                style={{ color: '#8B0000' }}>
-                KL University · Student Activity Center
-              </span>
-            </div>
-
-            {/* Headline */}
-            <h1
-              className="font-black leading-[1.05] mb-6 animate-fade-up"
-              style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', color: '#FFFFFF', letterSpacing: '-0.025em' }}>
-              Student Life.
-              <br />
-              <span style={{ color: 'rgba(255,255,255,0.55)', fontWeight: 300 }}>Beyond the</span>
-              <br />
-              Classroom.
-            </h1>
-
-            {/* Body */}
-            <p
-              className="text-lg sm:text-xl leading-relaxed mb-10 animate-fade-up delay-100"
-              style={{ color: 'rgba(255,255,255,0.65)', maxWidth: '48ch' }}>
-              KL SAC is where {totalClubs > 0 ? `${totalClubs} clubs, ` : ''}{domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 animate-fade-up delay-200">
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-bold text-base transition-all hover:scale-[1.03] active:scale-[0.98]"
-                style={{ background: '#8B0000', color: '#fff' }}>
-                Explore SAC
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                href="/clubs"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-bold text-base transition-all hover:bg-white/15"
-                style={{ border: '1px solid rgba(255,255,255,0.3)', color: '#fff' }}>
-                Browse Clubs
-              </Link>
-              <Link
-                href="https://sacactivities.kluniversity.in"
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-75"
-                style={{ color: 'rgba(255,255,255,0.55)' }}>
-                Student Dashboard
-                <ArrowUpRight size={14} />
-              </Link>
-            </div>
+          {/* Kicker */}
+          <div className="kicker mb-8 animate-fade-in" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            KL University · Student Activity Center
           </div>
 
-          {/* Scroll cue */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce-gentle opacity-40">
-            <ChevronDown size={22} style={{ color: '#fff' }} />
+          {/* Headline */}
+          <h1
+            className="font-display font-medium leading-[1.06] mb-6 animate-fade-up"
+            style={{ fontSize: 'clamp(2.75rem, 7vw, 5.25rem)', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+            Student Life.
+            <br />
+            <span style={{ color: 'rgba(255,255,255,0.45)', fontStyle: 'italic' }}>Beyond the</span>
+            <br />
+            Classroom.
+          </h1>
+
+          {/* Body */}
+          <p className="text-[15px] sm:text-base leading-relaxed mb-10 animate-fade-up delay-100"
+            style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '48ch' }}>
+            KL SAC is where {totalClubs > 0 ? `${totalClubs} clubs, ` : ''}{domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
+          </p>
+
+          {/* CTAs */}
+          <div className="flex flex-wrap items-center gap-4 animate-fade-up delay-200">
+            <Link
+              href="/about"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              style={{ background: '#970003', color: '#fff' }}>
+              Explore SAC
+              <ArrowRight size={15} />
+            </Link>
+            <Link
+              href="/clubs"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all"
+              style={{ border: '1px solid rgba(255,255,255,0.28)', color: '#fff' }}>
+              Browse Clubs
+            </Link>
+            <Link
+              href="https://sacactivities.kluniversity.in"
+              target="_blank" rel="noopener"
+              className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-75 border-b pb-0.5"
+              style={{ color: 'rgba(255,255,255,0.55)', borderColor: 'rgba(255,255,255,0.3)' }}>
+              Student Dashboard
+              <ArrowUpRight size={13} />
+            </Link>
           </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce-gentle opacity-35">
+          <ChevronDown size={20} style={{ color: '#fff' }} />
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════ AT A GLANCE ══ */}
-      <section style={{ background: '#0A0A0F' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-0 lg:divide-x"
-               style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+      {/* ════════════════════════════════════════════════ AT A GLANCE ══ */}
+      <section style={{ background: '#faf6f1' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-20">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-0"
+            style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: totalClubs   > 0 ? String(totalClubs)    : null,                    label: 'Active Clubs',     gold: true  },
-              { value: domains.length > 0 ? String(domains.length) : null,                 label: 'Learning Domains', gold: true  },
-              { value: statStudents   > 0 ? String(statStudents)   + '+' : null,           label: 'Student Members',  gold: false },
-              { value: statActivities > 0 ? String(statActivities) + '+' : null,           label: 'Annual Activities',gold: false },
-            ].map((s) => (
-              <div key={s.label} className="px-0 lg:px-10">
-                <div
-                  className="font-black leading-none mb-2"
-                  style={{
-                    fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                    color:    s.value ? '#fff' : '#2A2A30',
-                    letterSpacing: '-0.03em',
-                  }}>
-                  {s.value ?? '—'}
-                </div>
-                <div className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.38)' }}>
-                  {s.label}
-                </div>
-                {!s.value && (
-                  <div className="text-[10px] mt-1 font-medium" style={{ color: '#3A3A44' }}>
-                    Official data pending
-                  </div>
-                )}
-              </div>
+              { value: totalClubs   > 0 ? String(totalClubs)         : '50+', label: 'Active Clubs',      delay: 0    },
+              { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  delay: 120  },
+              { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Student Members', delay: 240  },
+              { value: statActivities > 0 ? `${statActivities}+`     : '200+', label: 'Annual Activities', delay: 360 },
+            ].map((s, i) => (
+              <StatCounter
+                key={s.label}
+                value={s.value}
+                label={s.label}
+                duration={1800}
+                className="px-0 lg:px-10 py-10"
+                style={{ borderRight: i < 3 ? '1px solid var(--hairline)' : 'none' }}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════ WHAT HAPPENS AT SAC */}
-      <section style={{ background: '#fff' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-28">
-          <FadeIn className="mb-16">
-            <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-              The SAC Journey
+      {/* ═══════════════════════════════════════════ WHAT HAPPENS AT SAC ══ */}
+      <section style={{ background: '#fffdfb' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-14 lg:py-16">
+
+          {/* Header */}
+          <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div>
+              <p className="kicker mb-3" style={{ color: '#970003' }}>The SAC Journey</p>
+              <h2
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(1.6rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                What happens when<br className="hidden sm:block" /> you join KL SAC?
+              </h2>
+            </div>
+            <p className="text-sm shrink-0" style={{ color: 'rgba(25,19,19,0.4)', maxWidth: '22ch', lineHeight: 1.6 }}>
+              Six stages. One transformation.
             </p>
-            <h2
-              className="font-black leading-tight"
-              style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.02em', maxWidth: '28ch' }}>
-              What happens when you join KL SAC?
-            </h2>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-0">
-            {JOURNEY_STEPS.map((step, i) => (
-              <FadeIn key={step.title} delay={i * 0.07}>
-                <div
-                  className="flex gap-6 py-8"
-                  style={{ borderBottom: '1px solid #EBEBEB' }}>
-                  <span
-                    className="font-black shrink-0 leading-none pt-1"
-                    style={{ fontSize: '2rem', color: '#E8E8EC', width: '3rem', fontVariantNumeric: 'tabular-nums' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div>
-                    <p className="font-black text-base uppercase tracking-[0.1em] mb-2" style={{ color: '#0D0D0D' }}>
+          {/* ── Snake grid (desktop) ── */}
+          <div className="hidden md:block">
+            {/* Row 1: steps 1–3 left→right */}
+            <div className="grid grid-cols-3 gap-3">
+              {JOURNEY_STEPS.slice(0, 3).map((step, i) => (
+                <FadeIn key={step.title} delay={i * 0.08}>
+                  <div className="relative rounded-2xl p-5 h-full hover-card"
+                    style={{ background: '#fff', border: '1px solid var(--hairline)', boxShadow: '0 2px 16px -6px rgba(25,19,19,0.07)' }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-display tabular-nums text-xs font-semibold px-2.5 py-1 rounded-full"
+                        style={{ background: '#fdf2f2', color: '#970003' }}>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      {i < 2 && (
+                        <span className="text-xs font-bold" style={{ color: 'rgba(151,0,3,0.25)' }}>→</span>
+                      )}
+                    </div>
+                    <p className="font-semibold text-sm uppercase tracking-[0.08em] mb-1.5" style={{ color: '#191313' }}>
                       {step.title}
                     </p>
-                    <p className="text-sm leading-relaxed" style={{ color: '#71717A' }}>
+                    <p className="text-[12.5px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
                       {step.description}
                     </p>
                   </div>
+                </FadeIn>
+              ))}
+            </div>
+
+            {/* U-turn connector between rows */}
+            <div className="flex items-center justify-end" style={{ height: '36px', paddingRight: '0' }}>
+              <div style={{ width: '33.33%', display: 'flex', alignItems: 'center', paddingRight: '12px' }}>
+                <svg width="100%" height="36" viewBox="0 0 200 36" fill="none" aria-hidden="true">
+                  <path d="M 0,4 Q 180,4 180,18 Q 180,32 0,32"
+                    stroke="rgba(151,0,3,0.2)" strokeWidth="1.5" strokeDasharray="5 4" fill="none" />
+                  <path d="M 6,26 L 0,32 L 6,38" stroke="rgba(151,0,3,0.3)" strokeWidth="1.5" fill="none" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Row 2: steps 4–6 displayed right→left (04 under 03, 06 under 01) */}
+            <div className="grid grid-cols-3 gap-3">
+              {[...JOURNEY_STEPS.slice(3)].reverse().map((step, i) => {
+                const realIdx = 5 - i;
+                return (
+                  <FadeIn key={step.title} delay={realIdx * 0.08}>
+                    <div className="relative rounded-2xl p-5 h-full hover-card"
+                      style={{ background: '#fff', border: '1px solid var(--hairline)', boxShadow: '0 2px 16px -6px rgba(25,19,19,0.07)' }}>
+                      <div className="flex items-center justify-between mb-3">
+                        {i > 0 && (
+                          <span className="text-xs font-bold" style={{ color: 'rgba(151,0,3,0.25)' }}>←</span>
+                        )}
+                        <span className="font-display tabular-nums text-xs font-semibold px-2.5 py-1 rounded-full ml-auto"
+                          style={{ background: '#fdf2f2', color: '#970003' }}>
+                          {String(realIdx + 1).padStart(2, '0')}
+                        </span>
+                      </div>
+                      <p className="font-semibold text-sm uppercase tracking-[0.08em] mb-1.5" style={{ color: '#191313' }}>
+                        {step.title}
+                      </p>
+                      <p className="text-[12.5px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                        {step.description}
+                      </p>
+                    </div>
+                  </FadeIn>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Mobile 2-col grid ── */}
+          <div className="md:hidden grid grid-cols-2 gap-3">
+            {JOURNEY_STEPS.map((step, i) => (
+              <FadeIn key={step.title} delay={i * 0.06}>
+                <div className="rounded-2xl p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+                  <span className="font-display tabular-nums text-[11px] font-semibold px-2 py-0.5 rounded-full inline-block mb-2.5"
+                    style={{ background: '#fdf2f2', color: '#970003' }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <p className="font-semibold text-xs uppercase tracking-[0.08em] mb-1" style={{ color: '#191313' }}>
+                    {step.title}
+                  </p>
+                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                    {step.description}
+                  </p>
                 </div>
               </FadeIn>
             ))}
           </div>
+
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════ FIVE DOMAINS ══ */}
-      <section style={{ background: '#F7F7F8' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-28">
-          <FadeIn className="mb-12">
-            <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-              {domains.length} Domains · {totalClubs} Clubs
-            </p>
-            <h2
-              className="font-black leading-tight"
-              style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-              Every passion. One ecosystem.
-            </h2>
-          </FadeIn>
+      {/* ══════════════════════════════════════════════ FIVE DOMAINS ══ */}
+      <section style={{ background: '#fffdfb' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16 lg:py-20">
 
-          <FadeIn>
-            <div style={{ borderTop: '1px solid #E4E4E7' }}>
-              {domains.map((d: any) => (
-                <Link
-                  key={d.code}
-                  href={`/domains/${d.slug}`}
-                  className="group flex items-center gap-4 sm:gap-8 py-5 sm:py-6 transition-all"
-                  style={{ borderBottom: '1px solid #E4E4E7' }}>
-                  <div
-                    className="w-14 h-10 rounded-lg flex items-center justify-center font-black text-xs shrink-0 transition-colors"
-                    style={{ background: d.accent_bg, color: d.color }}>
-                    {d.code}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-base sm:text-lg leading-tight text-gray-900 group-hover:text-gray-600 transition-colors">
-                      {d.name}
-                    </p>
-                    <p className="text-sm mt-0.5 hidden sm:block" style={{ color: '#A1A1AA' }}>
-                      {d.tagline}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <span className="text-sm font-semibold" style={{ color: '#A1A1AA' }}>
-                      {clubCountByDomain[d.code] ?? 0} clubs
-                    </span>
-                  </div>
-                  <ArrowRight
-                    size={18}
-                    className="shrink-0 transition-transform group-hover:translate-x-1"
-                    style={{ color: '#D1D1D6' }} />
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-8 flex items-center gap-6">
-              <Link href="/domains"
-                    className="inline-flex items-center gap-2 font-bold text-sm transition-colors hover:opacity-75"
-                    style={{ color: '#8B0000' }}>
-                View all domains <ArrowRight size={14} />
-              </Link>
-              <Link href="/clubs"
-                    className="inline-flex items-center gap-2 font-semibold text-sm transition-colors hover:opacity-75"
-                    style={{ color: '#71717A' }}>
-                Browse all clubs
-              </Link>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════ STUDENT STORIES ══ */}
-      <section style={{ background: '#fff' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-28">
-          <FadeIn className="flex items-end justify-between mb-12 gap-6">
+          {/* Header row */}
+          <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
             <div>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-                Student Stories
+              <p className="kicker mb-3" style={{ color: '#970003' }}>
+                {domains.length || 5} Domains · {totalClubs || 22} Clubs
               </p>
               <h2
-                className="font-black leading-tight"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                Every passion. One ecosystem.
+              </h2>
+            </div>
+            <div className="flex items-center gap-5 shrink-0">
+              <Link href="/domains"
+                className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-70"
+                style={{ color: '#970003' }}>
+                All domains <ArrowRight size={13} />
+              </Link>
+              <Link href="/clubs"
+                className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-70"
+                style={{ color: 'rgba(25,19,19,0.4)' }}>
+                Browse clubs
+              </Link>
+            </div>
+          </FadeIn>
+
+          {/* Domain rows with club pills */}
+          <FadeIn>
+            {(() => {
+              const dbClubs = (clubsRes.data ?? []) as any[];
+              const dbByDomain: Record<string, boolean> = {};
+              dbClubs.forEach(c => { if (c.domain_code) dbByDomain[c.domain_code] = true; });
+              const hasMappedClubs = dbClubs.some(c => c.domain_code && c.name);
+              const allClubs = hasMappedClubs
+                ? dbClubs
+                : DEMO_CLUBS.map(c => ({ domain_code: c.domain, slug: c.name.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g,'-'), name: c.name }));
+              const clubsByDomain: Record<string, { name: string; slug: string }[]> = {};
+              allClubs.forEach((c: any) => {
+                if (!clubsByDomain[c.domain_code]) clubsByDomain[c.domain_code] = [];
+                clubsByDomain[c.domain_code].push({ name: c.name, slug: c.slug });
+              });
+
+              const domainRows = domains.length > 0 ? domains : [
+                { code: 'TEC', name: 'Central Technology Clubs',              slug: 'technology',    color: '#8B0000', accent_bg: '#fef2f2' },
+                { code: 'LCH', name: 'Liberal Arts, Creative Arts & Hobby',   slug: 'liberal-arts',  color: '#B91C1C', accent_bg: '#fef2f2' },
+                { code: 'ESO', name: 'Extension & Society Outreach Clubs',    slug: 'social-outreach', color: '#991B1B', accent_bg: '#fef2f2' },
+                { code: 'IIE', name: 'Innovation, Incubation & Entrepreneurship', slug: 'innovation', color: '#C53030', accent_bg: '#fef2f2' },
+                { code: 'HWB', name: 'Health and Wellbeing Clubs',            slug: 'health-wellbeing', color: '#7C0000', accent_bg: '#fef2f2' },
+              ];
+
+              return (
+                <div style={{ borderTop: '1px solid var(--hairline)' }}>
+                  {domainRows.map((d: any, i: number) => {
+                    const clubs = clubsByDomain[d.code] ?? [];
+                    return (
+                      <div key={d.code}
+                        className="py-4 sm:py-5"
+                        style={{ borderBottom: '1px solid var(--hairline)' }}>
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6">
+
+                          {/* Domain badge + name + count */}
+                          <div className="flex items-center gap-3 shrink-0 sm:w-64">
+                            <Link href={`/domains/${d.slug}`}
+                              className="w-11 h-7 rounded flex items-center justify-center text-[10px] font-black tracking-wider shrink-0 hover:opacity-80 transition-opacity"
+                              style={{ background: d.accent_bg ?? '#fdf2f2', color: d.color ?? '#970003' }}>
+                              {d.code}
+                            </Link>
+                            <div className="min-w-0">
+                              <Link href={`/domains/${d.slug}`}
+                                className="font-semibold text-[13px] leading-tight hover:opacity-75 transition-opacity block"
+                                style={{ color: '#191313' }}>
+                                {d.name}
+                              </Link>
+                              <span className="text-[11px]" style={{ color: 'rgba(25,19,19,0.35)' }}>
+                                {clubs.length || (clubCountByDomain[d.code] ?? 0)} clubs
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Club pills */}
+                          <div className="flex flex-wrap gap-1.5 flex-1">
+                            {clubs.length > 0 ? clubs.map((c) => (
+                              <Link key={c.slug} href={`/clubs/${c.slug}`}
+                                className="text-[11px] font-medium px-2.5 py-1 rounded-full transition-all hover:opacity-75"
+                                style={{ background: 'rgba(25,19,19,0.055)', color: 'rgba(25,19,19,0.6)' }}>
+                                {c.name}
+                              </Link>
+                            )) : (
+                              <span className="text-[11px]" style={{ color: 'rgba(25,19,19,0.25)' }}>
+                                Clubs loading…
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════ STUDENT STORIES ══ */}
+      <section style={{ background: '#fffdfb' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+          <FadeIn className="flex items-end justify-between mb-12 gap-6">
+            <div>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>Student Stories</p>
+              <h2
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Lived experiences.<br />Real transformation.
               </h2>
             </div>
-            <Link
-              href="/stories"
-              className="hidden sm:inline-flex items-center gap-2 font-bold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
-              style={{ color: '#8B0000' }}>
-              All stories
-              <ArrowRight size={14} />
+            <Link href="/stories"
+              className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
+              style={{ color: '#970003' }}>
+              All stories <ArrowRight size={14} />
             </Link>
           </FadeIn>
 
@@ -323,32 +409,26 @@ export default async function HomePage() {
                 <Link href={`/stories/${featuredStory.slug}`} className="group block h-full">
                   <div
                     className="rounded-2xl overflow-hidden mb-5 relative"
-                    style={{ background: 'linear-gradient(135deg, #1a0005 0%, #5b0000 100%)', aspectRatio: '1/1' }}>
+                    style={{ background: 'linear-gradient(135deg, #fdf2f2 0%, #fce8e8 100%)', aspectRatio: '4/3' }}>
                     {featuredStory.photo && (
-                      <img
-                        src={featuredStory.photo}
-                        alt={featuredStory.title}
-                        className="absolute inset-0 w-full h-full"
-                        style={{ objectFit: 'cover', objectPosition: 'center center' }}
-                      />
+                      <img src={featuredStory.photo} alt={featuredStory.title}
+                        className="absolute inset-0 w-full h-full object-cover" />
                     )}
                     <div className="absolute bottom-0 left-0 right-0 p-6"
-                         style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)' }}>
-                      <span
-                        className="text-[10px] font-black tracking-widest uppercase mb-2 inline-block"
-                        style={{ color: DOMAINS.find(d => d.code === featuredStory.domain_code)?.color ?? '#8B0000' }}>
+                      style={{ background: 'linear-gradient(to top, rgba(10,2,2,0.85) 0%, transparent 100%)' }}>
+                      <span className="kicker mb-2" style={{ color: '#c67374' }}>
                         {featuredStory.club_name}
                       </span>
-                      <h3 className="font-black text-xl leading-snug" style={{ color: '#fff' }}>
+                      <h3 className="font-display font-medium text-xl leading-snug" style={{ color: '#fff' }}>
                         {featuredStory.title}
                       </h3>
                     </div>
                   </div>
-                  <p className="text-base leading-relaxed" style={{ color: '#71717A' }}>
+                  <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
                     {featuredStory.excerpt}
                   </p>
-                  <p className="text-sm font-bold mt-3 group-hover:gap-3 flex items-center gap-2 transition-all"
-                     style={{ color: '#8B0000' }}>
+                  <p className="text-sm font-semibold mt-3 flex items-center gap-2 group-hover:gap-3 transition-all"
+                    style={{ color: '#970003' }}>
                     Read story <ArrowRight size={14} />
                   </p>
                 </Link>
@@ -361,28 +441,23 @@ export default async function HomePage() {
                     <Link href={`/stories/${story.slug}`} className="group block h-full">
                       <div
                         className="rounded-xl overflow-hidden mb-4 relative"
-                        style={{ background: i === 0 ? 'linear-gradient(135deg, #2D0000 0%, #8B0000 100%)' : 'linear-gradient(135deg, #1a0000 0%, #7C0000 100%)', aspectRatio: '1/1' }}>
+                        style={{ background: 'linear-gradient(135deg, #fdf2f2 0%, #fce8e8 100%)', aspectRatio: '16/9' }}>
                         {story.photo && (
-                          <img
-                            src={story.photo}
-                            alt={story.title}
-                            className="absolute inset-0 w-full h-full"
-                            style={{ objectFit: 'cover', objectPosition: 'center center' }}
-                            loading="lazy"
-                          />
+                          <img src={story.photo} alt={story.title}
+                            className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                         )}
                         <div className="absolute bottom-0 left-0 right-0 p-4"
-                             style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)' }}>
-                          <span className="text-[9px] font-black tracking-widest uppercase"
-                                style={{ color: 'rgba(255,255,255,0.65)' }}>
+                          style={{ background: 'linear-gradient(to top, rgba(10,2,2,0.7) 0%, transparent 100%)' }}>
+                          <span className="text-[10px] font-semibold tracking-widest uppercase"
+                            style={{ color: 'rgba(255,255,255,0.6)' }}>
                             {story.club_name}
                           </span>
                         </div>
                       </div>
-                      <h3 className="font-bold text-base leading-snug mb-1" style={{ color: '#0D0D0D' }}>
+                      <h3 className="font-semibold text-base leading-snug mb-1" style={{ color: '#191313' }}>
                         {story.title}
                       </h3>
-                      <p className="text-sm line-clamp-2" style={{ color: '#71717A' }}>
+                      <p className="text-[13px] line-clamp-2" style={{ color: 'rgba(25,19,19,0.5)' }}>
                         {story.excerpt}
                       </p>
                     </Link>
@@ -391,92 +466,83 @@ export default async function HomePage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border p-12 text-center" style={{ borderColor: '#E4E4E7' }}>
-              <p className="text-sm" style={{ color: '#A1A1AA' }}>
-                Add student stories from the admin panel to display them here.
-              </p>
+            <div className="rounded-2xl p-14 text-center hairline-t hairline-b"
+              style={{ color: 'rgba(25,19,19,0.35)' }}>
+              <p className="font-display font-medium text-2xl mb-2">Stories coming soon</p>
+              <p className="text-sm">Add student stories from the admin panel to display them here.</p>
             </div>
           )}
 
           <div className="mt-8 sm:hidden">
-            <Link
-              href="/stories"
-              className="inline-flex items-center gap-2 font-bold text-sm"
-              style={{ color: '#8B0000' }}>
+            <Link href="/stories"
+              className="inline-flex items-center gap-2 font-semibold text-sm"
+              style={{ color: '#970003' }}>
               All student stories <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════ UPCOMING ACTIVITIES ══ */}
-      <section style={{ background: '#F7F7F8' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-28">
+      {/* ════════════════════════════════════ UPCOMING ACTIVITIES ══ */}
+      <section style={{ background: '#faf6f1' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-                Calendar
-              </p>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
               <h2
-                className="font-black leading-tight"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Upcoming Activities
               </h2>
             </div>
-            <Link
-              href="/activities"
-              className="hidden sm:inline-flex items-center gap-2 font-bold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
-              style={{ color: '#8B0000' }}>
-              Full calendar
-              <ArrowRight size={14} />
+            <Link href="/activities"
+              className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
+              style={{ color: '#970003' }}>
+              Full calendar <ArrowRight size={14} />
             </Link>
           </FadeIn>
 
           <FadeIn>
-            <div style={{ borderTop: '1px solid #E4E4E7' }}>
+            <div style={{ borderTop: '1px solid var(--hairline)' }}>
               {upcomingEvents.length === 0 ? (
-                <div className="py-16 text-center" style={{ color: '#A1A1AA' }}>
-                  <p className="font-semibold">No upcoming activities at this time.</p>
-                  <p className="text-sm mt-1">Check back soon or visit the activities page.</p>
+                <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.4)' }}>
+                  <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
+                  <p className="text-sm">Check back soon or visit the activities page.</p>
                 </div>
               ) : upcomingEvents.map((ev: any) => {
-                const date   = new Date(ev.activity_date);
-                const dmeta  = DOMAIN_META[ev.domain];
-                const color  = dmeta?.color ?? '#8B0000';
+                const date  = new Date(ev.activity_date);
+                const dmeta = DOMAIN_META[ev.domain];
+                const color = dmeta?.color ?? '#970003';
                 return (
-                  <div
-                    key={ev.code}
+                  <div key={ev.code}
                     className="group flex items-start gap-6 py-5"
-                    style={{ borderBottom: '1px solid #E4E4E7' }}>
-                    {/* Date */}
-                    <div className="w-12 shrink-0 text-center pt-0.5">
-                      <div className="font-black text-2xl leading-none" style={{ color: '#0D0D0D' }}>
+                    style={{ borderBottom: '1px solid var(--hairline)' }}>
+                    {/* Date stamp */}
+                    <div className="shrink-0 text-center"
+                      style={{ minWidth: '3.5rem', background: '#970003', borderRadius: '0.375rem', padding: '8px 10px' }}>
+                      <div className="font-display font-medium text-xl leading-none" style={{ color: '#fff' }}>
                         {date.getDate()}
                       </div>
-                      <div className="text-[10px] font-bold uppercase mt-0.5" style={{ color: '#A1A1AA' }}>
-                        {date.toLocaleString('en-IN', { month: 'short' })} {date.getFullYear().toString().slice(2)}
+                      <div className="text-[10px] font-semibold tracking-wider uppercase mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                        {date.toLocaleString('en-IN', { month: 'short' })}
                       </div>
                     </div>
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-base sm:text-lg leading-snug mb-1" style={{ color: '#0D0D0D' }}>
+                      <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1" style={{ color: '#191313' }}>
                         {ev.title}
                       </h3>
-                      <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: '#A1A1AA' }}>
-                        <span className="font-black text-[10px] uppercase" style={{ color }}>{ev.domain}</span>
-                        {clubNameMap[ev.club_slug] && <><span>·</span><span className="font-semibold">{clubNameMap[ev.club_slug]}</span></>}
+                      <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>
+                        <span className="font-bold text-[10px] uppercase tracking-wider" style={{ color }}>{ev.domain}</span>
+                        {clubNameMap[ev.club_slug] && <><span>·</span><span className="font-medium">{clubNameMap[ev.club_slug]}</span></>}
                         {ev.venue && <><span>·</span><span>{ev.venue}</span></>}
                       </div>
                     </div>
                     {/* CTA */}
-                    <a
-                      href="https://sacactivities.kluniversity.in"
-                      target="_blank"
-                      rel="noopener"
-                      className="text-xs font-bold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
-                      style={{ color: '#8B0000' }}>
-                      Register
-                      <ArrowUpRight size={12} />
+                    <a href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+                      className="text-xs font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
+                      style={{ color: '#970003' }}>
+                      Register <ArrowUpRight size={12} />
                     </a>
                   </div>
                 );
@@ -484,10 +550,9 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-8">
-              <Link
-                href="/activities"
-                className="inline-flex items-center gap-2 font-bold text-sm"
-                style={{ color: '#8B0000' }}>
+              <Link href="/activities"
+                className="inline-flex items-center gap-2 font-semibold text-sm"
+                style={{ color: '#970003' }}>
                 View all activities <ArrowRight size={14} />
               </Link>
             </div>
@@ -495,36 +560,31 @@ export default async function HomePage() {
         </div>
       </section>
 
-
-      {/* ═══════════════════════════════════════════════ ACHIEVEMENTS ══ */}
-      <section style={{ background: '#0A0A0F' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+      {/* ══════════════════════════════════════════ ACHIEVEMENTS ══ */}
+      <section style={{ background: '#faf6f1' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-                Recognition
-              </p>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>Recognition</p>
               <h2
-                className="font-black leading-tight"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#fff', letterSpacing: '-0.02em' }}>
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Achievements
               </h2>
             </div>
-            <Link
-              href="/achievements"
-              className="hidden sm:inline-flex items-center gap-2 font-bold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
-              style={{ color: '#8B0000' }}>
-              View all
-              <ArrowRight size={14} />
+            <Link href="/achievements"
+              className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
+              style={{ color: '#970003' }}>
+              View all <ArrowRight size={14} />
             </Link>
           </FadeIn>
 
           <FadeIn>
             {(() => {
               const levels = [
-                { label: 'National',   key: 'ach_national',   bar: 'linear-gradient(90deg, #8B0000, #C41E3A)' },
-                { label: 'State',      key: 'ach_state',       bar: 'linear-gradient(90deg, #78350F, #D97706)' },
-                { label: 'University', key: 'ach_university',  bar: 'linear-gradient(90deg, #27272A, #71717A)' },
+                { label: 'National',   key: 'ach_national',  bar: 'linear-gradient(90deg, #970003, #c67374)' },
+                { label: 'State',      key: 'ach_state',     bar: 'linear-gradient(90deg, #970003 0%, #d97706 100%)' },
+                { label: 'University', key: 'ach_university', bar: 'linear-gradient(90deg, rgba(151,0,3,0.3), rgba(151,0,3,0.6))' },
               ].map(l => ({ ...l, count: sacStatsMap[l.key] ?? 0 }));
 
               const maxCount = Math.max(...levels.map(l => l.count), 1);
@@ -532,32 +592,28 @@ export default async function HomePage() {
 
               if (!hasAny) {
                 return (
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                    No achievements added yet. Set counts in Admin → Achievements.
+                  <p className="text-sm" style={{ color: 'rgba(25,19,19,0.3)' }}>
+                    No achievements added yet.
                   </p>
                 );
               }
 
               return (
-                <div style={{ maxWidth: '640px' }}>
-                  <div className="flex flex-col gap-6">
+                <div style={{ maxWidth: '580px' }}>
+                  <div className="flex flex-col gap-8">
                     {levels.map(l => {
                       const pct = l.count > 0 ? Math.round((l.count / maxCount) * 100) : 0;
                       return (
                         <div key={l.label}>
-                          <div className="flex items-end justify-between mb-2.5">
-                            <span className="text-[10px] font-black tracking-[0.2em] uppercase"
-                                  style={{ color: 'rgba(255,255,255,0.38)' }}>
-                              {l.label}
-                            </span>
-                            <span className="font-black leading-none"
-                                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: l.count > 0 ? '#fff' : 'rgba(255,255,255,0.12)', letterSpacing: '-0.03em' }}>
+                          <div className="flex items-end justify-between mb-3">
+                            <span className="kicker" style={{ color: 'rgba(25,19,19,0.4)' }}>{l.label}</span>
+                            <span className="font-display font-medium leading-none"
+                              style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: l.count > 0 ? '#970003' : 'rgba(25,19,19,0.1)', letterSpacing: '-0.03em' }}>
                               {l.count > 0 ? l.count : '—'}
                             </span>
                           </div>
-                          <div className="w-full rounded-full overflow-hidden" style={{ height: '6px', background: 'rgba(255,255,255,0.06)' }}>
-                            <div className="h-full rounded-full"
-                                 style={{ width: `${pct}%`, background: l.bar }} />
+                          <div className="w-full rounded-full overflow-hidden" style={{ height: '4px', background: 'rgba(25,19,19,0.07)' }}>
+                            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: l.bar }} />
                           </div>
                         </div>
                       );
@@ -570,78 +626,206 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════ INDUSTRY TEASER ══ */}
-      <section style={{ background: '#fff' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      {/* ════════════════════════════════════ INDUSTRY & COLLABORATION ══ */}
+      <section style={{ background: '#fffdfb' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-                Industry & Collaboration
-              </p>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>Industry & Collaboration</p>
               <h2
-                className="font-black leading-tight mb-6"
-                style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                className="font-display font-medium leading-[1.07] mb-6"
+                style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Where industry meets student talent.
               </h2>
-              <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: '#71717A' }}>
+              <p className="text-[15px] sm:text-base leading-relaxed mb-8" style={{ color: 'rgba(25,19,19,0.5)' }}>
                 KL SAC creates structured pathways for industry leaders, academic institutions, government bodies, and organisations to engage with KL University's student talent.
               </p>
-              <Link
-                href="/collaborate"
-                className="inline-flex items-center gap-2 font-bold text-sm transition-opacity hover:opacity-75"
-                style={{ color: '#8B0000' }}>
-                Partner with SAC
-                <ArrowRight size={14} />
+              <Link href="/collaborate"
+                className="inline-flex items-center gap-2 font-semibold text-sm transition-opacity hover:opacity-75"
+                style={{ color: '#970003' }}>
+                Partner with SAC <ArrowRight size={14} />
               </Link>
             </FadeIn>
 
             <FadeIn delay={0.1}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-px" style={{ background: 'var(--hairline)' }}>
                 {[
-                  { title: 'Industry Mentorship', desc: 'Connect experts with students building real skills.' },
-                  { title: 'Campus Hiring',        desc: 'Engage students who already demonstrate excellence.' },
-                  { title: 'Research Collaboration', desc: 'Partner with student clubs on applied research.' },
-                  { title: 'Sponsorship & CSR',   desc: 'Fund programmes that create long-term social impact.' },
+                  { title: 'Industry Mentorship',    desc: 'Connect experts with students building real skills.' },
+                  { title: 'Campus Hiring',           desc: 'Engage students who already demonstrate excellence.' },
+                  { title: 'Research Collaboration',  desc: 'Partner with student clubs on applied research.' },
+                  { title: 'Sponsorship & CSR',       desc: 'Fund programmes that create long-term social impact.' },
                 ].map(item => (
-                  <div
-                    key={item.title}
-                    className="p-5 rounded-xl"
-                    style={{ background: '#F7F7F8', border: '1px solid #E4E4E7' }}>
-                    <p className="font-bold text-sm mb-1.5" style={{ color: '#0D0D0D' }}>{item.title}</p>
-                    <p className="text-xs leading-relaxed" style={{ color: '#71717A' }}>{item.desc}</p>
+                  <div key={item.title} className="p-6" style={{ background: '#fffdfb' }}>
+                    <p className="font-semibold text-sm mb-2" style={{ color: '#191313' }}>{item.title}</p>
+                    <p className="text-xs leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>{item.desc}</p>
                   </div>
                 ))}
               </div>
             </FadeIn>
           </div>
+
+          {/* Partners marquee */}
+          {partners.length > 0 && (
+            <FadeIn delay={0.2} className="mt-20 -mx-5 sm:-mx-6">
+              <p className="kicker justify-center mb-8 px-5 sm:px-6" style={{ color: 'rgba(25,19,19,0.3)' }}>
+                Partners & Collaborators
+              </p>
+              {/* Overflow clip — hairline border on both sides */}
+              <div className="overflow-hidden" style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
+                <div className="flex partners-track animate-marquee" style={{ width: 'max-content', animationDuration: `${Math.max(partners.length * 4, 20)}s` }}>
+                  {/* Duplicate logos for seamless loop */}
+                  {[...partners, ...partners].map((p: any, i: number) => (
+                    <div key={`${p.id}-${i}`}
+                      className="flex items-center justify-center shrink-0 px-10 py-7 group"
+                      style={{ borderRight: '1px solid var(--hairline)' }}>
+                      <img
+                        src={p.partner_image}
+                        alt={p.partner_name}
+                        className="object-contain transition-transform duration-300 group-hover:scale-110"
+                        style={{ height: '52px', maxWidth: '160px' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </FadeIn>
+          )}
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════ LATEST NEWS ══ */}
-      <section style={{ background: '#F7F7F8' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+      {/* ══════════════════════════════════ MEET OUR LEADERSHIP ══ */}
+      <section style={{ background: '#faf6f1' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#8B0000' }}>
-                News & Updates
-              </p>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>Governance</p>
               <h2
-                className="font-black leading-tight"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                Meet our leadership
+              </h2>
+            </div>
+            <Link href="/leadership"
+              className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
+              style={{ color: '#970003' }}>
+              Full council <ArrowRight size={14} />
+            </Link>
+          </FadeIn>
+
+          {leaders.length === 0 ? (
+            <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.3)' }}>
+              <p className="font-display font-medium text-2xl mb-2">Leadership coming soon</p>
+              <p className="text-sm">Council profiles will appear here once added.</p>
+            </div>
+          ) : (() => {
+            const director = leaders.find((l: any) =>
+              l.role?.toLowerCase().includes('director') || l.sort_order === 1
+            );
+            const council = leaders.filter((l: any) => l.id !== director?.id);
+
+            return (
+              <>
+                {/* Featured Director card */}
+                {director && (
+                  <FadeIn className="mb-8">
+                    <div className="hover-card rounded-2xl overflow-hidden border grid sm:grid-cols-[280px_1fr] group"
+                      style={{ background: '#fffdfb', borderColor: 'var(--hairline)' }}>
+                      <div className="relative overflow-hidden" style={{ minHeight: '320px', background: '#faf6f1' }}>
+                        {director.photo ? (
+                          <img src={director.photo} alt={director.name}
+                            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105 grayscale group-hover:grayscale-0"
+                            style={{ position: 'absolute', inset: 0 }} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center absolute inset-0">
+                            <span className="text-[10px] font-semibold tracking-widest uppercase"
+                              style={{ color: 'rgba(25,19,19,0.18)' }}>Photo</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-8 sm:p-10 flex flex-col justify-center">
+                        <p className="kicker mb-4" style={{ color: '#970003' }}>{director.role}</p>
+                        <h3 className="font-display font-medium mb-3"
+                          style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#191313', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
+                          {director.name}
+                        </h3>
+                        <p className="text-[15px] leading-relaxed mb-6" style={{ color: 'rgba(25,19,19,0.5)' }}>
+                          {director.subtitle || director.designation || director.bio || 'Student Activity Center, KL University'}
+                        </p>
+                        <div className="h-px w-12" style={{ background: 'var(--hairline)' }} />
+                      </div>
+                    </div>
+                  </FadeIn>
+                )}
+
+                {/* Council grid */}
+                {council.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {council.map((leader: any, i: number) => (
+                      <FadeIn key={leader.id} delay={i * 0.07}>
+                        <div className="hover-card rounded-xl overflow-hidden border flex flex-col group"
+                          style={{ background: '#fffdfb', borderColor: 'var(--hairline)' }}>
+                          <div className="aspect-[4/5] relative overflow-hidden" style={{ background: '#faf6f1' }}>
+                            {leader.photo ? (
+                              <img src={leader.photo} alt={leader.name}
+                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105 grayscale group-hover:grayscale-0" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <span className="text-[10px] font-semibold tracking-widest uppercase"
+                                  style={{ color: 'rgba(25,19,19,0.18)' }}>Photo</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-4">
+                            <p className="text-[9px] font-semibold tracking-[0.18em] uppercase mb-1" style={{ color: '#970003' }}>
+                              {leader.role}
+                            </p>
+                            <h3 className="font-semibold text-sm leading-snug mb-0.5" style={{ color: '#191313' }}>
+                              {leader.name}
+                            </h3>
+                            <p className="text-[12px] line-clamp-1" style={{ color: 'rgba(25,19,19,0.4)' }}>
+                              {leader.subtitle || leader.designation || 'Student Council'}
+                            </p>
+                          </div>
+                        </div>
+                      </FadeIn>
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+
+          <div className="mt-8 sm:hidden">
+            <Link href="/leadership"
+              className="inline-flex items-center gap-2 font-semibold text-sm"
+              style={{ color: '#970003' }}>
+              View full council <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ LATEST NEWS ══ */}
+      <section style={{ background: '#fffdfb' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+          <FadeIn className="flex items-end justify-between mb-12 gap-6">
+            <div>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>News & Updates</p>
+              <h2
+                className="font-display font-medium leading-[1.07]"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Latest from SAC
               </h2>
             </div>
-            <Link
-              href="/news"
-              className="hidden sm:inline-flex items-center gap-2 font-bold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
-              style={{ color: '#8B0000' }}>
-              All news
-              <ArrowRight size={14} />
+            <Link href="/news"
+              className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
+              style={{ color: '#970003' }}>
+              All news <ArrowRight size={14} />
             </Link>
           </FadeIn>
 
           {newsArticles.length === 0 && (
-            <p className="text-sm" style={{ color: '#A1A1AA' }}>
+            <p className="text-[13px] mb-8" style={{ color: 'rgba(25,19,19,0.35)' }}>
               No featured articles yet. Check "Feature on homepage" in Admin → News to show articles here.
             </p>
           )}
@@ -649,42 +833,34 @@ export default async function HomePage() {
             {newsArticles.map((article, i) => (
               <FadeIn key={article.slug} delay={i * 0.1}>
                 <Link href={`/news/${article.slug}`} className="group block h-full">
-                  <article
-                    className="h-full rounded-2xl overflow-hidden flex flex-col transition-all hover:shadow-lg"
-                    style={{ background: '#fff', border: '1px solid #E4E4E7' }}>
-                    {/* Cover image */}
-                    <div
-                      className="h-44 overflow-hidden"
-                      style={{
-                        background: 'linear-gradient(135deg, #5B0000 0%, #8B0000 100%)',
-                      }}>
+                  <article className="hover-card h-full rounded-2xl overflow-hidden flex flex-col border"
+                    style={{ background: '#faf6f1', borderColor: 'var(--hairline)' }}>
+                    <div className="h-44 overflow-hidden relative"
+                      style={{ background: 'linear-gradient(135deg, #6a0002 0%, #970003 100%)' }}>
                       {article.photo_url ? (
-                        <img src={article.photo_url} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
+                        <img src={article.photo_url} alt={article.title}
+                          className="w-full h-full object-cover" loading="lazy" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-[10px] font-bold tracking-widest uppercase opacity-20" style={{ color: '#fff' }}>KL SAC</span>
+                          <span className="font-display text-2xl font-medium opacity-20" style={{ color: '#fff' }}>KL SAC</span>
                         </div>
                       )}
                     </div>
                     <div className="p-5 flex flex-col gap-3 flex-1">
                       <div className="flex items-center gap-2">
-                        <span
-                          className="text-[10px] font-black tracking-[0.15em] uppercase px-2 py-0.5 rounded"
-                          style={{ background: '#FFF0F0', color: '#8B0000' }}>
-                          {article.category}
-                        </span>
-                        <span className="text-xs" style={{ color: '#A1A1AA' }}>
+                        <span className="kicker" style={{ color: '#970003' }}>{article.category}</span>
+                        <span className="text-xs" style={{ color: 'rgba(25,19,19,0.3)' }}>
                           {new Date(article.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
-                      <h3 className="font-bold text-base leading-snug flex-1" style={{ color: '#0D0D0D' }}>
+                      <h3 className="font-semibold text-base leading-snug flex-1" style={{ color: '#191313' }}>
                         {article.title}
                       </h3>
-                      <p className="text-sm line-clamp-2" style={{ color: '#71717A' }}>
+                      <p className="text-[13px] line-clamp-2" style={{ color: 'rgba(25,19,19,0.5)' }}>
                         {article.excerpt}
                       </p>
-                      <p className="text-xs font-bold flex items-center gap-1.5 transition-all group-hover:gap-2.5"
-                         style={{ color: '#8B0000' }}>
+                      <p className="text-xs font-semibold flex items-center gap-1.5 group-hover:gap-2.5 transition-all"
+                        style={{ color: '#970003' }}>
                         Read more <ArrowRight size={11} />
                       </p>
                     </div>
@@ -696,38 +872,39 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════ CTA ══ */}
-      <section style={{ background: '#0A0A0F' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-32 text-center">
+      {/* ════════════════════════════════════════════════════ CTA ══ */}
+      <section className="relative noise overflow-hidden" style={{ background: '#970003' }}>
+        {/* Floating orbs */}
+        <div className="orb-a absolute -top-24 -left-24 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'rgba(106,0,2,0.5)', filter: 'blur(80px)' }} aria-hidden="true" />
+        <div className="orb-b absolute -bottom-24 -right-24 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'rgba(198,115,116,0.25)', filter: 'blur(80px)' }} aria-hidden="true" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 py-28 text-center">
           <FadeIn>
-            <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-6"
-               style={{ color: 'rgba(255,255,255,0.3)' }}>
+            <p className="kicker justify-center mb-6" style={{ color: 'rgba(255,255,255,0.55)' }}>
               KL SAC
             </p>
             <h2
-              className="font-black leading-tight mb-6 mx-auto"
+              className="font-display font-medium leading-[1.06] mb-6 mx-auto"
               style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)', color: '#fff', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
               Ready to make your university years count?
             </h2>
-            <p className="text-lg mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.45)', maxWidth: '48ch' }}>
+            <p className="text-[15px] sm:text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
               Join one of 25 clubs, participate in activities, and build experiences that will define your career.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/clubs"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-base transition-all hover:scale-[1.03] active:scale-[0.98]"
-                style={{ background: '#8B0000', color: '#fff' }}>
+              <Link href="/clubs"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all"
+                style={{ background: '#fff', color: '#970003' }}>
                 Explore All Clubs
-                <ArrowRight size={16} />
+                <ArrowRight size={15} />
               </Link>
-              <Link
-                href="https://sacactivities.kluniversity.in"
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-base transition-all hover:bg-white/10"
-                style={{ border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}>
+              <Link href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all"
+                style={{ border: '1px solid rgba(255,255,255,0.35)', color: '#fff' }}>
                 Student Dashboard
-                <ArrowUpRight size={16} />
+                <ArrowUpRight size={15} />
               </Link>
             </div>
           </FadeIn>
@@ -736,4 +913,3 @@ export default async function HomePage() {
     </>
   );
 }
-

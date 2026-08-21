@@ -22,27 +22,23 @@ const ENGAGE = [
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#0A0A0F', color: '#fff' }}>
+    <footer style={{ background: '#150404', color: '#fff' }}>
 
       {/* ── Main columns ── */}
-      <div className="w-full px-6 sm:px-12 xl:px-20 pt-16 pb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 pt-16 pb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
 
         {/* Brand */}
         <div>
           <div className="mb-6">
-            <Image
-              src="/logo.png"
-              alt="KL SAC — Student Activity Center, KL University"
-              height={44}
-              width={200}
-              style={{
-                height: '44px',
-                width: 'auto',
-                objectFit: 'contain',
-                filter: 'brightness(0) invert(1)',
-                opacity: 0.88,
-              }}
-            />
+            <span className="inline-flex items-center" style={{ background: '#fff', borderRadius: '0.875rem', padding: '8px 12px' }}>
+              <Image
+                src="/logo.png"
+                alt="KL SAC — Student Activity Center, KL University"
+                height={32}
+                width={150}
+                style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+              />
+            </span>
           </div>
 
           <p className="text-sm leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.38)' }}>
@@ -51,9 +47,8 @@ export default function Footer() {
             Andhra Pradesh — 522 502
           </p>
 
-          <p className="text-xs font-bold tracking-widest uppercase mb-4"
-             style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Empowering <span style={{ color: '#8B0000' }}>Tomorrow's Leaders</span>
+          <p className="kicker mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            Tomorrow's Leaders
           </p>
 
           {/* Social links */}
@@ -145,7 +140,7 @@ export default function Footer() {
             </p>
             <Link href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all hover:scale-[1.03]"
-                  style={{ background: '#8B0000', color: '#fff' }}>
+                  style={{ background: '#970003', color: '#fff' }}>
               Student Dashboard
               <ArrowUpRight size={11} />
             </Link>
@@ -154,7 +149,7 @@ export default function Footer() {
       </div>
 
       {/* ── Credits ── */}
-      <div className="w-full px-6 sm:px-12 xl:px-20 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-6"
            style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
         <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
           <span style={{ color: 'rgba(255,255,255,0.35)' }}>First SAC Website</span>
@@ -190,7 +185,7 @@ export default function Footer() {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="w-full px-6 sm:px-12 xl:px-20 py-5 flex flex-col sm:flex-row items-center justify-between gap-3"
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3"
            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
           © {new Date().getFullYear()} KL University — Student Activity Center. All rights reserved.

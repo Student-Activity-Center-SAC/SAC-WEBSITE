@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export async function GET() {
   const [{ data: statsRows }, { count: clubCount }, { count: domainCount }] = await Promise.all([
-    supabase.from('sac_stats').select('*'),
-    supabase.from('clubs').select('*', { count: 'exact', head: true }),
-    supabase.from('domains').select('*', { count: 'exact', head: true }),
+    db.from('sac_stats').select('*'),
+    db.from('clubs').select('*', { count: 'exact', head: true }),
+    db.from('domains').select('*', { count: 'exact', head: true }),
   ]);
 
   const manual: Record<string, number> = {};

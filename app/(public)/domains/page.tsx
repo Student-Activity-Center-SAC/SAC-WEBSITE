@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn } from '../_components/FadeIn';
 
 export const dynamic = 'force-dynamic';
@@ -12,8 +12,8 @@ export const metadata = {
 
 export default async function DomainsPage() {
   const [{ data: domainsData }, { data: clubsData }] = await Promise.all([
-    supabase.from('domains').select('*').order('sort_order', { ascending: true }),
-    supabase.from('clubs').select('domain_code'),
+    db.from('domains').select('*').order('sort_order', { ascending: true }),
+    db.from('clubs').select('domain_code'),
   ]);
 
   const domains = domainsData ?? [];
@@ -28,17 +28,15 @@ export default async function DomainsPage() {
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F', paddingTop: '92px', paddingBottom: '72px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-5" style={{ color: '#8B0000' }}>
-            Discovery
-          </p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Discovery</p>
           <h1
-            className="font-black leading-[1.05] mb-5"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#FFFFFF', letterSpacing: '-0.025em', maxWidth: '20ch' }}>
+            className="font-display font-medium leading-[1.05] mb-5"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '20ch' }}>
             Five Domains.<br />Every Passion.
           </h1>
-          <p className="text-lg leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)', maxWidth: '56ch' }}>
+          <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '56ch' }}>
             KL SAC organises all {totalClubs > 0 ? totalClubs : ''} clubs into five domains — each with a distinct purpose, philosophy, and community. Find yours.
           </p>
         </div>
@@ -123,20 +121,20 @@ export default async function DomainsPage() {
       </section>
 
       {/* ─── Browse Clubs CTA ─────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F' }}>
+      <section style={{ background: '#970003' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20 text-center">
           <h2
-            className="font-black leading-tight mb-5"
+            className="font-display font-medium leading-tight mb-5"
             style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#fff', letterSpacing: '-0.02em' }}>
             Ready to explore the clubs?
           </h2>
-          <p className="text-base mb-8" style={{ color: 'rgba(255,255,255,0.42)' }}>
+          <p className="text-base mb-8" style={{ color: 'rgba(255,255,255,0.65)' }}>
             Browse all clubs across the five domains and find the one that matches your ambition.
           </p>
           <Link
             href="/clubs"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-base transition-all hover:scale-[1.03]"
-            style={{ background: '#8B0000', color: '#fff' }}>
+            style={{ background: '#fff', color: '#970003' }}>
             Browse All Clubs
             <ArrowRight size={16} />
           </Link>

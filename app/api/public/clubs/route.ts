@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export async function GET() {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('clubs')
     .select('id, slug, name, domain_code, domain_slug, tagline, logo_url')
     .order('sort_order', { ascending: true });

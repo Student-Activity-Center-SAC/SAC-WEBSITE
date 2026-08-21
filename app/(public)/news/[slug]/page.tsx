@@ -1,14 +1,14 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn } from '../../_components/FadeIn';
 
 export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { data } = await supabase.from('news_articles').select('title,excerpt').eq('slug', slug).single();
+  const { data } = await db.from('news_articles').select('title,excerpt').eq('slug', slug).single();
   if (!data) return {};
   return { title: `${data.title} — KL SAC News`, description: data.excerpt };
 }
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function NewsArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const { data: article } = await supabase
+  const { data: article } = await db
     .from('news_articles')
     .select('*')
     .eq('slug', slug)
@@ -24,7 +24,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
 
   if (!article) notFound();
 
-  const { data: allArticles } = await supabase
+  const { data: allArticles } = await db
     .from('news_articles')
     .select('slug,title,category')
     .order('date', { ascending: false });

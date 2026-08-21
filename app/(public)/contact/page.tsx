@@ -1,5 +1,5 @@
 ﻿import Link from 'next/link';
-import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin } from 'lucide-react';
 import { FadeIn } from '../_components/FadeIn';
 
 export const metadata = {
@@ -64,23 +64,12 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-bold text-sm mb-0.5" style={{ color: '#0D0D0D' }}>Email</p>
-                      <p className="text-sm" style={{ color: '#71717A' }}>
-                        [PLACEHOLDER — Official SAC email required]
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div
-                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: '#FEF2F2' }}>
-                      <Phone size={16} style={{ color: '#8B0000' }} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm mb-0.5" style={{ color: '#0D0D0D' }}>Phone</p>
-                      <p className="text-sm" style={{ color: '#71717A' }}>
-                        [PLACEHOLDER — Official SAC phone required]
-                      </p>
+                      <a href="mailto:sac@kluniversity.in" className="text-sm block hover:underline" style={{ color: '#71717A' }}>
+                        sac@kluniversity.in
+                      </a>
+                      <a href="mailto:director_sac@kluniversity.in" className="text-sm block hover:underline" style={{ color: '#71717A' }}>
+                        director_sac@kluniversity.in
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -88,11 +77,11 @@ export default function ContactPage() {
                 {/* Student dashboard CTA */}
                 <div
                   className="mt-10 p-6 rounded-2xl"
-                  style={{ background: '#0A0A0F' }}>
-                  <p className="font-black text-sm mb-1" style={{ color: '#fff' }}>
+                  style={{ background: '#fdf2f2', border: '1px solid rgba(151,0,3,0.12)' }}>
+                  <p className="font-bold text-sm mb-1" style={{ color: '#191313' }}>
                     Are you a KL student?
                   </p>
-                  <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                  <p className="text-xs mb-4" style={{ color: 'rgba(25,19,19,0.5)' }}>
                     For club registration and activity details — use the Student Dashboard.
                   </p>
                   <Link
@@ -120,7 +109,7 @@ export default function ContactPage() {
                     {
                       title: 'General Enquiries',
                       desc: 'Questions about SAC, its programmes, domains, or clubs.',
-                      href: 'mailto:[PLACEHOLDER]',
+                      href: 'mailto:sac@kluniversity.in',
                     },
                     {
                       title: 'Industry Collaboration',
@@ -130,7 +119,7 @@ export default function ContactPage() {
                     {
                       title: 'Media & Press',
                       desc: 'Interview requests, press releases, and institutional statements.',
-                      href: 'mailto:[PLACEHOLDER]',
+                      href: 'mailto:director_sac@kluniversity.in',
                     },
                     {
                       title: 'Student Support',

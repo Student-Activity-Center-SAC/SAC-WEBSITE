@@ -4,7 +4,7 @@ import {
   ArrowLeft, ArrowRight, ArrowUpRight, CheckCircle2,
   Camera, Calendar, MapPin, Trophy, Users,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { getDomainByCode } from '@/lib/content/domains';
 import { FadeIn } from '../../_components/FadeIn';
 
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { data } = await supabase.from('clubs').select('name, tagline').eq('slug', slug).single();
+  const { data } = await db.from('clubs').select('name, tagline').eq('slug', slug).single();
   if (!data) return {};
   return { title: data.name, description: data.tagline };
 }
@@ -28,8 +28,8 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   const { slug } = await params;
 
   const [{ data: club }, { data: allActivities }] = await Promise.all([
-    supabase.from('clubs').select('*').eq('slug', slug).single(),
-    supabase
+    db.from('clubs').select('*').eq('slug', slug).single(),
+    db
       .from('activities')
       .select('*')
       .eq('club_slug', slug)
@@ -513,7 +513,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
       </section>
 
       {/* ─── Join CTA ─────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F' }}>
+      <section style={{ background: '#faf6f1' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
           <FadeIn>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
@@ -522,11 +522,11 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   <Users size={16} style={{ color: domain.color }} />
                 </div>
                 <h2
-                  className="font-black text-2xl sm:text-3xl mb-2 leading-tight"
-                  style={{ color: '#fff', letterSpacing: '-0.02em' }}>
+                  className="font-display font-medium text-2xl sm:text-3xl mb-2 leading-tight"
+                  style={{ color: '#191313', letterSpacing: '-0.02em' }}>
                   Ready to join {club.name}?
                 </h2>
-                <p style={{ color: 'rgba(255,255,255,0.45)' }}>
+                <p style={{ color: 'rgba(25,19,19,0.55)' }}>
                   Register on the Student Dashboard to join this club and be part of the community.
                 </p>
               </div>
@@ -536,14 +536,14 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   target="_blank"
                   rel="noopener"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all hover:scale-[1.03]"
-                  style={{ background: domain.color, color: '#fff' }}>
+                  style={{ background: '#970003', color: '#fff' }}>
                   Join on Dashboard
                   <ArrowUpRight size={14} />
                 </Link>
                 <Link
                   href="/clubs"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all hover:opacity-80"
-                  style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  style={{ background: '#fff', color: '#191313', border: '1px solid var(--hairline)' }}>
                   Browse all clubs
                   <ArrowRight size={14} />
                 </Link>

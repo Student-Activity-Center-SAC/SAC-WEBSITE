@@ -1,15 +1,15 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export async function GET(req: NextRequest) {
   const domain = req.nextUrl.searchParams.get('domain');
 
-  let query = supabase.from('activities').select('*').order('activity_date', { ascending: false });
+  let query = db.from('activities').select('*').order('activity_date', { ascending: false });
   if (domain && domain !== 'all') query = query.eq('domain', domain);
 
   const [{ data: activities, error }, { data: clubs }] = await Promise.all([
     query,
-    supabase.from('clubs').select('slug, name'),
+    db.from('clubs').select('slug, name'),
   ]);
 
   if (error) return NextResponse.json({ success: false, data: [] }, { status: 500 });

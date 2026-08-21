@@ -12,20 +12,20 @@ const DRAW    = [0.76, 0, 0.24, 1] as [number, number, number, number];
 /* â”€â”€ Word reel â€” alternates white / crimson â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    "LIVE" is last and gets its own held scene with branding  */
 const WORDS = [
-  { text: 'MUSIC',   red: false },
-  { text: 'CODE',    red: true  },
-  { text: 'SPORT',   red: false },
-  { text: 'ART',     red: true  },
-  { text: 'DANCE',   red: false },
-  { text: 'CREATE',  red: true  },
-  { text: 'WIN',     red: false },
-  { text: 'LEAD',    red: true  },
-  { text: 'BUILD',   red: false },
-  { text: 'DREAM',   red: true  },
-  { text: 'THRIVE',  red: false },
-  { text: 'INSPIRE', red: true  },
-  { text: 'BELONG',  red: false },
-  { text: 'LIVE',    red: true  }, // â† held with KL SAC branding
+  { text: 'CODE',     red: false }, // TEC
+  { text: 'DANCE',    red: true  }, // LCH
+  { text: 'LAUNCH',   red: false }, // IIE
+  { text: 'SERVE',    red: true  }, // ESO
+  { text: 'BREATHE',  red: false }, // HWB
+  { text: 'HACK',     red: true  }, // TEC
+  { text: 'FILM',     red: false }, // LCH
+  { text: 'IMPACT',   red: true  }, // ESO
+  { text: 'BUILD',    red: false }, // TEC
+  { text: 'THRIVE',   red: true  }, // HWB
+  { text: 'PERFORM',  red: false }, // LCH
+  { text: 'INNOVATE', red: true  }, // IIE
+  { text: 'LEAD',     red: false }, // all
+  { text: 'LIVE',     red: true  }, // â† held with KL SAC branding
 ];
 
 const WORD_MS  = 150;

@@ -1,6 +1,6 @@
 import { Camera } from 'lucide-react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import CouncilGrid from './_components/CouncilGrid';
 
 export const dynamic = 'force-dynamic';
@@ -13,24 +13,22 @@ export const metadata = {
 
 export default async function LeadershipPage() {
   const [{ data: members }, { data: clubs }] = await Promise.all([
-    supabase.from('council_members').select('*').order('sort_order', { ascending: true }),
-    supabase.from('clubs').select('id, slug, name, domain_code').order('sort_order', { ascending: true }),
+    db.from('council_members').select('*').order('sort_order', { ascending: true }),
+    db.from('clubs').select('id, slug, name, domain_code').order('name', { ascending: true }),
   ]);
 
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F', paddingTop: '92px', paddingBottom: '72px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-5" style={{ color: '#8B0000' }}>
-            Governance
-          </p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Governance</p>
           <h1
-            className="font-black leading-[1.05] mb-5"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#FFFFFF', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
+            className="font-display font-medium leading-[1.05] mb-5"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
             Student Council of KL University
           </h1>
-          <p className="text-lg leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)', maxWidth: '54ch' }}>
+          <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '54ch' }}>
             The elected and appointed student leaders who run KL SAC — {clubs?.length ?? 0} clubs, 5 domains, and the full breadth of campus life.
           </p>
         </div>
@@ -75,18 +73,16 @@ export default async function LeadershipPage() {
       <CouncilGrid members={members ?? []} clubs={clubs ?? []} />
 
       {/* ─── Governance Framework ─────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F' }}>
+      <section style={{ background: '#faf6f1' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-5" style={{ color: '#8B0000' }}>
-            Governance Framework
-          </p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Governance Framework</p>
           <h2
-            className="font-black leading-tight mb-10"
-            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#fff', letterSpacing: '-0.02em' }}>
+            className="font-display font-medium leading-tight mb-10"
+            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
             How SAC is organised.
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.06)' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { title: 'Faculty Oversight',              desc: 'SAC operates under direct university faculty supervision, ensuring alignment with academic and institutional values.' },
               { title: 'Student Leadership',             desc: 'Elected and appointed student officers manage day-to-day operations of each domain and its clubs.' },
@@ -95,9 +91,9 @@ export default async function LeadershipPage() {
               { title: 'Annual Review',                  desc: 'All clubs and domains undergo an annual performance review with student and faculty participation.' },
               { title: 'Open Membership',                desc: 'Any enrolled KL University student may join clubs and participate in activities regardless of branch or year.' },
             ].map(item => (
-              <div key={item.title} className="p-7" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                <h3 className="font-bold text-base mb-2" style={{ color: '#fff' }}>{item.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{item.desc}</p>
+              <div key={item.title} className="p-6 rounded-2xl" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+                <h3 className="font-semibold text-base mb-2" style={{ color: '#191313' }}>{item.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>{item.desc}</p>
               </div>
             ))}
           </div>

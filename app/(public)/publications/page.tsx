@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/lib/supabase-admin';
+﻿import { db } from '@/lib/query-builder';
 import { FadeIn } from '../_components/FadeIn';
 import { Download, FileText } from 'lucide-react';
 
@@ -17,7 +17,7 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 export default async function PublicationsPage() {
-  const { data } = await supabase
+  const { data } = await db
     .from('publications')
     .select('*')
     .order('sort_order', { ascending: true });

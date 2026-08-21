@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn } from '../_components/FadeIn';
 import { Trophy } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const LEVEL_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 export default async function AchievementsPage() {
-  const { data } = await supabase
+  const { data } = await db
     .from('achievements')
     .select('*')
     .order('sort_order', { ascending: true })
@@ -32,17 +32,15 @@ export default async function AchievementsPage() {
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F', paddingTop: '92px', paddingBottom: '72px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-5" style={{ color: '#8B0000' }}>
-            Achievements
-          </p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Achievements</p>
           <h1
-            className="font-black leading-[1.05] mb-5"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#FFFFFF', letterSpacing: '-0.025em', maxWidth: '18ch' }}>
+            className="font-display font-medium leading-[1.05] mb-5"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '18ch' }}>
             What Our Students Have Built.
           </h1>
-          <p className="text-lg leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.42)', maxWidth: '56ch' }}>
+          <p className="text-lg leading-relaxed mb-4" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '56ch' }}>
             Competitions won, recognitions earned, and milestones crossed — by KL SAC students.
           </p>
         </div>

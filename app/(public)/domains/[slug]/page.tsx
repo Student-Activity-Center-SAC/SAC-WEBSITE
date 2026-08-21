@@ -4,14 +4,14 @@ import {
   ArrowRight, ArrowUpRight, ArrowLeft,
   Camera, Calendar, MapPin, Trophy,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn } from '../../_components/FadeIn';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { data } = await supabase.from('domains').select('name, description').eq('slug', slug).single();
+  const { data } = await db.from('domains').select('name, description').eq('slug', slug).single();
   if (!data) return {};
   return { title: data.name, description: data.description };
 }
@@ -19,17 +19,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function DomainDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const { data: domain } = await supabase.from('domains').select('*').eq('slug', slug).single();
+  const { data: domain } = await db.from('domains').select('*').eq('slug', slug).single();
   if (!domain) notFound();
 
   const today = new Date().toISOString().split('T')[0];
   const [{ data: clubsData }, { data: upcomingActivitiesData }] = await Promise.all([
-    supabase
+    db
       .from('clubs')
       .select('id, slug, name, tagline, logo_url')
       .eq('domain_slug', slug)
-      .order('sort_order', { ascending: true }),
-    supabase
+      .order('name', { ascending: true }),
+    db
       .from('activities')
       .select('*')
       .eq('domain', domain.code)

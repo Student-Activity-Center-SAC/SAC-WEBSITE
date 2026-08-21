@@ -57,17 +57,15 @@ export default function CollaboratePage() {
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F', paddingTop: '92px', paddingBottom: '72px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-5" style={{ color: '#8B0000' }}>
-            Collaborate
-          </p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Collaborate</p>
           <h1
-            className="font-black leading-[1.05] mb-5"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#FFFFFF', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
+            className="font-display font-medium leading-[1.05] mb-5"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
             Build With Our Students.
           </h1>
-          <p className="text-lg leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.42)', maxWidth: '56ch' }}>
+          <p className="text-lg leading-relaxed mb-8" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '56ch' }}>
             KL SAC is a bridge between university and the world outside. If you're an industry partner, NGO, government body, or international institution — there's a way to work together.
           </p>
           <Link

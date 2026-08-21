@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn } from '../../_components/FadeIn';
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { data } = await supabase.from('stories').select('title, excerpt').eq('slug', slug).single();
+  const { data } = await db.from('stories').select('title, excerpt').eq('slug', slug).single();
   if (!data) return {};
   return { title: `${data.title} — KL SAC Stories`, description: data.excerpt };
 }
@@ -21,8 +21,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   const { slug } = await params;
 
   const [{ data: story }, { data: allStories }] = await Promise.all([
-    supabase.from('stories').select('*').eq('slug', slug).single(),
-    supabase.from('stories').select('slug, title, student_name, sort_order').order('sort_order', { ascending: true }),
+    db.from('stories').select('*').eq('slug', slug).single(),
+    db.from('stories').select('slug, title, student_name, sort_order').order('sort_order', { ascending: true }),
   ]);
 
   if (!story) notFound();
@@ -35,12 +35,12 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F', paddingTop: '92px', paddingBottom: '72px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="max-w-4xl mx-auto px-5 sm:px-10">
           <Link
             href="/stories"
             className="inline-flex items-center gap-2 text-xs font-bold mb-8 transition-opacity hover:opacity-70"
-            style={{ color: 'rgba(255,255,255,0.4)' }}>
+            style={{ color: 'rgba(25,19,19,0.4)' }}>
             <ArrowLeft size={12} />
             All Stories
           </Link>
@@ -50,8 +50,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           </span>
 
           <h1
-            className="font-black leading-tight mb-6"
-            style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', color: '#fff', letterSpacing: '-0.025em' }}>
+            className="font-display font-medium leading-tight mb-6"
+            style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', color: '#191313', letterSpacing: '-0.025em' }}>
             {story.title}
           </h1>
 
@@ -60,7 +60,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
               {story.photo ? (
                 <img src={story.photo} alt={story.student_name}
                      className="w-12 h-12 rounded-full object-cover object-top"
-                     style={{ border: '2px solid rgba(255,255,255,0.15)' }} />
+                     style={{ border: '2px solid rgba(25,19,19,0.15)' }} />
               ) : (
                 <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm"
                      style={{ background: `${domainColor}22`, color: domainColor, border: '2px solid rgba(255,255,255,0.1)' }}>

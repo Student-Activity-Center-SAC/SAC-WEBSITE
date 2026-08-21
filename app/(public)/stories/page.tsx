@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { FadeIn, Stagger } from '../_components/FadeIn';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 export default async function StoriesPage() {
-  const { data: stories } = await supabase
+  const { data: stories } = await db
     .from('stories')
     .select('*')
     .order('sort_order', { ascending: true });
@@ -27,17 +27,15 @@ export default async function StoriesPage() {
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{ background: '#0A0A0F', paddingTop: '92px', paddingBottom: '72px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-5" style={{ color: '#8B0000' }}>
-            Student Stories
-          </p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Student Stories</p>
           <h1
-            className="font-black leading-[1.05] mb-5"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#FFFFFF', letterSpacing: '-0.025em', maxWidth: '24ch' }}>
+            className="font-display font-medium leading-[1.05] mb-5"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '24ch' }}>
             The Experiences That Shape Careers.
           </h1>
-          <p className="text-lg leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.42)', maxWidth: '56ch' }}>
+          <p className="text-lg leading-relaxed mb-5" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '56ch' }}>
             Behind every achievement is a student who chose to engage. These are their stories.
           </p>
         </div>
