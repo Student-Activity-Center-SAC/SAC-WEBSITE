@@ -90,8 +90,8 @@ export default async function AboutPage() {
 
               {/* Message */}
               <div className="pt-1">
-                <p className="kicker mb-5" style={{ color: '#970003' }}>Hon'ble KLEF President's Message</p>
-                <p className="font-display leading-none mb-4" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>"</p>
+                <p className="kicker mb-5" style={{ color: '#970003' }}>Hon’ble KLEF President’s Message</p>
+                <p className="font-display leading-none mb-4" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
                 <blockquote
                   className="font-display font-medium leading-[1.2] mb-7"
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
@@ -141,8 +141,8 @@ export default async function AboutPage() {
 
               {/* Message */}
               <div className="pt-1">
-                <p className="kicker mb-5" style={{ color: '#970003' }}>Hon'ble SAC Director's Message</p>
-                <p className="font-display leading-none mb-4" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>"</p>
+                <p className="kicker mb-5" style={{ color: '#970003' }}>Hon’ble SAC Director’s Message</p>
+                <p className="font-display leading-none mb-4" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
                 <blockquote
                   className="font-display font-medium leading-[1.2] mb-7"
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
