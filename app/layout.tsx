@@ -1,12 +1,25 @@
 ﻿import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Fraunces, Lexend } from 'next/font/google';
 import './globals.css';
 
-const fontSans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700', '800'],
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+  axes: ['opsz', 'SOFT', 'WONK'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+
+const lexend = Lexend({
+  subsets: ['latin'],
+  variable: '--font-lexend',
+  display: 'swap',
 });
 
 export const viewport: Viewport = {
@@ -55,7 +68,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={fontSans.variable}>
+    <html lang="en" className={`${inter.variable} ${fraunces.variable} ${lexend.variable} h-full antialiased`}>
       <body>{children}</body>
     </html>
   );
