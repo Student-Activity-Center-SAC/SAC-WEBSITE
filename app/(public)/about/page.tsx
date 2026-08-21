@@ -179,7 +179,7 @@ export default async function AboutPage() {
               </h2>
               <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)' }}>
                 <p>
-                  KL SAC is KL University's official co-curricular development body. It operates{clubCount > 0 ? ` ${clubCount}` : ''} student clubs across{domainCount > 0 ? ` ${domainCount}` : ''} domains — Technology, Liberal Arts & Culture, Health & Wellbeing, Social Outreach, and Innovation & Entrepreneurship.
+                  KL SAC is KL University's official co-curricular development body. It operates 20+ student clubs across{domainCount > 0 ? ` ${domainCount}` : ''} domains — Technology, Liberal Arts & Culture, Health & Wellbeing, Social Outreach, and Innovation & Entrepreneurship.
                 </p>
                 <p>
                   SAC is distinct from the academic programme. Where the dashboard tracks your academic journey, SAC shapes who you become beyond it — through real activities, genuine leadership, and measurable impact.
@@ -194,7 +194,7 @@ export default async function AboutPage() {
             <FadeIn delay={0.1}>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: clubCount   > 0 ? clubCount   : 20,  suffix: '+', label: 'Active Clubs'      },
+                  { value: 20,  suffix: '+', label: 'Active Clubs'      },
                   { value: domainCount > 0 ? domainCount : 5,   suffix: '',  label: 'Learning Domains'  },
                   { value: statsMap.students   || 5000, suffix: '+', label: 'Students Annually'  },
                   { value: statsMap.activities || 300,  suffix: '+', label: 'Annual Activities' },
@@ -263,7 +263,7 @@ export default async function AboutPage() {
             <h2
               className="font-display font-medium leading-tight"
               style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
-              {domainCount || 5} Domains. {clubCount || 20}+ Clubs.
+              {domainCount || 5} Domains. 20+ Clubs.
             </h2>
           </FadeIn>
 

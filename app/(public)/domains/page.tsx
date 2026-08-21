@@ -37,7 +37,7 @@ export default async function DomainsPage() {
             Five Domains.<br />Every Passion.
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '56ch' }}>
-            KL SAC organises all {totalClubs > 0 ? totalClubs : ''} clubs into five domains — each with a distinct purpose, philosophy, and community. Find yours.
+            KL SAC organises all 20+ clubs into five domains — each with a distinct purpose, philosophy, and community. Find yours.
           </p>
         </div>
       </section>

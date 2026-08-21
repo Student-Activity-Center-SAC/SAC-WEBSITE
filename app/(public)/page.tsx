@@ -105,7 +105,7 @@ export default async function HomePage() {
           {/* Body */}
           <p className="text-[15px] sm:text-base leading-relaxed mb-10 animate-fade-up delay-100"
             style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '48ch' }}>
-            KL SAC is where {totalClubs > 0 ? `${totalClubs} clubs, ` : ''}{domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
+            KL SAC is where 20+ clubs, {domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
           </p>
 
           {/* CTAs */}
@@ -146,7 +146,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: totalClubs   > 0 ? String(totalClubs)         : '20+', label: 'Active Clubs',      delay: 0    },
+              { value: '20+', label: 'Active Clubs',      delay: 0    },
               { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  delay: 120  },
               { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Students Annually', delay: 240  },
               { value: statActivities > 0 ? `${statActivities}+`     : '300+', label: 'Annual Activities', delay: 360 },
@@ -283,7 +283,7 @@ export default async function HomePage() {
           <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
             <div>
               <p className="kicker mb-3" style={{ color: '#970003' }}>
-                {domains.length || 5} Domains · {totalClubs || 22} Clubs
+                {domains.length || 5} Domains · 20+ Clubs
               </p>
               <h2
                 className="font-display font-medium leading-[1.07]"
