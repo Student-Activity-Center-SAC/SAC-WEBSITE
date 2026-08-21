@@ -2120,7 +2120,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A01",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Literature Club Orientation & Book Café",
     description: "The Literature Club Orientation & Book Café serves as the introductory event for new and existing members, providing an overview of the club's vision, objectives, annual activities, long-term programmes, and opportunities for participation.",
@@ -2132,7 +2132,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A02",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Book Reading Circle",
     description: "The Book Reading Circle is a collaborative reading activity where members collectively read selected literary works and engage in guided discussions.",
@@ -2144,7 +2144,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A03",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Book Review & Discussion Session",
     description: "This activity enables participants to critically evaluate books through structured reviews and panel discussions.",
@@ -2156,7 +2156,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A04",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Poetry Reading Evening",
     description: "Poetry Reading Evening is an interactive literary event where participants recite and interpret poems from classical, modern, and contemporary literature.",
@@ -2168,7 +2168,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A05",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Creative Writing Workshop",
     description: "The Creative Writing Workshop provides participants with practical training in writing fiction, poetry, personal essays, and creative non-fiction.",
@@ -2180,7 +2180,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A06",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Short Story Writing Competition",
     description: "The Short Story Writing Competition challenges participants to create original short stories based on predefined or open themes.",
@@ -2192,7 +2192,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A07",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Poetry Writing Competition",
     description: "The Poetry Writing Competition encourages participants to compose original poems that reflect imagination, emotion, social awareness, and artistic expression.",
@@ -2204,7 +2204,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A08",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Essay Writing Competition",
     description: "The Essay Writing Competition provides participants with an opportunity to develop structured, analytical, and persuasive essays on literary, social, scientific, cultural, or contemporary topics.",
@@ -2216,7 +2216,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A09",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Debate & Literary Discussion",
     description: "The Debate & Literary Discussion activity provides a structured platform for participants to analyze literary works, discuss contemporary issues, and present evidence-based arguments.",
@@ -2228,7 +2228,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A10",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Extempore Speaking Challenge",
     description: "The Extempore Speaking Challenge develops participants' ability to think critically and communicate effectively without prior preparation.",
@@ -2240,7 +2240,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A11",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Storytelling Session",
     description: "The Storytelling Session enables participants to narrate original or adapted stories using effective verbal communication, expression, voice modulation, and audience engagement techniques.",
@@ -2252,7 +2252,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A12",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Author Spotlight & Literary Appreciation",
     description: "Author Spotlight & Literary Appreciation introduces participants to the lives, works, writing styles, and literary contributions of renowned national and international authors.",
@@ -2264,7 +2264,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A13",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Literary Quiz",
     description: "The Literary Quiz is a competitive knowledge-based activity that tests participants' understanding of literature, authors, literary movements, famous works, poetry, drama, grammar, and language.",
@@ -2276,7 +2276,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A14",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Open Mic – Poetry & Prose",
     description: "The Open Mic – Poetry & Prose is a literary performance platform where participants present original or selected poems, prose, monologues, spoken word pieces, and literary excerpts before a live audience.",
@@ -2288,7 +2288,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A15",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Script & Screenplay Reading Session",
     description: "The Script & Screenplay Reading Session introduces participants to the fundamentals of dramatic writing through guided readings of stage plays, film scripts, and screenplays.",
@@ -2300,7 +2300,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A16",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Book Exchange Fair",
     description: "The Book Exchange Fair promotes a culture of reading and resource sharing by enabling participants to exchange books across various genres.",
@@ -2312,7 +2312,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A17",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Literary Magazine Contribution Drive",
     description: "The Literary Magazine Contribution Drive invites participants to create and submit original literary works for publication in the club's annual magazine.",
@@ -2324,7 +2324,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A18",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Inter-College Literary Fest",
     description: "The Inter-College Literary Fest is a flagship literary event that brings together students from multiple institutions to participate in competitions, panel discussions, author interactions, debates, creative writing contests, poetry performances, quizzes, and cultural literary activities.",
@@ -2336,7 +2336,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A19",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "World Book Day Celebration",
     description: "World Book Day Celebration is an annual literary event organized to promote reading habits, celebrate books and authors, and encourage lifelong learning.",
@@ -2348,7 +2348,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "LC-A20",
-    clubSlug: "vachas-club",
+    clubSlug: "literature-club",
     domain: "LCH",
     title: "Annual Literature Festival & Awards",
     description: "The Annual Literature Festival & Awards is the flagship event of the Literature Club that showcases the literary achievements of members through competitions, exhibitions, performances, author interactions, panel discussions, publication launches, and award ceremonies.",
@@ -2600,7 +2600,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A01",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Line Following Robot Build Workshop",
     description: "Build and program a line-following robot from scratch using sensors and microcontrollers.",
@@ -2612,7 +2612,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A02",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Robot Programming with ROS",
     description: "Introduction to Robot Operating System (ROS) for autonomous robot programming.",
@@ -2624,7 +2624,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A03",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Autonomous Vehicle Simulation Lab",
     description: "Simulate autonomous vehicle behaviors using Gazebo simulation environment.",
@@ -2636,7 +2636,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A04",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Robot Wars: Mini Sumo Competition",
     description: "Mini sumo robot competition where teams design, build, and battle their robots.",
@@ -2648,7 +2648,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A05",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Computer Vision with OpenCV Workshop",
     description: "Hands-on object detection and tracking using OpenCV and deep learning models.",
@@ -2660,7 +2660,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A06",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Industry Automation Plant Visit",
     description: "Visit a manufacturing plant to observe industrial robots and automation systems.",
@@ -2672,7 +2672,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A07",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Cobot Programming Demo Session",
     description: "Programming collaborative robots for pick-and-place and inspection tasks.",
@@ -2684,7 +2684,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A08",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Robotics Innovation Pitch",
     description: "Teams pitch robotics product concepts addressing real-world automation challenges.",
@@ -2696,7 +2696,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A09",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "AI in Robotics Study Circle",
     description: "Weekly sessions on reinforcement learning, path planning, and AI control algorithms.",
@@ -2708,7 +2708,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RA-A10",
-    clubSlug: "automation-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Annual Robotics Showcase",
     description: "Year-end exhibition of robot builds, demos, and research projects by club members.",
@@ -2840,7 +2840,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A01",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Solar Panel Installation Workshop",
     description: "Hands-on solar panel wiring, orientation optimization, and output measurement lab.",
@@ -2852,7 +2852,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A02",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Wind Energy Model Build Challenge",
     description: "Build and test model wind turbines under varying wind conditions.",
@@ -2864,7 +2864,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A03",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Energy Audit of University Campus",
     description: "Teams audit campus energy consumption and propose renewable energy upgrade plans.",
@@ -2876,7 +2876,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A04",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Smart Grid Simulation Lab",
     description: "Simulate smart grid load balancing and renewable energy integration scenarios.",
@@ -2888,7 +2888,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A05",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "EV Charging Infrastructure Workshop",
     description: "Understand EV charging technologies and campus EV charging station design.",
@@ -2900,7 +2900,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A06",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Climate Policy & COP Simulation",
     description: "Simulate international climate negotiations with teams representing different countries.",
@@ -2912,7 +2912,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A07",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Renewable Energy Startup Pitch",
     description: "Teams pitch clean energy business ideas to investors and energy sector professionals.",
@@ -2924,7 +2924,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A08",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Renewable Energy Plant Visit",
     description: "Visit to solar farm or wind energy installation to observe industrial-scale operations.",
@@ -2936,7 +2936,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A09",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "IoT Energy Monitoring System Build",
     description: "Build an IoT system to monitor and visualize building energy consumption in real time.",
@@ -2948,7 +2948,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "TEC-RE-A10",
-    clubSlug: "electric-vehicle-club",
+    clubSlug: "ev-automation-club",
     domain: "TEC",
     title: "Green Energy Innovation Expo",
     description: "Year-end showcase of solar projects, energy models, smart grid simulations, and clean-tech ideas.",
@@ -3200,7 +3200,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A01",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Marathon Club Orientation & Fitness Assessment",
     description: "This introductory activity familiarizes students with the objectives, structure, safety guidelines, and opportunities offered by the Marathon Club.",
@@ -3212,7 +3212,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A02",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Beginner Running Workshop",
     description: "This workshop introduces beginners to the fundamentals of running, including posture, running mechanics, breathing techniques, pacing, and proper warm-up and cool-down exercises to develop safe and effective running habits.",
@@ -3224,7 +3224,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A03",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Endurance Run Training Session",
     description: "Participants engage in structured endurance training sessions designed to progressively improve cardiovascular endurance, stamina, pace consistency, and mental resilience required for long-distance running.",
@@ -3236,7 +3236,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A04",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Speed & Interval Training Workshop",
     description: "This workshop develops participants' speed, power, and anaerobic capacity through structured interval training methods.",
@@ -3248,7 +3248,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A05",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Long Distance Group Run",
     description: "The Long Distance Group Run brings Marathon Club members together for structured outdoor running sessions, building community spirit, mutual motivation, and collective endurance.",
@@ -3260,7 +3260,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A06",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Running Technique & Biomechanics Workshop",
     description: "This workshop focuses on improving running efficiency through proper biomechanics, posture, stride mechanics, foot strike patterns, arm movement, and body alignment.",
@@ -3272,7 +3272,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A07",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Strength & Conditioning for Runners",
     description: "This activity introduces participants to strength training, functional fitness, flexibility, mobility, and conditioning exercises specifically designed to improve running performance, muscular endurance, and injury resistance.",
@@ -3284,7 +3284,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A08",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Recovery & Injury Prevention Clinic",
     description: "This clinic provides practical knowledge on recovery strategies, injury prevention, stretching techniques, mobility exercises, sleep, and rehabilitation methods that help runners maintain consistent performance while minimizing injuries.",
@@ -3296,7 +3296,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A09",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Campus Mini Marathon",
     description: "The Campus Mini Marathon provides participants with an opportunity to apply their training in a competitive yet supportive environment.",
@@ -3308,7 +3308,7 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     code: "MC-A10",
-    clubSlug: "marathon-club",
+    clubSlug: "ev-automation-club",
     domain: "HWB",
     title: "Annual Marathon Championship",
     description: "The Annual Marathon Championship is the flagship event of the Marathon Club, providing participants with an opportunity to demonstrate their endurance, discipline, leadership, and competitive abilities.",
