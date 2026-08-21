@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { ArrowUpRight, CalendarDays } from 'lucide-react';
 import { DEMO_ACTIVITIES, DOMAIN_META } from '@/lib/demo-data';
 import { FadeIn } from '../_components/FadeIn';
@@ -153,7 +153,7 @@ function EventRow({ ev, dim }: { ev: any; dim: boolean }) {
       {/* Register CTA (only upcoming) */}
       {!dim && (
         <Link
-          href="https://sacactivities.kluniversity.in"
+          href="https://sacactivities.kluniversity.in/auth/login"
           target="_blank"
           rel="noopener"
           className="hidden sm:inline-flex items-center gap-1 text-xs font-bold shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"

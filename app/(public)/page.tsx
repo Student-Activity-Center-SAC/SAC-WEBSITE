@@ -124,7 +124,7 @@ export default async function HomePage() {
               Browse Clubs
             </Link>
             <Link
-              href="https://sacactivities.kluniversity.in"
+              href="https://sacactivities.kluniversity.in/auth/login"
               target="_blank" rel="noopener"
               className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-75 border-b pb-0.5"
               style={{ color: 'rgba(255,255,255,0.55)', borderColor: 'rgba(255,255,255,0.3)' }}>
@@ -146,10 +146,10 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: totalClubs   > 0 ? String(totalClubs)         : '50+', label: 'Active Clubs',      delay: 0    },
+              { value: totalClubs   > 0 ? String(totalClubs)         : '20+', label: 'Active Clubs',      delay: 0    },
               { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  delay: 120  },
-              { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Student Members', delay: 240  },
-              { value: statActivities > 0 ? `${statActivities}+`     : '200+', label: 'Annual Activities', delay: 360 },
+              { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Students Annually', delay: 240  },
+              { value: statActivities > 0 ? `${statActivities}+`     : '300+', label: 'Annual Activities', delay: 360 },
             ].map((s, i) => (
               <StatCounter
                 key={s.label}
@@ -539,7 +539,7 @@ export default async function HomePage() {
                       </div>
                     </div>
                     {/* CTA */}
-                    <a href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+                    <a href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
                       className="text-xs font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
                       style={{ color: '#970003' }}>
                       Register <ArrowUpRight size={12} />
@@ -900,7 +900,7 @@ export default async function HomePage() {
                 Explore All Clubs
                 <ArrowRight size={15} />
               </Link>
-              <Link href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+              <Link href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all"
                 style={{ border: '1px solid rgba(255,255,255,0.35)', color: '#fff' }}>
                 Student Dashboard

@@ -5,7 +5,7 @@ import { Save, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 const MANUAL_KEYS = [
-  { key: 'students',   label: 'Student Members',   suffix: '+', hint: 'Total enrolled students across all clubs' },
+  { key: 'students',   label: 'Students Annually',   suffix: '+', hint: 'Total enrolled students across all clubs' },
   { key: 'activities', label: 'Annual Activities', suffix: '+', hint: 'Total activities run per academic year'   },
 ];
 

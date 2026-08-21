@@ -194,10 +194,10 @@ export default async function AboutPage() {
             <FadeIn delay={0.1}>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: clubCount   > 0 ? clubCount   : 50,  suffix: '+', label: 'Active Clubs'      },
+                  { value: clubCount   > 0 ? clubCount   : 20,  suffix: '+', label: 'Active Clubs'      },
                   { value: domainCount > 0 ? domainCount : 5,   suffix: '',  label: 'Learning Domains'  },
-                  { value: statsMap.students   || 5000, suffix: '+', label: 'Student Members'  },
-                  { value: statsMap.activities || 200,  suffix: '+', label: 'Annual Activities' },
+                  { value: statsMap.students   || 5000, suffix: '+', label: 'Students Annually'  },
+                  { value: statsMap.activities || 300,  suffix: '+', label: 'Annual Activities' },
                 ].map(s => (
                   <div
                     key={s.label}
@@ -263,7 +263,7 @@ export default async function AboutPage() {
             <h2
               className="font-display font-medium leading-tight"
               style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
-              {domainCount || 5} Domains. {clubCount || 50}+ Clubs.
+              {domainCount || 5} Domains. {clubCount || 20}+ Clubs.
             </h2>
           </FadeIn>
 

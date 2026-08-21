@@ -106,7 +106,7 @@ export default function Navbar() {
           {/* ── Desktop CTA ── */}
           <div className="hidden lg:flex items-center gap-3 shrink-0">
             <Link
-              href="https://sacactivities.kluniversity.in"
+              href="https://sacactivities.kluniversity.in/auth/login"
               target="_blank"
               rel="noopener"
               className="flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
@@ -173,7 +173,7 @@ export default function Navbar() {
 
         {/* Drawer footer */}
         <div className="px-4 py-4 hairline-t">
-          <Link href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+          <Link href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold"
                 style={{ background: '#970003', color: '#fff' }}>

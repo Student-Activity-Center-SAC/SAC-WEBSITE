@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { ArrowUpRight, Mail, MapPin } from 'lucide-react';
 import { FadeIn } from '../_components/FadeIn';
 
@@ -85,7 +85,7 @@ export default function ContactPage() {
                     For club registration and activity details — use the Student Dashboard.
                   </p>
                   <Link
-                    href="https://sacactivities.kluniversity.in"
+                    href="https://sacactivities.kluniversity.in/auth/login"
                     target="_blank"
                     rel="noopener"
                     className="inline-flex items-center gap-1.5 text-xs font-bold"

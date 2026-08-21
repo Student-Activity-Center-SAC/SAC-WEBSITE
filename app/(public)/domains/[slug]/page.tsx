@@ -270,7 +270,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                       </div>
                       <div className="flex items-center justify-end px-6 py-3"
                            style={{ borderTop: '1px solid #E4E4E7', background: '#FAFAFA' }}>
-                        <Link href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+                        <Link href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
                               className="text-[11px] font-bold px-3.5 py-1.5 rounded-full transition-all hover:opacity-80"
                               style={{ background: domain.color, color: '#fff' }}>
                           Register →
@@ -388,7 +388,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                   style={{ background: '#fff', color: domain.color }}>
               See All Clubs <ArrowRight size={14} />
             </Link>
-            <Link href="https://sacactivities.kluniversity.in" target="_blank" rel="noopener"
+            <Link href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all hover:bg-white/15"
                   style={{ border: '1px solid rgba(255,255,255,0.35)', color: '#fff' }}>
               Student Dashboard <ArrowUpRight size={14} />

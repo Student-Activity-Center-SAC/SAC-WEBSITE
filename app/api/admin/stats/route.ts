@@ -13,7 +13,7 @@ export async function PUT(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const LABELS: Record<string, { label: string; suffix: string }> = {
-    students:            { label: 'Student Members',               suffix: '+' },
+    students:            { label: 'Students Annually',               suffix: '+' },
     activities:          { label: 'Annual Activities',             suffix: '+' },
     clubs:               { label: 'Active Clubs',                  suffix: ''  },
     achievements:        { label: 'Achievements',                  suffix: '+' },

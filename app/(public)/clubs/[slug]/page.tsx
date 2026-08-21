@@ -128,7 +128,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
 
           <div className="flex flex-wrap items-center gap-4">
             <Link
-              href="https://sacactivities.kluniversity.in"
+              href="https://sacactivities.kluniversity.in/auth/login"
               target="_blank"
               rel="noopener"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all hover:scale-[1.03]"
@@ -499,7 +499,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
             <p className="text-xs text-center mt-5" style={{ color: '#A1A1AA' }}>
               Office bearer details are updated at the start of each academic year via the{' '}
               <Link
-                href="https://sacactivities.kluniversity.in"
+                href="https://sacactivities.kluniversity.in/auth/login"
                 target="_blank"
                 rel="noopener"
                 className="font-bold hover:underline"
@@ -532,7 +532,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
               </div>
               <div className="flex flex-wrap gap-4 shrink-0">
                 <Link
-                  href="https://sacactivities.kluniversity.in"
+                  href="https://sacactivities.kluniversity.in/auth/login"
                   target="_blank"
                   rel="noopener"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all hover:scale-[1.03]"
