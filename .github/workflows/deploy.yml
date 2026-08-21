@@ -1,0 +1,48 @@
+name: Deploy to Ubuntu Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    permissions:
+      contents: read
+      actions: none
+
+    steps:
+      - name: Pull latest code from main
+        run: |
+          set -e
+          # Change this path to where your repository is cloned on the server
+          cd /var/www/SAC-WEBSITE
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
+
+      - name: Install dependencies
+        run: |
+          cd /var/www/SAC-WEBSITE
+          rm -rf node_modules package-lock.json
+          npm install --include=dev --legacy-peer-deps
+
+      - name: Clean old build
+        run: |
+          cd /var/www/SAC-WEBSITE
+          rm -rf .next
+
+      - name: Build app
+        run: |
+          cd /var/www/SAC-WEBSITE
+          npm install typescript @types/node @types/react @types/react-dom --no-save --legacy-peer-deps
+          npm run build
+
+      - name: Restart PM2
+        run: |
+          cd /var/www/SAC-WEBSITE
+          pm2 restart sac-website 2>/dev/null || true
+          pm2 startOrReload ecosystem.config.js
+          pm2 save
