@@ -7,17 +7,12 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
-
-    permissions:
-      contents: read
-      actions: none
+    runs-on: [self-hosted, linux, X64]
 
     steps:
       - name: Pull latest code from main
         run: |
           set -e
-          # Change this path to where your repository is cloned on the server
           cd /var/www/SAC-WEBSITE
           git fetch origin main
           git reset --hard origin/main
