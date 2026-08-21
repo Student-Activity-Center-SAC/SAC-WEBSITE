@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export async function GET() {
-  let { data, error } = await supabase
+  let { data, error } = await db
     .from('achievements')
     .select('*')
     .order('sort_order', { ascending: true })
@@ -13,7 +13,7 @@ export async function GET() {
   let needsMigration = false;
   if (error) {
     needsMigration = true;
-    const fallback = await supabase
+    const fallback = await db
       .from('achievements')
       .select('*')
       .order('year', { ascending: false });
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const body = await req.json();
-  const { data, error: e } = await supabase.from('achievements').insert({
+  const { data, error: e } = await db.from('achievements').insert({
     ...body,
     updated_at: new Date().toISOString(),
   }).select().single();
@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id, ...rest } = await req.json();
-  const { error: e } = await supabase.from('achievements')
+  const { error: e } = await db.from('achievements')
     .update({ ...rest, updated_at: new Date().toISOString() }).eq('id', id);
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
 
@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest) {
 
   const { orderedIds } = await req.json() as { orderedIds: string[] };
   const updates = orderedIds.map((id, i) =>
-    supabase.from('achievements').update({ sort_order: i }).eq('id', id)
+    db.from('achievements').update({ sort_order: i }).eq('id', id)
   );
   const results = await Promise.all(updates);
   const failed = results.find(r => r.error);
@@ -76,7 +76,7 @@ export async function DELETE(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id } = await req.json();
-  const { error: e } = await supabase.from('achievements').delete().eq('id', id);
+  const { error: e } = await db.from('achievements').delete().eq('id', id);
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
 
   revalidatePath('/achievements');

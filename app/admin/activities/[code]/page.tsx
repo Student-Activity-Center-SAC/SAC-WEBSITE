@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { notFound, redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
 import ActivityForm from '../_components/ActivityForm';
@@ -12,7 +12,7 @@ export default async function EditActivityPage({ params }: { params: Promise<{ c
   if (error) redirect('/admin/login');
 
   const { code } = await params;
-  const { data } = await supabase.from('activities').select('*').eq('code', decodeURIComponent(code)).single();
+  const { data } = await db.from('activities').select('*').eq('code', decodeURIComponent(code)).single();
   if (!data) notFound();
 
   return (

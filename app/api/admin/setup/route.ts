@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'username and password required' }, { status: 400 });
 
   const hash = await bcrypt.hash(password, 12);
-  const { error } = await supabase
+  const { error } = await db
     .from('sac_admins')
     .insert({ username, password_hash: hash, name: name ?? username });
 

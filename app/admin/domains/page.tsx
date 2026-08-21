@@ -1,6 +1,6 @@
 import { requireAdmin } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import Link from 'next/link';
 import { ArrowRight, Globe } from 'lucide-react';
 
@@ -10,12 +10,12 @@ export default async function AdminDomainsPage() {
   const { error } = await requireAdmin();
   if (error) redirect('/admin/login');
 
-  const { data: domains } = await supabase
+  const { data: domains } = await db
     .from('domains')
     .select('slug, code, name, short_name, color, tagline, competencies, gallery')
     .order('sort_order', { ascending: true });
 
-  const { data: clubs } = await supabase
+  const { data: clubs } = await db
     .from('clubs')
     .select('domain_code');
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { NEWS_ARTICLES, PUBLICATIONS } from '@/lib/content/site-content';
 import { ACTIVITIES } from '@/lib/content/activities';
 
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const results: Record<string, unknown> = {};
 
   // ── Stats ────────────────────────────────────────────────────────────────
-  const { error: statsErr } = await supabase.from('sac_stats').upsert([
+  const { error: statsErr } = await db.from('sac_stats').upsert([
     { key: 'students',    value: 8500, label: 'Students Enrolled', suffix: '+' },
     { key: 'clubs',       value: 25,   label: 'Active Clubs',       suffix: ''  },
     { key: 'activities',  value: 400,  label: 'Annual Activities',  suffix: '+' },
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     featured:  a.featured,
     photo_url: a.photo ?? null,
   }));
-  const { error: newsErr } = await supabase
+  const { error: newsErr } = await db
     .from('news_articles')
     .upsert(newsRows, { onConflict: 'slug' });
   results.news = newsErr ? newsErr.message : `${newsRows.length} articles`;
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     download_available: p.downloadAvailable,
     sort_order:         i + 1,
   }));
-  const { error: pubErr } = await supabase
+  const { error: pubErr } = await db
     .from('publications')
     .upsert(pubRows, { onConflict: 'id' });
   results.publications = pubErr ? pubErr.message : `${pubRows.length} publications`;
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       sdc_credits:   a.sdc_credits,
     }));
 
-    const { error } = await supabase
+    const { error } = await db
       .from('activities')
       .upsert(batch, { onConflict: 'code' });
 

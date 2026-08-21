@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 const REAL_CLUBS = [
   // ── TEC ──────────────────────────────────────────────────────────────
@@ -377,11 +377,11 @@ export async function POST(req: NextRequest) {
     updated_at:      new Date().toISOString(),
   }));
 
-  const { error } = await supabase.from('clubs').upsert(rows, { onConflict: 'slug' });
+  const { error } = await db.from('clubs').upsert(rows, { onConflict: 'slug' });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const { count } = await supabase.from('clubs').select('*', { count: 'exact', head: true });
-  await supabase.from('sac_stats').upsert(
+  const { count } = await db.from('clubs').select('*', { count: 'exact', head: true });
+  await db.from('sac_stats').upsert(
     { key: 'clubs', value: count ?? 0, updated_at: new Date().toISOString() },
     { onConflict: 'key' },
   );

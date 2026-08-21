@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import MemberForm from '../_components/MemberForm';
 
 export const metadata = { title: 'Edit Member — KL SAC Admin' };
@@ -12,7 +12,7 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
   const { error } = await requireAdmin();
   if (error) redirect('/admin/login');
 
-  const { data } = await supabase.from('council_members').select('*').eq('id', id).single();
+  const { data } = await db.from('council_members').select('*').eq('id', id).single();
   if (!data) notFound();
 
   return (

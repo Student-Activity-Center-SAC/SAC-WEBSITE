@@ -1,13 +1,13 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { revalidatePath } from 'next/cache';
 
 export async function GET() {
   const { error } = await requireAdmin();
   if (error) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data, error: dbError } = await supabase
+  const { data, error: dbError } = await db
     .from('domains')
     .select('*')
     .order('sort_order', { ascending: true });
@@ -24,7 +24,7 @@ export async function PUT(req: NextRequest) {
   const { slug, ...fields } = body;
   if (!slug) return NextResponse.json({ error: 'slug required' }, { status: 400 });
 
-  const { error: dbError } = await supabase
+  const { error: dbError } = await db
     .from('domains')
     .update({ ...fields, updated_at: new Date().toISOString() })
     .eq('slug', slug);

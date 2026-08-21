@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { notFound, redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
 import NewsForm from '../_components/NewsForm';
@@ -12,7 +12,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ sl
   if (error) redirect('/admin/login');
 
   const { slug } = await params;
-  const { data } = await supabase.from('news_articles').select('*').eq('slug', slug).single();
+  const { data } = await db.from('news_articles').select('*').eq('slug', slug).single();
   if (!data) notFound();
 
   return (

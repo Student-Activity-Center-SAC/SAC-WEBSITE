@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { DOMAINS } from '@/lib/content/domains';
 
 export async function POST(req: NextRequest) {
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     sort_order:  i,
   }));
 
-  const { error } = await supabase.from('domains').upsert(rows, { onConflict: 'slug' });
+  const { error } = await db.from('domains').upsert(rows, { onConflict: 'slug' });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ success: true, count: rows.length });

@@ -9,8 +9,8 @@ const FALLBACK_CLUBS: Record<string, { slug: string; name: string }[]> = {
     { slug: 'zeroone-code-club',    name: 'ZeroOne Code Club' },
     { slug: 'cyber-security-club',  name: 'Cyber Security Club' },
     { slug: 'webapps-club',         name: 'WebApps Club' },
-    { slug: 'electric-vehicle-club',name: 'Electric Vehicle Club' },
-    { slug: 'automation-club',      name: 'Automation Club' },
+    { slug: 'ev-automation-club',name: 'Electric Vehicle Club' },
+    { slug: 'ev-automation-club',      name: 'Automation Club' },
   ],
   LCH: [
     { slug: 'swara-music-club',     name: 'Swara Music Club' },
@@ -23,12 +23,12 @@ const FALLBACK_CLUBS: Record<string, { slug: string; name: string }[]> = {
     { slug: 'vastraa-fashion-club', name: 'Vastraa (Fashion) Club' },
     { slug: 'adventure-club',       name: 'Adventure Club' },
     { slug: 'kl-esports-club',      name: 'KL eSports Club' },
-    { slug: 'vachas-club',          name: 'Vachas Club' },
+    { slug: 'literature-club',          name: 'Vachas Club' },
   ],
   HWB: [
     { slug: 'safelife-club',   name: 'SafeLife Club' },
     { slug: 'yoga-club',       name: 'Yoga Club' },
-    { slug: 'marathon-club',   name: 'Marathon Club' },
+    { slug: 'yoga-club',   name: 'Marathon Club' },
   ],
   ESO: [
     { slug: 'yuva-tourism-club',      name: 'Yuva Tourism Club' },
@@ -37,7 +37,7 @@ const FALLBACK_CLUBS: Record<string, { slug: string; name: string }[]> = {
   ],
   IIE: [
     { slug: 'acic', name: 'ACIC' },
-    { slug: 'tbi',  name: 'TBI'  },
+    { slug: 'acic-tif',  name: 'TBI'  },
   ],
 };
 

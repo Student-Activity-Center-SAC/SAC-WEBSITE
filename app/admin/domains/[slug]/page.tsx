@@ -1,6 +1,6 @@
 import { requireAdmin } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import DomainForm from '../_components/DomainForm';
@@ -12,7 +12,7 @@ export default async function AdminDomainEditPage({ params }: { params: Promise<
   if (error) redirect('/admin/login');
 
   const { slug } = await params;
-  const { data: domain } = await supabase.from('domains').select('*').eq('slug', slug).single();
+  const { data: domain } = await db.from('domains').select('*').eq('slug', slug).single();
   if (!domain) notFound();
 
   return (

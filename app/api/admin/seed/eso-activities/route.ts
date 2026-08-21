@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 const M: Record<string, string> = {
   AUG: 'August 2026', SEP: 'September 2026', OCT: 'October 2026',
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     difficulty:    'Beginner',
   }));
 
-  const { error } = await supabase.from('activities').upsert(rows, { onConflict: 'code' });
+  const { error } = await db.from('activities').upsert(rows, { onConflict: 'code' });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   revalidatePath('/activities');

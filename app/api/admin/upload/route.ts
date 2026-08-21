@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export async function POST(req: NextRequest) {
   const { error } = await requireAdmin();
@@ -16,12 +16,12 @@ export async function POST(req: NextRequest) {
   const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const buf  = Buffer.from(await file.arrayBuffer());
 
-  const { error: uploadErr } = await supabase.storage
+  const { error: uploadErr } = await db.storage
     .from('sac-media')
     .upload(name, buf, { contentType: file.type, upsert: false });
 
   if (uploadErr) return NextResponse.json({ error: uploadErr.message }, { status: 500 });
 
-  const { data } = supabase.storage.from('sac-media').getPublicUrl(name);
+  const { data } = db.storage.from('sac-media').getPublicUrl(name);
   return NextResponse.json({ success: true, url: data.publicUrl });
 }

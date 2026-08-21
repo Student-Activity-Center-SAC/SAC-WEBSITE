@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { STUDENT_STORIES } from '@/lib/content/site-content';
 
 export async function POST(req: NextRequest) {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     sort_order:   i,
   }));
 
-  const { error } = await supabase.from('stories').upsert(rows, { onConflict: 'slug' });
+  const { error } = await db.from('stories').upsert(rows, { onConflict: 'slug' });
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ success: true, seeded: rows.length });
 }

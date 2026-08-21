@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { CLUBS } from '@/lib/content/clubs';
 import { STUDENT_COUNCIL } from '@/lib/content/student-council';
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     sort_order:      i + 1,
   }));
 
-  const { error: clubErr } = await supabase
+  const { error: clubErr } = await db
     .from('clubs')
     .upsert(clubRows, { onConflict: 'slug' });
   results.clubs = clubErr ? clubErr.message : `${clubRows.length} clubs`;
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     sort_order:    i + 1,
   }));
 
-  const { error: memberErr } = await supabase
+  const { error: memberErr } = await db
     .from('council_members')
     .upsert(memberRows, { onConflict: 'id' });
   results.council = memberErr ? memberErr.message : `${memberRows.length} members`;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 
 export async function POST(req: NextRequest) {
   const { error } = await requireAdmin();
@@ -9,13 +9,13 @@ export async function POST(req: NextRequest) {
   const { folder = 'misc', ext = 'pdf' } = await req.json();
   const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
 
-  const { data, error: signedErr } = await supabase.storage
+  const { data, error: signedErr } = await db.storage
     .from('sac-media')
     .createSignedUploadUrl(path);
 
   if (signedErr) return NextResponse.json({ error: signedErr.message }, { status: 500 });
 
-  const { data: urlData } = supabase.storage.from('sac-media').getPublicUrl(path);
+  const { data: urlData } = db.storage.from('sac-media').getPublicUrl(path);
 
   return NextResponse.json({
     signedUrl: data.signedUrl,

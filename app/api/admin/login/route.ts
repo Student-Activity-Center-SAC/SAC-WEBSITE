@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { db } from '@/lib/query-builder';
 import { signToken } from '@/lib/jwt';
 import bcrypt from 'bcryptjs';
 
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   if (!username || !password)
     return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
 
-  const { data: admin } = await supabase
+  const { data: admin } = await db
     .from('sac_admins')
     .select('*')
     .eq('username', username)
