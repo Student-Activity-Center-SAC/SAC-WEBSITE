@@ -83,29 +83,29 @@ export default async function AboutPage() {
                 </div>
                 <div style={{ borderLeft: '3px solid #970003', paddingLeft: '14px' }}>
                   <p className="font-bold text-base leading-snug" style={{ color: '#191313' }}>Er. Koneru Satyanarayana</p>
-                  <p className="text-sm font-semibold mt-1" style={{ color: '#970003' }}>President — KLEF</p>
-                  <p className="text-xs mt-0.5" style={{ color: 'rgba(25,19,19,0.4)' }}>KL University</p>
+                  <p className="text-sm font-semibold mt-1" style={{ color: '#970003' }}>President</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'rgba(25,19,19,0.4)' }}>KLEF</p>
                 </div>
               </div>
 
               {/* Message */}
               <div className="pt-1">
-                <p className="kicker mb-5" style={{ color: '#970003' }}>Hon’ble KLEF President’s Message</p>
-                <p className="font-display leading-none mb-4" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
+                <p className="kicker mb-2" style={{ color: '#970003' }}>Hon’ble KLEF President’s Message</p>
+                <p className="font-display leading-none mb-3" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
                 <blockquote
                   className="font-display font-medium leading-[1.2] mb-7"
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
-                  Excellence is not a destination — it is a lifelong commitment to growth, service, and the relentless pursuit of your highest potential.
+                  Education at its core is not merely about acquiring degrees; it is about building character, nurturing innovation, and empowering minds to shape a better tomorrow.
                 </blockquote>
                 <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)', maxWidth: '72ch' }}>
                   <p>
-                    At KL University, we believe that education must extend far beyond the classroom. The Student Activity Centre is a testament to that belief — a living platform where students discover themselves, sharpen their talents, and develop the character that distinguishes exceptional professionals from merely competent ones.
+                    At KL University, we have always believed in fostering a holistic environment where students can truly discover themselves. The Student Activity Centre (SAC) embodies this very vision. It is a vibrant ecosystem designed to pull you out of your comfort zones and challenge you to explore your deepest passions.
                   </p>
                   <p>
-                    Whether you join a coding club, a cultural society, or a social outreach initiative, you are not just enriching your résumé. You are shaping who you are. The friendships you build, the challenges you overcome, and the stages you perform on will define you long after your degree.
+                    When you engage in co-curricular activities, you build invaluable life skills—leadership, empathy, resilience, and teamwork. These experiences do not just add weight to your resume; they profoundly shape the person you become. The memories you create here and the bonds you forge will be the foundation of your professional and personal life.
                   </p>
                   <p>
-                    I encourage every student at KL University to step forward, take ownership, and lead. The SAC is here to back you every single step of the way.
+                    I invite you to make the most of this extraordinary platform. Dream big, lead with integrity, and leave an indelible mark on our community.
                   </p>
                 </div>
               </div>
@@ -141,22 +141,22 @@ export default async function AboutPage() {
 
               {/* Message */}
               <div className="pt-1">
-                <p className="kicker mb-5" style={{ color: '#970003' }}>Hon’ble SAC Director’s Message</p>
-                <p className="font-display leading-none mb-4" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
+                <p className="kicker mb-2" style={{ color: '#970003' }}>Hon’ble SAC Director’s Message</p>
+                <p className="font-display leading-none mb-3" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
                 <blockquote
                   className="font-display font-medium leading-[1.2] mb-7"
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
-                  Every great achievement begins with a single step — the step to say, "I will be part of something bigger than myself."
+                  Your university years are a canvas, and the Student Activity Centre provides the colors. How vibrantly you paint your journey is entirely in your hands.
                 </blockquote>
                 <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)', maxWidth: '72ch' }}>
                   <p>
-                    The Student Activity Centre is not just a department — it is a living community where your curiosity meets opportunity, your talent meets purpose, and your ambitions find the support system to become reality.
+                    Welcome to the heart of student life at KL University! The SAC is more than just a collection of clubs; it is a thriving family of creators, thinkers, artists, and leaders. It is the place where your ideas find a voice, and your talents find a stage.
                   </p>
                   <p>
-                    Whether you join a coding club, a cultural society, or a social outreach initiative, you are not just enriching your résumé. You are shaping who you are. The friendships you build, the challenges you overcome, and the stages you perform on will define you long after your degree.
+                    We understand that every student is unique, which is why our domains are so diverse. Whether you're building a robot, organizing a national-level cultural fest, or dedicating your weekend to social service, you are contributing to a legacy. It's here that you'll meet your future co-founders, lifelong friends, and mentors.
                   </p>
                   <p>
-                    I encourage every student at KL University to step forward, take ownership, and lead. The SAC is here to back you every single step of the way.
+                    My advice to you is simple: do not sit on the sidelines. Dive in, take on responsibilities, make mistakes, and learn from them. Our doors are always open, and our team is always here to support your ambitions. Let’s create something amazing together.
                   </p>
                 </div>
               </div>
