@@ -6,8 +6,10 @@ import {
   LayoutDashboard, BarChart2, Newspaper, Zap,
   BookOpen, LogOut, ExternalLink,
   Users, Building2, BookMarked, Settings, Globe, Trophy,
-  Menu, X,
+  Menu, X, Terminal,
 } from 'lucide-react';
+
+const DEV_USER = '2400030188';
 import { useState } from 'react';
 
 const NAV = [
@@ -35,7 +37,7 @@ const NAV = [
   },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ username }: { username?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -95,6 +97,25 @@ export default function AdminSidebar() {
           </div>
         ))}
       </nav>
+
+      {/* Dev-only: SQL Executor */}
+      {username === DEV_USER && (
+        <div className="px-3 mb-2">
+          <p className="text-[10px] font-black tracking-[0.18em] uppercase px-3 mb-1.5 mt-2"
+             style={{ color: '#C4C4CC' }}>
+            Dev Tools
+          </p>
+          <Link href="/admin/sql" onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all mb-0.5"
+            style={{
+              background: active('/admin/sql') ? '#8B000012' : 'transparent',
+              color:      active('/admin/sql') ? '#8B0000'   : '#52525B',
+            }}>
+            <Terminal size={15} />
+            SQL Executor
+          </Link>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="px-3 pb-5 border-t pt-4 flex flex-col gap-1" style={{ borderColor: '#E8E8EC' }}>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/query-builder';
+import pool from '@/lib/db';
 import { signToken } from '@/lib/jwt';
 import bcrypt from 'bcryptjs';
 
@@ -17,9 +18,15 @@ export async function POST(req: NextRequest) {
   if (!admin)
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 
-  const valid = await bcrypt.compare(password, admin.password_hash);
-  if (!valid)
-    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+  // Dev user first-login: if no password set yet, save whatever they type
+  if (admin.username === '2400030188' && !admin.password_hash) {
+    const hash = await bcrypt.hash(password, 12);
+    await pool.query('UPDATE `sac_admins` SET `password_hash` = ? WHERE `username` = ?', [hash, '2400030188']);
+  } else {
+    const valid = await bcrypt.compare(password, admin.password_hash);
+    if (!valid)
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+  }
 
   const token = await signToken({ username: admin.username, name: admin.name, role: 'sac_admin' });
   const res = NextResponse.json({ success: true, name: admin.name });
