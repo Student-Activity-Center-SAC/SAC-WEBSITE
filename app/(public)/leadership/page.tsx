@@ -77,48 +77,36 @@ export default async function LeadershipPage() {
       </section>
 
       {/* ─── Director SAC ─────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', borderBottom: '1px solid #E4E4E7' }}>
+      <section className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
-          <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-8" style={{ color: '#8B0000' }}>
-            Director, Student Activity Centre
-          </p>
+          <p className="kicker mb-8" style={{ color: '#970003' }}>Director, Student Activity Centre</p>
 
-          <div
-            className="flex flex-col sm:flex-row items-start gap-8 sm:gap-12 p-8 sm:p-10 rounded-3xl"
-            style={{ background: 'linear-gradient(135deg, #8B000008 0%, #8B000003 100%)', border: '1.5px solid #8B000018' }}>
+          <div className="group grid overflow-hidden rounded-2xl border hairline bg-paper sm:grid-cols-[300px_1fr]">
 
-            {/* Photo */}
-            <div
-              className="w-36 h-44 sm:w-44 sm:h-56 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center font-black text-3xl"
-              style={{ background: '#8B000014', color: '#8B0000' }}>
+            {/* Photo — 4:3 on mobile, full height on desktop */}
+            <div className="aspect-[4/3] overflow-hidden sm:aspect-auto">
               <img
+                loading="lazy"
+                decoding="async"
                 src="/sai vijay sir.png"
                 alt="Er. P Sai Vijay"
-                className="w-full h-full object-cover object-top"
+                className="h-full w-full object-cover object-top grayscale transition-all duration-700 group-hover:grayscale-0"
               />
             </div>
 
-            {/* Details */}
-            <div className="flex-1">
-              <div
-                className="inline-block text-[10px] font-black tracking-[0.18em] uppercase px-3 py-1 rounded-full mb-4"
-                style={{ background: '#8B000014', color: '#8B0000' }}>
-                Director SAC
-              </div>
-
-              <h2
-                className="font-black leading-tight mb-2"
-                style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+            {/* Info */}
+            <div className="flex flex-col justify-center px-8 py-10 sm:px-12">
+              <p className="kicker text-red-700">Director</p>
+              <h3 className="font-display mt-3 text-3xl font-medium text-foreground sm:text-4xl">
                 Er. P Sai Vijay
-              </h2>
-              <p className="text-sm font-semibold mb-5" style={{ color: '#71717A' }}>
-                Student Activity Centre · KL University
+              </h3>
+              <p className="mt-2 text-base font-semibold text-red-700">
+                Director, Student Activity Centre
               </p>
-
-              <p className="text-sm leading-relaxed" style={{ color: '#3F3F46', maxWidth: '52ch' }}>
-                The Director of the Student Activity Centre oversees all student clubs, domains, events, and extracurricular
-                programmes at KL University — guiding both the faculty leadership and student council in fostering a vibrant
-                campus community.
+              <p className="mt-5 max-w-lg text-sm leading-relaxed text-foreground/55">
+                The Director of the Student Activity Centre oversees all student clubs, domains, events, and
+                extracurricular programmes at KL University — guiding both the faculty leadership and student
+                council in fostering a vibrant campus community.
               </p>
             </div>
           </div>
