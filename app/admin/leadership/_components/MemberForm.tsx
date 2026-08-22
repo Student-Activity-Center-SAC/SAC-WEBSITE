@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Save, Upload, X, Move } from 'lucide-react';
@@ -23,70 +23,62 @@ function autoId(role: string) {
 
 // ── Crop Modal ─────────────────────────────────────────────────────────────────
 const CROP_SIZE = 300;
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
 function CropModal({ src, onConfirm, onCancel }: {
   src: string;
   onConfirm: (blob: Blob) => void;
   onCancel: () => void;
 }) {
+  const [scale,  setScale]  = useState(1);
+  const [natW,   setNatW]   = useState(0);
+  const [natH,   setNatH]   = useState(0);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [imgSize, setImgSize] = useState({ w: 0, h: 0 });
-  const [scale, setScale] = useState(1);
   const dragging = useRef(false);
-  const last = useRef({ x: 0, y: 0 });
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
+  const last     = useRef({ x: 0, y: 0 });
+  const imgEl    = useRef<HTMLImageElement>(null);
 
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => {
-      imgRef.current = img;
-      // fit image so its shortest side = CROP_SIZE (fills the square)
-      const s = CROP_SIZE / Math.min(img.naturalWidth, img.naturalHeight);
-      setScale(s);
-      setImgSize({ w: img.naturalWidth, h: img.naturalHeight });
-      setOffset({ x: 0, y: 0 });
-    };
-    img.src = src;
-  }, [src]);
+  // Called once the <img> finishes loading — compute scale to fill the box
+  function onImgLoad(e: React.SyntheticEvent<HTMLImageElement>) {
+    const img = e.currentTarget;
+    const s = CROP_SIZE / Math.min(img.naturalWidth, img.naturalHeight);
+    setNatW(img.naturalWidth);
+    setNatH(img.naturalHeight);
+    setScale(s);
+    setOffset({ x: 0, y: 0 });
+  }
 
-  const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
-
-  const renderedW = imgSize.w * scale;
-  const renderedH = imgSize.h * scale;
-  const minX = CROP_SIZE - renderedW;
-  const minY = CROP_SIZE - renderedH;
+  const rW   = natW * scale;           // rendered width
+  const rH   = natH * scale;           // rendered height
+  const minX = Math.min(CROP_SIZE - rW, 0);
+  const minY = Math.min(CROP_SIZE - rH, 0);
 
   const onPointerDown = (e: React.PointerEvent) => {
     dragging.current = true;
     last.current = { x: e.clientX, y: e.clientY };
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging.current) return;
     const dx = e.clientX - last.current.x;
     const dy = e.clientY - last.current.y;
     last.current = { x: e.clientX, y: e.clientY };
-    setOffset(o => ({
-      x: clamp(o.x + dx, Math.min(minX, 0), 0),
-      y: clamp(o.y + dy, Math.min(minY, 0), 0),
-    }));
+    setOffset(o => ({ x: clamp(o.x + dx, minX, 0), y: clamp(o.y + dy, minY, 0) }));
   };
   const onPointerUp = () => { dragging.current = false; };
 
-  const confirm = useCallback(() => {
-    const img = imgRef.current;
+  function confirm() {
+    const img = imgEl.current;
     if (!img) return;
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 400;
     const ctx = canvas.getContext('2d')!;
-    // offset is in rendered pixels; convert back to source pixels
-    const srcX = (-offset.x) / scale;
-    const srcY = (-offset.y) / scale;
-    const srcSize = CROP_SIZE / scale;
+    const srcX    = (-offset.x) / scale;
+    const srcY    = (-offset.y) / scale;
+    const srcSize = CROP_SIZE   / scale;
     ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 400, 400);
     canvas.toBlob(b => b && onConfirm(b), 'image/jpeg', 0.92);
-  }, [offset, scale, onConfirm]);
+  }
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
@@ -103,38 +95,53 @@ function CropModal({ src, onConfirm, onCancel }: {
           </button>
         </div>
 
-        {/* Crop box */}
         <div className="px-6 py-4 flex flex-col items-center gap-4">
+          {/* Crop box */}
           <div
-            className="relative overflow-hidden rounded-2xl cursor-grab active:cursor-grabbing select-none"
-            style={{ width: CROP_SIZE, height: CROP_SIZE, background: '#F4F4F5', border: '2px solid #8B0000' }}
-            onPointerDown={onPointerDown}
+            className="relative overflow-hidden rounded-2xl select-none"
+            style={{
+              width: CROP_SIZE, height: CROP_SIZE,
+              background: '#F4F4F5',
+              border: '2px solid #8B0000',
+              cursor: natW > 0 ? 'grab' : 'default',
+            }}
+            onPointerDown={natW > 0 ? onPointerDown : undefined}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}>
-            {imgSize.w > 0 && (
-              <img
-                src={src}
-                alt="crop"
-                draggable={false}
-                style={{
-                  position: 'absolute',
-                  width:  renderedW,
-                  height: renderedH,
-                  left: offset.x,
-                  top:  offset.y,
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                }}
-              />
+
+            {/* Always render img — onLoad sets dimensions */}
+            <img
+              ref={imgEl}
+              src={src}
+              alt="crop preview"
+              onLoad={onImgLoad}
+              draggable={false}
+              style={{
+                position:      'absolute',
+                width:          natW > 0 ? rW   : '100%',
+                height:         natW > 0 ? rH   : '100%',
+                objectFit:      natW > 0 ? undefined : 'cover',
+                left:           natW > 0 ? offset.x : 0,
+                top:            natW > 0 ? offset.y : 0,
+                pointerEvents: 'none',
+                userSelect:    'none',
+                display:       'block',
+              }}
+            />
+
+            {/* Grid lines */}
+            {natW > 0 && (
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background:
+                  'repeating-linear-gradient(transparent,transparent calc(33.33% - 1px),rgba(255,255,255,0.3) calc(33.33% - 1px),rgba(255,255,255,0.3) 33.33%),' +
+                  'repeating-linear-gradient(90deg,transparent,transparent calc(33.33% - 1px),rgba(255,255,255,0.3) calc(33.33% - 1px),rgba(255,255,255,0.3) 33.33%)',
+              }} />
             )}
-            {/* Grid overlay */}
-            <div className="absolute inset-0 pointer-events-none" style={{
-              background: 'repeating-linear-gradient(transparent, transparent calc(33.33% - 1px), rgba(255,255,255,0.25) calc(33.33% - 1px), rgba(255,255,255,0.25) 33.33%), repeating-linear-gradient(90deg, transparent, transparent calc(33.33% - 1px), rgba(255,255,255,0.25) calc(33.33% - 1px), rgba(255,255,255,0.25) 33.33%)',
-            }} />
           </div>
+
           <p className="text-xs flex items-center gap-1.5" style={{ color: '#A1A1AA' }}>
-            <Move size={11} /> Drag the image to reposition
+            <Move size={11} /> Drag to reposition
           </p>
         </div>
 
@@ -144,8 +151,8 @@ function CropModal({ src, onConfirm, onCancel }: {
                   style={{ borderColor: '#E4E4E7', color: '#71717A' }}>
             Cancel
           </button>
-          <button onClick={confirm}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+          <button onClick={confirm} disabled={natW === 0}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
                   style={{ background: '#8B0000' }}>
             Use this crop
           </button>
