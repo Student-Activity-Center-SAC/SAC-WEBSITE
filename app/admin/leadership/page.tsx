@@ -4,7 +4,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { Plus, Trash2, Pencil, User } from 'lucide-react';
 
-const ROLE_ORDER = ['President', 'Vice President', 'Secretary', 'Joint Secretary', 'Club Lead', 'Faculty Mentor', 'Faculty In-Charge'];
+const ROLE_ORDER = ['Deputy Director', 'President', 'Vice President', 'Secretary', 'Joint Secretary', 'Club Lead', 'Faculty Mentor', 'Faculty In-Charge'];
 
 export default function LeadershipAdminPage() {
   const [members, setMembers] = useState<any[]>([]);
@@ -36,7 +36,8 @@ export default function LeadershipAdminPage() {
     if (!grouped[g]) grouped[g] = [];
     grouped[g].push(m);
   });
-  const orderedRoles = ROLE_ORDER.filter(r => grouped[r]?.length > 0);
+  const extraRoles = Object.keys(grouped).filter(r => !ROLE_ORDER.includes(r));
+  const orderedRoles = [...ROLE_ORDER.filter(r => grouped[r]?.length > 0), ...extraRoles];
 
   return (
     <div>

@@ -55,22 +55,20 @@ function MemberCard({
       style={{ border: '1px solid #E4E4E7', background: '#fff' }}>
 
       {/* Portrait photo */}
-      <div
-        className="relative w-full overflow-hidden flex items-center justify-center"
-        style={{ aspectRatio: '3/4' }}>
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '3/4' }}>
         {member?.photo ? (
           <img
             src={member.photo}
             alt={member.name}
-            className="w-full h-full object-cover object-top"
+            className="absolute inset-0 w-full h-full object-cover object-top"
           />
         ) : isPlaceholder ? (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2" style={{ background: '#F4F4F5' }}>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ background: '#F4F4F5' }}>
             <Camera size={28} style={{ color: '#D1D1D6' }} />
             <span className="text-[9px] font-black tracking-widest uppercase" style={{ color: '#D1D1D6' }}>Photo</span>
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${CRIMSON}14 0%, ${CRIMSON}06 100%)` }}>
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${CRIMSON}14 0%, ${CRIMSON}06 100%)` }}>
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center font-black text-3xl"
               style={{ background: `${CRIMSON}18`, color: CRIMSON }}>
