@@ -10,7 +10,7 @@ export async function GET(
 
   try {
     const { body, contentType } = await getObject(key);
-    return new NextResponse(body, {
+    return new NextResponse(body as any, {
       headers: {
         'Content-Type':  contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
