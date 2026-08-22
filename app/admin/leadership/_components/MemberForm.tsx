@@ -1,39 +1,168 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Save, Upload, ChevronLeft } from 'lucide-react';
+import { Save, Upload, X, Move } from 'lucide-react';
 
 interface Club { id: string; name: string; }
-
-interface Props {
-  initial?: any;
-  mode: 'create' | 'edit';
-  clubs?: Club[];
-}
-
+interface Props { initial?: any; mode: 'create' | 'edit'; clubs?: Club[]; }
 type Category = 'Deputy Director' | 'Faculty' | 'President' | 'Vice President' | 'Club Lead';
 
 const CATEGORIES: { label: string; sub?: string; cat: Category }[] = [
-  { label: 'Deputy Directors of SAC',  cat: 'Deputy Director' },
-  { label: 'Mentors & In-Charges',     cat: 'Faculty' },
-  { label: 'Presidents of KL SAC',     cat: 'President' },
-  { label: 'Vice Presidents',          sub: 'Domain & division leadership', cat: 'Vice President' },
-  { label: 'Club Leads',               sub: `Coordinators of clubs`,         cat: 'Club Lead' },
+  { label: 'Deputy Directors of SAC', cat: 'Deputy Director' },
+  { label: 'Mentors & In-Charges',    cat: 'Faculty' },
+  { label: 'Presidents of KL SAC',    cat: 'President' },
+  { label: 'Vice Presidents', sub: 'Domain & division leadership', cat: 'Vice President' },
+  { label: 'Club Leads',      sub: 'Coordinators of clubs',        cat: 'Club Lead' },
 ];
-
 const FACULTY_ROLES = ['Faculty Mentor', 'Faculty In-Charge'];
 
 function autoId(role: string) {
   return role.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString(36);
 }
 
+// ── Crop Modal ─────────────────────────────────────────────────────────────────
+const CROP_SIZE = 300;
+
+function CropModal({ src, onConfirm, onCancel }: {
+  src: string;
+  onConfirm: (blob: Blob) => void;
+  onCancel: () => void;
+}) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [imgSize, setImgSize] = useState({ w: 0, h: 0 });
+  const [scale, setScale] = useState(1);
+  const dragging = useRef(false);
+  const last = useRef({ x: 0, y: 0 });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      imgRef.current = img;
+      // fit image so its shortest side = CROP_SIZE (fills the square)
+      const s = CROP_SIZE / Math.min(img.naturalWidth, img.naturalHeight);
+      setScale(s);
+      setImgSize({ w: img.naturalWidth, h: img.naturalHeight });
+      setOffset({ x: 0, y: 0 });
+    };
+    img.src = src;
+  }, [src]);
+
+  const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
+  const renderedW = imgSize.w * scale;
+  const renderedH = imgSize.h * scale;
+  const minX = CROP_SIZE - renderedW;
+  const minY = CROP_SIZE - renderedH;
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragging.current = true;
+    last.current = { x: e.clientX, y: e.clientY };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const dx = e.clientX - last.current.x;
+    const dy = e.clientY - last.current.y;
+    last.current = { x: e.clientX, y: e.clientY };
+    setOffset(o => ({
+      x: clamp(o.x + dx, Math.min(minX, 0), 0),
+      y: clamp(o.y + dy, Math.min(minY, 0), 0),
+    }));
+  };
+  const onPointerUp = () => { dragging.current = false; };
+
+  const confirm = useCallback(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 400;
+    const ctx = canvas.getContext('2d')!;
+    // offset is in rendered pixels; convert back to source pixels
+    const srcX = (-offset.x) / scale;
+    const srcY = (-offset.y) / scale;
+    const srcSize = CROP_SIZE / scale;
+    ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 400, 400);
+    canvas.toBlob(b => b && onConfirm(b), 'image/jpeg', 0.92);
+  }, [offset, scale, onConfirm]);
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+         style={{ background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(6px)' }}>
+      <div className="bg-white rounded-3xl overflow-hidden w-full max-w-sm shadow-2xl">
+        <div className="px-6 pt-5 pb-3 flex items-center justify-between"
+             style={{ borderBottom: '1px solid #F0F0F0' }}>
+          <div>
+            <p className="font-black text-base" style={{ color: '#0D0D0D' }}>Crop Photo</p>
+            <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>Drag to reposition · Square crop</p>
+          </div>
+          <button onClick={onCancel} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100">
+            <X size={15} style={{ color: '#71717A' }} />
+          </button>
+        </div>
+
+        {/* Crop box */}
+        <div className="px-6 py-4 flex flex-col items-center gap-4">
+          <div
+            className="relative overflow-hidden rounded-2xl cursor-grab active:cursor-grabbing select-none"
+            style={{ width: CROP_SIZE, height: CROP_SIZE, background: '#F4F4F5', border: '2px solid #8B0000' }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerLeave={onPointerUp}>
+            {imgSize.w > 0 && (
+              <img
+                src={src}
+                alt="crop"
+                draggable={false}
+                style={{
+                  position: 'absolute',
+                  width:  renderedW,
+                  height: renderedH,
+                  left: offset.x,
+                  top:  offset.y,
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+            {/* Grid overlay */}
+            <div className="absolute inset-0 pointer-events-none" style={{
+              background: 'repeating-linear-gradient(transparent, transparent calc(33.33% - 1px), rgba(255,255,255,0.25) calc(33.33% - 1px), rgba(255,255,255,0.25) 33.33%), repeating-linear-gradient(90deg, transparent, transparent calc(33.33% - 1px), rgba(255,255,255,0.25) calc(33.33% - 1px), rgba(255,255,255,0.25) 33.33%)',
+            }} />
+          </div>
+          <p className="text-xs flex items-center gap-1.5" style={{ color: '#A1A1AA' }}>
+            <Move size={11} /> Drag the image to reposition
+          </p>
+        </div>
+
+        <div className="px-6 pb-5 flex gap-3">
+          <button onClick={onCancel}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold border transition-colors hover:bg-gray-50"
+                  style={{ borderColor: '#E4E4E7', color: '#71717A' }}>
+            Cancel
+          </button>
+          <button onClick={confirm}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+                  style={{ background: '#8B0000' }}>
+            Use this crop
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Form ──────────────────────────────────────────────────────────────────
 export default function MemberForm({ initial, mode, clubs = [] }: Props) {
   const router = useRouter();
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc,   setCropSrc]   = useState<string | null>(null);
+  const pendingFile = useRef<File | null>(null);
 
-  // In edit mode, derive category from role
   const initCat: Category | null = initial
     ? initial.role === 'Deputy Director'  ? 'Deputy Director'
     : initial.role === 'Faculty Mentor' || initial.role === 'Faculty In-Charge' ? 'Faculty'
@@ -43,22 +172,32 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
     : null
     : null;
 
-  const [category,     setCategory]     = useState<Category | null>(initCat);
-  const [facultyRole,  setFacultyRole]  = useState<string>(initial?.role ?? 'Faculty Mentor');
-  const [clubName,     setClubName]     = useState<string>(initial?.club_lead ?? '');
-  const [name,         setName]         = useState(initial?.name       ?? '');
-  const [subtitle,     setSubtitle]     = useState(initial?.subtitle   ?? '');
-  const [linkedin,     setLinkedin]     = useState(initial?.linkedin   ?? '');
-  const [photo,        setPhoto]        = useState(initial?.photo      ?? '');
-  const [sortOrder,    setSortOrder]    = useState<number>(initial?.sort_order ?? 0);
+  const [category,    setCategory]    = useState<Category | null>(initCat);
+  const [facultyRole, setFacultyRole] = useState<string>(initial?.role ?? 'Faculty Mentor');
+  const [clubName,    setClubName]    = useState<string>(initial?.club_lead ?? '');
+  const [name,        setName]        = useState(initial?.name     ?? '');
+  const [subtitle,    setSubtitle]    = useState(initial?.subtitle ?? '');
+  const [linkedin,    setLinkedin]    = useState(initial?.linkedin ?? '');
+  const [photo,       setPhoto]       = useState(initial?.photo    ?? '');
 
-  async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+  // File selected → show crop modal
+  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    pendingFile.current = file;
+    const reader = new FileReader();
+    reader.onload = ev => setCropSrc(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+
+  // After crop confirmed → upload the blob
+  async function onCropConfirm(blob: Blob) {
+    setCropSrc(null);
     setUploading(true);
     try {
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', blob, 'photo.jpg');
       fd.append('folder', 'council');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const d   = await res.json();
@@ -81,21 +220,20 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
     const role = category === 'Faculty' ? facultyRole : category;
 
     const payload = {
-      id:         initial?.id ?? autoId(role),
-      name:       name.trim(),
+      id:           initial?.id ?? autoId(role),
+      name:         name.trim(),
       role,
-      subtitle:   subtitle.trim() || null,
-      linkedin:   linkedin.trim() || null,
-      photo:      photo   || null,
-      club_lead:  category === 'Club Lead' ? clubName : null,
-      is_faculty: category === 'Faculty',
-      sort_order: sortOrder,
-      // clear unused fields
+      subtitle:     subtitle.trim() || null,
+      linkedin:     linkedin.trim() || null,
+      photo:        photo || null,
+      club_lead:    category === 'Club Lead' ? clubName : null,
+      is_faculty:   category === 'Faculty',
+      sort_order:   initial?.sort_order ?? 0,
       year_of_study: null,
       branch:        null,
       journey:       null,
-      achievements:  [],
-      clubs_list:    [],
+      achievements:  '[]',
+      clubs_list:    '[]',
       designation:   null,
     };
 
@@ -119,145 +257,144 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl">
+    <>
+      {cropSrc && (
+        <CropModal
+          src={cropSrc}
+          onConfirm={onCropConfirm}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
 
-      {/* ── Step 1: Category ── */}
-      <div>
-        <p className="text-xs font-black tracking-[0.2em] uppercase mb-4" style={{ color: '#8B0000' }}>
-          Step 1 — Select Category
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {CATEGORIES.map(c => (
-            <button
-              key={c.cat}
-              type="button"
-              onClick={() => { setCategory(c.cat); setClubName(''); }}
-              className="text-left px-5 py-4 rounded-2xl border-2 transition-all"
-              style={{
-                borderColor:  category === c.cat ? '#8B0000' : '#E4E4E7',
-                background:   category === c.cat ? '#8B000008' : '#F7F7F8',
-              }}>
-              <p className="font-black text-sm leading-tight" style={{ color: '#0D0D0D' }}>{c.label}</p>
-              {c.sub && <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>{c.sub}</p>}
-            </button>
-          ))}
-        </div>
-      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl">
 
-      {/* ── Step 1b: Faculty sub-type ── */}
-      {category === 'Faculty' && (
+        {/* ── Step 1: Category ── */}
         <div>
-          <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>
-            Faculty Type
+          <p className="text-xs font-black tracking-[0.2em] uppercase mb-4" style={{ color: '#8B0000' }}>
+            Step 1 — Select Category
           </p>
-          <div className="flex gap-3">
-            {FACULTY_ROLES.map(r => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setFacultyRole(r)}
-                className="px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
-                style={{
-                  borderColor: facultyRole === r ? '#8B0000' : '#E4E4E7',
-                  background:  facultyRole === r ? '#8B000010' : '#F7F7F8',
-                  color:       facultyRole === r ? '#8B0000'   : '#71717A',
-                }}>
-                {r}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {CATEGORIES.map(c => (
+              <button key={c.cat} type="button"
+                      onClick={() => { setCategory(c.cat); setClubName(''); }}
+                      className="text-left px-5 py-4 rounded-2xl border-2 transition-all"
+                      style={{
+                        borderColor: category === c.cat ? '#8B0000' : '#E4E4E7',
+                        background:  category === c.cat ? '#8B000008' : '#F7F7F8',
+                      }}>
+                <p className="font-black text-sm leading-tight" style={{ color: '#0D0D0D' }}>{c.label}</p>
+                {c.sub && <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>{c.sub}</p>}
               </button>
             ))}
           </div>
         </div>
-      )}
 
-      {/* ── Step 1b: Club picker for Club Leads ── */}
-      {category === 'Club Lead' && (
-        <div>
-          <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>
-            Select Club
-          </p>
-          {clubs.length === 0 ? (
-            <p className="text-sm" style={{ color: '#A1A1AA' }}>No clubs found in database.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
-              {clubs.map(c => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setClubName(c.name)}
-                  className="text-left px-3 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all"
-                  style={{
-                    borderColor: clubName === c.name ? '#8B0000' : '#E4E4E7',
-                    background:  clubName === c.name ? '#8B000010' : '#F7F7F8',
-                    color:       clubName === c.name ? '#8B0000'   : '#3F3F46',
-                  }}>
-                  {c.name}
+        {/* Faculty sub-type */}
+        {category === 'Faculty' && (
+          <div>
+            <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Faculty Type</p>
+            <div className="flex gap-3">
+              {FACULTY_ROLES.map(r => (
+                <button key={r} type="button" onClick={() => setFacultyRole(r)}
+                        className="px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
+                        style={{
+                          borderColor: facultyRole === r ? '#8B0000' : '#E4E4E7',
+                          background:  facultyRole === r ? '#8B000010' : '#F7F7F8',
+                          color:       facultyRole === r ? '#8B0000'   : '#71717A',
+                        }}>
+                  {r}
                 </button>
               ))}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* ── Step 2: Details ── */}
-      {category && (
-        <div className="flex flex-col gap-5">
-          <p className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: '#8B0000' }}>
-            Step 2 — Member Details
-          </p>
+        {/* Club picker */}
+        {category === 'Club Lead' && (
+          <div>
+            <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Select Club</p>
+            {clubs.length === 0
+              ? <p className="text-sm" style={{ color: '#A1A1AA' }}>No clubs found in database.</p>
+              : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                  {clubs.map(c => (
+                    <button key={c.id} type="button" onClick={() => setClubName(c.name)}
+                            className="text-left px-3 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all"
+                            style={{
+                              borderColor: clubName === c.name ? '#8B0000' : '#E4E4E7',
+                              background:  clubName === c.name ? '#8B000010' : '#F7F7F8',
+                              color:       clubName === c.name ? '#8B0000'   : '#3F3F46',
+                            }}>
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+          </div>
+        )}
 
-          <Field label="Full Name *">
-            <input required value={name} onChange={e => setName(e.target.value)}
-                   className={inp} style={sty} placeholder="e.g. Ravi Kumar" />
-          </Field>
-
-          <Field label="Description (shown below role)">
-            <input value={subtitle} onChange={e => setSubtitle(e.target.value)}
-                   className={inp} style={sty}
-                   placeholder="e.g. Administration & Student Engagement" />
-          </Field>
-
-          <Field label="LinkedIn URL">
-            <input value={linkedin} onChange={e => setLinkedin(e.target.value)}
-                   className={inp} style={sty} placeholder="https://linkedin.com/in/..." />
-          </Field>
-
-          <Field label="Photo">
-            <p className="text-xs mb-2" style={{ color: '#A1A1AA' }}>
-              400 × 400 px recommended · Square · Professional headshot
+        {/* ── Step 2: Details ── */}
+        {category && (
+          <div className="flex flex-col gap-5">
+            <p className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: '#8B0000' }}>
+              Step 2 — Member Details
             </p>
-            <div className="flex items-center gap-4">
-              {photo && (
-                <img src={photo} alt="preview"
-                     className="w-16 h-16 rounded-xl object-cover border"
-                     style={{ borderColor: '#E4E4E7' }} />
-              )}
-              <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold px-4 py-2.5 rounded-xl border transition-colors hover:bg-gray-50"
-                     style={{ borderColor: '#E4E4E7', color: '#0D0D0D' }}>
-                <Upload size={13} /> {uploading ? 'Uploading…' : 'Upload photo'}
-                <input type="file" accept="image/*" className="hidden"
-                       onChange={uploadPhoto} disabled={uploading} />
-              </label>
-              {photo && (
-                <button type="button" onClick={() => setPhoto('')}
-                        className="text-xs font-semibold px-3 py-2 rounded-lg"
-                        style={{ background: '#FEE2E2', color: '#991B1B' }}>
-                  Remove
-                </button>
-              )}
-            </div>
-          </Field>
-        </div>
-      )}
 
-      {category && (
-        <button type="submit" disabled={saving}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
-                style={{ background: '#8B0000', color: '#fff' }}>
-          <Save size={14} />
-          {saving ? 'Saving…' : mode === 'create' ? 'Add Member' : 'Save Changes'}
-        </button>
-      )}
-    </form>
+            <Field label="Full Name *">
+              <input required value={name} onChange={e => setName(e.target.value)}
+                     className={inp} style={sty} placeholder="e.g. Ravi Kumar" />
+            </Field>
+
+            <Field label="Description (optional — shown below role)">
+              <input value={subtitle} onChange={e => setSubtitle(e.target.value)}
+                     className={inp} style={sty}
+                     placeholder="e.g. Administration & Student Engagement" />
+            </Field>
+
+            <Field label="LinkedIn URL (optional)">
+              <input value={linkedin} onChange={e => setLinkedin(e.target.value)}
+                     className={inp} style={sty} placeholder="https://linkedin.com/in/..." />
+            </Field>
+
+            <Field label="Photo (optional)">
+              <p className="text-xs mb-2" style={{ color: '#A1A1AA' }}>
+                400 × 400 px recommended · Will be cropped to square
+              </p>
+              <div className="flex items-center gap-4 flex-wrap">
+                {photo && (
+                  <div className="relative">
+                    <img src={photo} alt="preview"
+                         className="w-20 h-20 rounded-xl object-cover border"
+                         style={{ borderColor: '#E4E4E7' }} />
+                    <button type="button" onClick={() => setPhoto('')}
+                            className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                            style={{ background: '#8B0000' }}>
+                      <X size={10} className="text-white" />
+                    </button>
+                  </div>
+                )}
+                <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold px-4 py-2.5 rounded-xl border transition-colors hover:bg-gray-50"
+                       style={{ borderColor: '#E4E4E7', color: uploading ? '#A1A1AA' : '#0D0D0D' }}>
+                  <Upload size={13} />
+                  {uploading ? 'Uploading…' : photo ? 'Change photo' : 'Upload photo'}
+                  <input type="file" accept="image/*" className="hidden"
+                         onChange={onFileChange} disabled={uploading} />
+                </label>
+              </div>
+            </Field>
+          </div>
+        )}
+
+        {category && (
+          <button type="submit" disabled={saving}
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
+                  style={{ background: '#8B0000', color: '#fff' }}>
+            <Save size={14} />
+            {saving ? 'Saving…' : mode === 'create' ? 'Add Member' : 'Save Changes'}
+          </button>
+        )}
+      </form>
+    </>
   );
 }
 
