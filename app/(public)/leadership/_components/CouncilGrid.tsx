@@ -356,15 +356,28 @@ export default function CouncilGrid({
 
   const byRole = (role: string) => members.filter(m => m.role === role);
 
-  const presidents = byRole('President');
-  const vps        = byRole('Vice President');
-  const secs       = byRole('Secretary');
-  const jsecs      = byRole('Joint Secretary');
-  const mentors    = byRole('Faculty Mentor');
-  const incharges  = byRole('Faculty In-Charge');
+  const presidents    = byRole('President');
+  const vps           = byRole('Vice President');
+  const secs          = byRole('Secretary');
+  const jsecs         = byRole('Joint Secretary');
+  const mentors       = byRole('Faculty Mentor');
+  const incharges     = byRole('Faculty In-Charge');
+  const deputyDirs    = byRole('Deputy Director');
 
   return (
     <>
+      {/* ── Deputy Directors of SAC ──────────────────────────────────── */}
+      <section style={{ background: '#fff' }}>
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+          <SectionLabel label="Deputy Directors" sub="Deputy Directors of SAC." />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            {deputyDirs.length > 0
+              ? deputyDirs.map(m => <MemberCard key={m.id} member={m} size="md" onClick={open} />)
+              : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Deputy Director" size="md" />)}
+          </div>
+        </div>
+      </section>
+
       {/* ── Faculty Mentors & In-Charges ─────────────────────────────── */}
       <section style={{ background: '#F7F7F8' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
