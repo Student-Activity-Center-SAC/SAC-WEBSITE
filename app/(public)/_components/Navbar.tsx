@@ -15,7 +15,7 @@ const NAV_LINKS_RIGHT = [
   { href: '/events',     label: 'Events'     },
   { href: '/clubs',      label: 'Clubs'      },
   { href: '/activities', label: 'Activities' },
-  { href: '/svr',        label: 'SVR'        },
+  { href: 'https://svr.kluniversity.in/', label: 'SVR', external: true },
 ];
 
 export default function Navbar() {
@@ -93,6 +93,7 @@ export default function Navbar() {
               <Link
                 key={l.label}
                 href={l.href}
+                {...(l.external ? { target: '_blank', rel: 'noopener' } : {})}
                 className="relative px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
                 style={{ color: textColor(isActive(l.href)) }}>
                 {l.label}
@@ -161,6 +162,7 @@ export default function Navbar() {
         <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-0.5">
           {[...NAV_LINKS_LEFT, ...NAV_LINKS_RIGHT].map(l => (
             <Link key={l.label} href={l.href} onClick={() => setMenuOpen(false)}
+                  {...('external' in l && l.external ? { target: '_blank', rel: 'noopener' } : {})}
                   className="px-3 py-3 rounded-xl text-sm font-semibold transition-colors"
                   style={{
                     background: isActive(l.href) ? '#fdf2f2' : 'transparent',

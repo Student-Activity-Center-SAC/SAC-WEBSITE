@@ -6,6 +6,7 @@ import { FadeIn } from './_components/FadeIn';
 import StatCounter from './_components/StatCounter';
 import { getHomepageEvents } from '@/lib/data/homepage';
 import { db } from '@/lib/query-builder';
+import { PartnersMarquee } from './_components/PartnersMarquee';
 
 export const dynamic = 'force-dynamic';
 
@@ -668,27 +669,11 @@ export default async function HomePage() {
           {/* Partners marquee */}
           {partners.length > 0 && (
             <FadeIn delay={0.2} className="mt-20 -mx-5 sm:-mx-6">
-              <p className="kicker justify-center mb-8 px-5 sm:px-6" style={{ color: '#8B0000', fontWeight: 800, letterSpacing: '0.05em' }}>
-                Partners & Collaborators
+              <p className="text-center mb-8 px-5 sm:px-6 font-black uppercase tracking-widest"
+                 style={{ fontSize: '13px', color: '#8B0000', letterSpacing: '0.18em' }}>
+                Partners &amp; Collaborators
               </p>
-              {/* Overflow clip — hairline border on both sides */}
-              <div className="overflow-hidden" style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
-                <div className="flex partners-track animate-marquee" style={{ width: 'max-content', animationDuration: `${Math.max(partners.length * 4, 20)}s` }}>
-                  {/* Duplicate logos for seamless loop */}
-                  {[...partners, ...partners].map((p: any, i: number) => (
-                    <div key={`${p.id}-${i}`}
-                      className="flex items-center justify-center shrink-0 px-10 py-7 group"
-                      style={{ borderRight: '1px solid var(--hairline)' }}>
-                      <img
-                        src={p.partner_image}
-                        alt={p.partner_name}
-                        className="object-contain transition-transform duration-300 group-hover:scale-110"
-                        style={{ height: '84px', maxWidth: '240px' }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PartnersMarquee partners={partners} />
             </FadeIn>
           )}
         </div>
@@ -874,12 +859,12 @@ export default async function HomePage() {
       </section>
 
       {/* ════════════════════════════════════════════════════ CTA ══ */}
-      <section className="relative noise overflow-hidden" style={{ background: '#970003' }}>
+      <section className="relative noise overflow-hidden" style={{ background: '#5C0001' }}>
         {/* Floating orbs */}
         <div className="orb-a absolute -top-24 -left-24 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: 'rgba(106,0,2,0.5)', filter: 'blur(80px)' }} aria-hidden="true" />
+          style={{ background: 'rgba(40,0,1,0.6)', filter: 'blur(80px)' }} aria-hidden="true" />
         <div className="orb-b absolute -bottom-24 -right-24 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: 'rgba(198,115,116,0.25)', filter: 'blur(80px)' }} aria-hidden="true" />
+          style={{ background: 'rgba(150,40,40,0.2)', filter: 'blur(80px)' }} aria-hidden="true" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 py-28 text-center">
           <FadeIn>
