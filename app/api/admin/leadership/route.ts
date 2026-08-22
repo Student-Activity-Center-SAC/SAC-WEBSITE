@@ -23,9 +23,9 @@ export async function PUT(req: NextRequest) {
   const { error } = await requireAdmin();
   if (error) return NextResponse.json({ error }, { status: 401 });
 
-  const { id, ...rest } = await req.json();
+  const { id, updated_at: _ts, ...rest } = await req.json();
   const { error: e } = await db.from('council_members')
-    .update({ ...rest, updated_at: new Date().toISOString() }).eq('id', id);
+    .update(rest).eq('id', id);
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
   revalidatePath('/leadership');
   return NextResponse.json({ success: true });

@@ -417,11 +417,11 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
         )}
 
         {category && (
-          <button type="submit" disabled={saving}
+          <button type="submit" disabled={saving || uploading}
                   className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
                   style={{ background: '#8B0000', color: '#fff' }}>
             <Save size={14} />
-            {saving ? 'Saving…' : mode === 'create' ? 'Add Member' : 'Save Changes'}
+            {saving ? 'Saving…' : uploading ? 'Uploading photo…' : mode === 'create' ? 'Add Member' : 'Save Changes'}
           </button>
         )}
       </form>
