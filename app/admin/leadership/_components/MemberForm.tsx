@@ -165,10 +165,12 @@ function CropModal({ src, onConfirm, onCancel }: {
 // ── Main Form ──────────────────────────────────────────────────────────────────
 export default function MemberForm({ initial, mode, clubs = [] }: Props) {
   const router = useRouter();
-  const [saving,    setSaving]    = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [cropSrc,   setCropSrc]   = useState<string | null>(null);
+  const [saving,     setSaving]    = useState(false);
+  const [uploading,  setUploading] = useState(false);
+  const [cropSrc,    setCropSrc]   = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>(initial?.photo ?? '');
   const pendingFile = useRef<File | null>(null);
+  const blobUrlRef  = useRef<string | null>(null);
 
   const initCat: Category | null = initial
     ? initial.role === 'Deputy Director'  ? 'Deputy Director'
@@ -198,21 +200,33 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
     e.target.value = '';
   }
 
-  // After crop confirmed → upload the blob
+  // After crop confirmed → show preview immediately, then upload
   async function onCropConfirm(blob: Blob) {
     setCropSrc(null);
+
+    // Revoke previous blob URL to avoid memory leaks
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    const localUrl = URL.createObjectURL(blob);
+    blobUrlRef.current = localUrl;
+    setPreviewUrl(localUrl); // show immediately without waiting for upload
+
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append('file', blob, 'photo.jpg');
       fd.append('folder', 'council');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-      const d   = await res.json();
-      if (!res.ok) throw new Error(d.error);
+      let d: any;
+      try { d = await res.json(); } catch { throw new Error('Server error — check PM2 logs'); }
+      if (!res.ok) throw new Error(d?.error ?? 'Upload failed');
       setPhoto(d.url);
+      setPreviewUrl(d.url);
+      URL.revokeObjectURL(localUrl);
+      blobUrlRef.current = null;
       toast.success('Photo uploaded');
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error('Upload failed: ' + (err.message ?? 'unknown error'));
+      // keep blob URL preview so the user can see their selection
     } finally {
       setUploading(false);
     }
@@ -368,12 +382,22 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
                 400 × 400 px recommended · Will be cropped to square
               </p>
               <div className="flex items-center gap-4 flex-wrap">
-                {photo && (
+                {previewUrl && (
                   <div className="relative">
-                    <img src={photo} alt="preview"
+                    <img src={previewUrl} alt="preview"
                          className="w-20 h-20 rounded-xl object-cover border"
                          style={{ borderColor: '#E4E4E7' }} />
-                    <button type="button" onClick={() => setPhoto('')}
+                    {uploading && (
+                      <div className="absolute inset-0 rounded-xl flex items-center justify-center"
+                           style={{ background: 'rgba(0,0,0,0.4)' }}>
+                        <span className="text-white text-[10px] font-bold">Saving…</span>
+                      </div>
+                    )}
+                    <button type="button" onClick={() => {
+                      setPhoto('');
+                      setPreviewUrl('');
+                      if (blobUrlRef.current) { URL.revokeObjectURL(blobUrlRef.current); blobUrlRef.current = null; }
+                    }}
                             className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center"
                             style={{ background: '#8B0000' }}>
                       <X size={10} className="text-white" />
