@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { db } from '@/lib/query-builder';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
 
 export async function POST(req: NextRequest) {
   const { error } = await requireAdmin();
@@ -12,16 +13,13 @@ export async function POST(req: NextRequest) {
 
   if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
-  const ext  = file.name.split('.').pop();
-  const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const buf  = Buffer.from(await file.arrayBuffer());
+  const ext  = file.name.split('.').pop() ?? 'bin';
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const dir  = join(process.cwd(), 'public', 'uploads', folder);
+  const path = join(dir, name);
 
-  const { error: uploadErr } = await db.storage
-    .from('sac-media')
-    .upload(name, buf, { contentType: file.type, upsert: false });
+  await mkdir(dir, { recursive: true });
+  await writeFile(path, Buffer.from(await file.arrayBuffer()));
 
-  if (uploadErr) return NextResponse.json({ error: uploadErr.message }, { status: 500 });
-
-  const { data } = db.storage.from('sac-media').getPublicUrl(name);
-  return NextResponse.json({ success: true, url: data.publicUrl });
+  return NextResponse.json({ success: true, url: `/uploads/${folder}/${name}` });
 }

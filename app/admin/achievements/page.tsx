@@ -149,7 +149,7 @@ export default function AchievementsAdminPage() {
              style={{ background: '#fffbeb', borderColor: '#fcd34d' }}>
           <AlertCircle size={18} style={{ color: '#d97706', flexShrink: 0, marginTop: 1 }} />
           <div>
-            <p className="text-sm font-bold" style={{ color: '#92400e' }}>Run this SQL in Supabase to enable ordering:</p>
+            <p className="text-sm font-bold" style={{ color: '#92400e' }}>Run this SQL in MySQL to enable ordering:</p>
             <code className="text-xs block mt-1 p-2 rounded font-mono" style={{ background: '#fef3c7', color: '#78350f' }}>
               ALTER TABLE achievements ADD COLUMN IF NOT EXISTS sort_order integer DEFAULT 0;
             </code>

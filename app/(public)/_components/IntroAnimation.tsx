@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,10 +33,13 @@ const LAST_IDX = WORDS.length - 1;
 
 type Phase = 'reel' | 'live-scene' | 'kl-sac' | 'tagline';
 
+// Survives client-side navigation (SPA) but resets on full page reload
+let _introShown = false;
+
 export function IntroAnimation() {
   const [idx,     setIdx]     = useState(0);
   const [phase,   setPhase]   = useState<Phase>('reel');
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const fired = useRef(false);
 
   const dismiss = useCallback(() => {
@@ -46,10 +49,16 @@ export function IntroAnimation() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      dismiss();
-      return;
-    }
+    if (_introShown) return;
+
+    // Skip on F5 refresh or browser back/forward
+    const navType = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type;
+    if (navType === 'reload' || navType === 'back_forward') return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    _introShown = true;
+    setVisible(true);
 
     const ts: ReturnType<typeof setTimeout>[] = [];
 

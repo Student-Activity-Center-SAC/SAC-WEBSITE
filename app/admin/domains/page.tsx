@@ -52,7 +52,7 @@ export default async function AdminDomainsPage() {
           <Globe size={40} className="mx-auto mb-4" style={{ color: '#E4E4E7' }} />
           <p className="font-bold text-base mb-2" style={{ color: '#71717A' }}>Domains not seeded yet.</p>
           <p className="text-sm mb-6" style={{ color: '#A1A1AA' }}>
-            Run the SQL in Supabase, then run the seed command in your browser console:
+            Run the SQL in MySQL, then run the seed command in your browser console:
           </p>
           <code className="block text-xs rounded-xl p-4 text-left" style={{ background: '#F7F7F8', color: '#3F3F46' }}>
             {`fetch('/api/admin/seed/domains', { method: 'POST', headers: { 'x-setup-key': 'KLSACsetup2026' } }).then(r => r.json()).then(console.log)`}

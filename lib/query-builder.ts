@@ -171,12 +171,6 @@ export const db = {
     getSession: async () => ({ data: { session: null }, error: null }),
     getUser: async () => ({ data: { user: null }, error: null }),
   },
-  storage: {
-    from: () => ({
-      upload: async () => ({ data: null, error: null }),
-      getPublicUrl: () => ({ data: { publicUrl: '' } }),
-    }),
-  },
 } as any;
 
 export const dbAdmin = db;

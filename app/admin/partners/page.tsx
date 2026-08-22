@@ -43,23 +43,13 @@ export default function PartnersAdminPage() {
     if (!file) return;
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop() ?? 'png';
-      const urlRes = await fetch('/api/admin/upload-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ folder: 'partners', ext }),
-      });
-      const urlData = await urlRes.json();
-      if (!urlRes.ok) throw new Error(urlData.error ?? 'Failed to get upload URL');
-
-      const uploadRes = await fetch(urlData.signedUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type || 'image/png' },
-        body: file,
-      });
-      if (!uploadRes.ok) throw new Error('Upload to storage failed');
-
-      set('partner_image', urlData.publicUrl);
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('folder', 'partners');
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Upload failed');
+      set('partner_image', data.url);
       toast.success('Logo uploaded');
     } catch (err: any) {
       toast.error(err.message);
