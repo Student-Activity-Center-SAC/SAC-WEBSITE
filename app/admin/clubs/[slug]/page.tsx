@@ -5,15 +5,39 @@ import { ArrowLeft } from 'lucide-react';
 import { db } from '@/lib/query-builder';
 import ClubForm from '../_components/ClubForm';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Edit Club — KL SAC Admin' };
+
+function toSlug(name: string) {
+  return name?.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') ?? '';
+}
 
 export default async function EditClubPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const { error } = await requireAdmin();
   if (error) redirect('/admin/login');
 
-  const { data } = await db.from('clubs').select('*').eq('slug', slug).single();
-  if (!data) notFound();
+  const { data: allClubs } = await db.from('clubs').select('*').order('id', { ascending: true });
+  const raw = (allClubs ?? []).find((c: any) => toSlug(c.club_name) === slug);
+
+  if (!raw) notFound();
+
+  const data = {
+    id:             raw.id,
+    slug,
+    name:           raw.club_name ?? '',
+    domain_code:    raw.club_domain ?? 'TEC',
+    domain_slug:    raw.club_domain?.toLowerCase() ?? 'technology',
+    tagline:        raw.club_description ?? '',
+    logo_url:       raw.club_logo ?? '',
+    about:          raw.club_about ? raw.club_about.split('\n').filter(Boolean) : [],
+    purpose:        '',
+    competencies:   [],
+    activities_list:[],
+    cover_url:      '',
+    gallery:        [] as string[],
+    sort_order:     0,
+  };
 
   return (
     <div>

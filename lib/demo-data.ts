@@ -6,7 +6,8 @@ export const DEMO_CLUBS = [
   { id: 1,  name: 'ZeroOne Code Club',            domain: 'TEC', description: 'Competitive programming, hackathons and coding excellence.',                memberCount: 320, memberLimit: 400 },
   { id: 2,  name: 'Cyber Security Club',           domain: 'TEC', description: 'Ethical hacking, CTF challenges and digital security awareness.',            memberCount: 210, memberLimit: 250 },
   { id: 3,  name: 'WebApps Club',                  domain: 'TEC', description: 'Web development, UI/UX design and full-stack projects.',                     memberCount: 280, memberLimit: 350 },
-  { id: 4,  name: 'Electric Vehicle & Automation Club', domain: 'TEC', description: 'EV technology, robotics, IoT and sustainable engineering.',            memberCount: 290, memberLimit: 350 },
+  { id: 4,  name: 'Electric Vehicle Club',                 domain: 'TEC', description: 'EV technology, battery systems and sustainable engineering.',                  memberCount: 150, memberLimit: 200 },
+  { id: 23, name: 'Automation Club',                       domain: 'TEC', description: 'Robotics, IoT and industrial automation systems.',                               memberCount: 140, memberLimit: 200 },
   // LCH
   { id: 5,  name: 'Short Film Makers Club',        domain: 'LCH', description: 'Script writing, direction and short film production.',                        memberCount: 160, memberLimit: 200 },
   { id: 6,  name: 'Dance Club',                    domain: 'LCH', description: 'Classical, folk and contemporary dance forms and competitions.',              memberCount: 420, memberLimit: 500 },
@@ -29,6 +30,7 @@ export const DEMO_CLUBS = [
   // HWB
   { id: 21, name: 'Yoga Club',                     domain: 'HWB', description: 'Daily yoga practice, meditation and mental wellness sessions.',                memberCount: 310, memberLimit: 400 },
   { id: 22, name: 'SafeLife Club',                 domain: 'HWB', description: 'First aid, health awareness and emergency response training.',                 memberCount: 200, memberLimit: 250 },
+  { id: 24, name: 'Marathon Club',                 domain: 'HWB', description: 'Running, endurance and physical fitness.',                                     memberCount: 180, memberLimit: 250 },
 ];
 
 export const DEMO_ACTIVITIES = ACTIVITIES;
@@ -70,7 +72,7 @@ export const DEMO_ANNOUNCEMENTS = [
     id: 5,
     type: 'general' as const,
     title: 'Welcome to KL SAC — Academic Year 2026-27',
-    content: 'The Student Activity Center welcomes all students to the new academic year. Explore our 25 clubs across 5 domains, enroll in activities, and make your university years count. Together we grow!',
+    content: 'The Student Activity Center welcomes all students to the new academic year. Explore our 24 clubs across 5 domains, enroll in activities, and make your university years count. Together we grow!',
     created_at: '2026-07-25T09:00:00',
     expires_at: null,
   },

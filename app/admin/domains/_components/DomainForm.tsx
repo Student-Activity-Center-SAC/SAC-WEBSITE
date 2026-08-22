@@ -109,7 +109,7 @@ export default function DomainForm({ domain }: { domain: DomainRow }) {
       {/* Identity */}
       <div className="rounded-2xl border p-6 space-y-5" style={{ background: '#fff', borderColor: '#E4E4E7' }}>
         <h2 className="font-black text-base" style={{ color: '#0D0D0D' }}>Identity</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelCls} style={{ color: '#71717A' }}>Code</label>
             <input value={domain.code} disabled
@@ -248,7 +248,7 @@ export default function DomainForm({ domain }: { domain: DomainRow }) {
           Colors (advanced)
         </summary>
         <div className="px-6 pb-6 space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className={labelCls} style={{ color: '#71717A' }}>Primary Color</label>
               <div className="flex items-center gap-2">

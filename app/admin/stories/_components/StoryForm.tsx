@@ -99,7 +99,7 @@ export default function StoryForm({ initial, mode }: Props) {
                className={inp} style={sty} placeholder="auto-generated" />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Student Name *">
           <input required value={form.student_name}
                  onChange={e => set('student_name', e.target.value)}
@@ -112,7 +112,7 @@ export default function StoryForm({ initial, mode }: Props) {
         </Field>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Club Name">
           <input value={form.club_name}
                  onChange={e => set('club_name', e.target.value)}

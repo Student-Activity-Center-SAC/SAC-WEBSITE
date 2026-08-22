@@ -86,7 +86,7 @@ export default function NewsAdminPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>News Articles</h1>
           <p className="text-sm" style={{ color: '#71717A' }}>Articles appear on the public news page immediately after saving.</p>
@@ -143,8 +143,8 @@ export default function NewsAdminPage() {
                    style={{ borderBottom: i < articles.length - 1 ? '1px solid #F0F0F0' : 'none',
                             opacity: isUpdating ? 0.6 : 1 }}>
 
-                {/* News-page order arrows */}
-                <div className="flex flex-col gap-0.5 shrink-0">
+                {/* News-page order arrows — hidden on small mobile */}
+                <div className="hidden sm:flex flex-col gap-0.5 shrink-0">
                   <button onClick={() => move(i, 'up')} disabled={i === 0 || reordering || !!updating}
                           className="p-1 rounded hover:bg-gray-100 disabled:opacity-20 transition-opacity"
                           title="Move up in /news page">
@@ -173,8 +173,8 @@ export default function NewsAdminPage() {
                   </span>
                 </div>
 
-                {/* Homepage position dropdown */}
-                <div className="flex items-center gap-1 shrink-0">
+                {/* Homepage position dropdown — hidden on small mobile */}
+                <div className="hidden sm:flex items-center gap-1 shrink-0">
                   <Home size={11} style={{ color: hp > 0 ? '#8B0000' : '#A1A1AA' }} />
                   <select
                     value={hp}
@@ -194,12 +194,12 @@ export default function NewsAdminPage() {
                   </select>
                 </div>
 
-                {/* News-page featured star */}
+                {/* News-page featured star — hidden on small mobile */}
                 <button
                   onClick={() => toggleFeatured(a.slug, a.featured)}
                   disabled={isUpdating}
                   title={a.featured ? 'Big highlight on /news page (click to remove)' : 'Set as big highlight on /news page'}
-                  className="p-1.5 rounded-lg transition-colors hover:bg-yellow-50 shrink-0">
+                  className="hidden sm:block p-1.5 rounded-lg transition-colors hover:bg-yellow-50 shrink-0">
                   <Star size={15}
                     fill={a.featured ? '#f59e0b' : 'none'}
                     style={{ color: a.featured ? '#f59e0b' : '#D1D1D6' }} />

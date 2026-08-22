@@ -88,7 +88,7 @@ export default function NewsForm({ initial, mode }: Props) {
       </Field>
 
       {/* Date + Category + Featured */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Date *">
           <input required type="date" value={form.date} onChange={e => set('date', e.target.value)}
                  className={input} style={inputStyle} />

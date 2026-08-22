@@ -8,7 +8,7 @@ const NAVIGATE = [
   { href: '/domains',       label: 'Domains'         },
   { href: '/clubs',         label: 'All Clubs'       },
   { href: '/activities',     label: 'Activities'      },
-  { href: '/stories',       label: 'Student Stories' },
+  // { href: '/stories',       label: 'Student Stories' },
   { href: '/achievements',  label: 'Achievements'    },
   { href: '/news',          label: 'News'            },
   { href: '/publications',  label: 'Publications'    },
@@ -148,61 +148,26 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── Credits ── */}
-      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+      {/* ── Bottom bar ── */}
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3"
            style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-        <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
-          <span style={{ color: 'rgba(255,255,255,0.35)' }}>First SAC Website</span>
-          {' '}— Designed &amp; Developed by{' '}
-          <a href="https://www.linkedin.com/in/deepakreddygathpa/" target="_blank" rel="noopener"
-             className="transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
-            Deepak Reddy Gathpa
-          </a>
-          {' '}&amp;{' '}
-          <a href="https://www.linkedin.com/in/tadikondasaimanikanta/" target="_blank" rel="noopener"
-             className="transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
-            Tadikonda Sai Manikanta
-          </a>
+        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
+          © {new Date().getFullYear()} KL University — Student Activity Center. All rights reserved.
         </p>
-        <div className="hidden sm:block w-px self-stretch" style={{ background: 'rgba(255,255,255,0.08)' }} />
-        <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
-          <span style={{ color: 'rgba(255,255,255,0.35)' }}>Current Website</span>
-          {' '}— Designed &amp; Developed by{' '}
+        <p className="text-xs text-center sm:text-right" style={{ color: 'rgba(255,255,255,0.28)' }}>
+          Designed &amp; Developed by{' '}
           <a href="https://www.linkedin.com/in/rohith-venkata-sai-pinnamaneni/" target="_blank" rel="noopener"
              className="transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
-            Rohith Venkata Sai Pinnamaneni
+             style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255,255,255,0.2)' }}>
+            Rohith Pinnamaneni
           </a>
           {' '}&amp;{' '}
           <a href="https://www.linkedin.com/in/singananischal/" target="_blank" rel="noopener"
              className="transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
-            Singana Nischal
+             style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255,255,255,0.2)' }}>
+            Nischal Singana
           </a>
         </p>
-      </div>
-
-      {/* ── Bottom bar ── */}
-      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3"
-           style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
-          © {new Date().getFullYear()} KL University — Student Activity Center. All rights reserved.
-        </p>
-        <div className="flex items-center gap-6">
-          {['Privacy Policy', 'Terms of Use'].map(l => (
-            <span key={l} className="text-xs cursor-default"
-                  style={{ color: 'rgba(255,255,255,0.18)' }}>
-              {l}
-            </span>
-          ))}
-          <Link href="/admin/login"
-                className="text-xs transition-colors hover:text-white"
-                style={{ color: 'rgba(255,255,255,0.18)' }}>
-            Admin
-          </Link>
-        </div>
       </div>
     </footer>
   );

@@ -97,7 +97,7 @@ export default function PublicationsAdminPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>Publications</h1>
           <p className="text-sm" style={{ color: '#71717A' }}>Magazines, annual reports, and PDF documents.</p>
@@ -117,7 +117,7 @@ export default function PublicationsAdminPage() {
             <Field label="Title *">
               <input required value={form.title} onChange={e => set('title', e.target.value)} className={inp} style={is} />
             </Field>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Type">
                 <select value={form.type} onChange={e => set('type', e.target.value)} className={inp} style={is}>
                   {TYPES.map(t => <option key={t}>{t}</option>)}

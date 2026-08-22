@@ -101,7 +101,7 @@ export default function AchievementsAdminPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>Achievements</h1>
           <p className="text-sm" style={{ color: '#71717A' }}>Recognitions, wins, and milestones. Use ↑↓ to set the display order.</p>
@@ -179,8 +179,8 @@ export default function AchievementsAdminPage() {
                    className="flex items-center gap-3 px-4 py-3.5"
                    style={{ borderBottom: i < achievements.length - 1 ? '1px solid #F0F0F0' : 'none' }}>
 
-                {/* Order arrows */}
-                <div className="flex flex-col gap-0.5 shrink-0">
+                {/* Order arrows — hidden on small mobile */}
+                <div className="hidden sm:flex flex-col gap-0.5 shrink-0">
                   <button onClick={() => move(i, 'up')} disabled={i === 0 || reordering}
                           className="p-1 rounded hover:bg-gray-100 disabled:opacity-20 transition-opacity"
                           title="Move up">

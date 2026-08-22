@@ -12,10 +12,17 @@ export const metadata = {
 };
 
 export default async function LeadershipPage() {
-  const [{ data: members }, { data: clubs }] = await Promise.all([
+  const [{ data: members }, { data: dbClubs }] = await Promise.all([
     db.from('council_members').select('*').order('sort_order', { ascending: true }),
-    db.from('clubs').select('id, slug, name, domain_code').order('name', { ascending: true }),
+    db.from('clubs').select('*').order('club_name', { ascending: true }),
   ]);
+
+  const clubs = (dbClubs ?? []).map((c: any) => ({
+    id: c.id,
+    slug: c.club_name ? c.club_name.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') : '',
+    name: c.club_name,
+    domain_code: c.club_domain,
+  }));
 
   return (
     <>
@@ -63,6 +70,55 @@ export default async function LeadershipPage() {
                   style={{ color: '#8B0000' }}>
                   Student Dashboard
                 </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Director SAC ─────────────────────────────────────────────── */}
+      <section style={{ background: '#fff', borderBottom: '1px solid #E4E4E7' }}>
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
+          <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-8" style={{ color: '#8B0000' }}>
+            Director, Student Activity Centre
+          </p>
+
+          <div
+            className="flex flex-col sm:flex-row items-start gap-8 sm:gap-12 p-8 sm:p-10 rounded-3xl"
+            style={{ background: 'linear-gradient(135deg, #8B000008 0%, #8B000003 100%)', border: '1.5px solid #8B000018' }}>
+
+            {/* Photo */}
+            <div
+              className="w-36 h-44 sm:w-44 sm:h-56 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center font-black text-3xl"
+              style={{ background: '#8B000014', color: '#8B0000' }}>
+              <img
+                src="/sai vijay sir.png"
+                alt="Er. P Sai Vijay"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
+
+            {/* Details */}
+            <div className="flex-1">
+              <div
+                className="inline-block text-[10px] font-black tracking-[0.18em] uppercase px-3 py-1 rounded-full mb-4"
+                style={{ background: '#8B000014', color: '#8B0000' }}>
+                Director SAC
+              </div>
+
+              <h2
+                className="font-black leading-tight mb-2"
+                style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                Er. P Sai Vijay
+              </h2>
+              <p className="text-sm font-semibold mb-5" style={{ color: '#71717A' }}>
+                Student Activity Centre · KL University
+              </p>
+
+              <p className="text-sm leading-relaxed" style={{ color: '#3F3F46', maxWidth: '52ch' }}>
+                The Director of the Student Activity Centre oversees all student clubs, domains, events, and extracurricular
+                programmes at KL University — guiding both the faculty leadership and student council in fostering a vibrant
+                campus community.
               </p>
             </div>
           </div>

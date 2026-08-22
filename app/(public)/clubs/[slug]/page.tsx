@@ -10,11 +10,35 @@ import { FadeIn } from '../../_components/FadeIn';
 
 export const dynamic = 'force-dynamic';
 
+function toSlug(name: string) {
+  return name?.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') ?? '';
+}
+
+async function getClubBySlug(slug: string) {
+  const { data: all } = await db.from('clubs').select('*').order('id', { ascending: true });
+  const raw = (all ?? []).find((c: any) => toSlug(c.club_name) === slug);
+  if (!raw) return null;
+  return {
+    id:             raw.id,
+    slug,
+    name:           raw.club_name ?? '',
+    domain_code:    raw.club_domain ?? '',
+    tagline:        raw.club_description ?? '',
+    logo_url:       raw.club_logo ?? '',
+    about:          raw.club_about ? raw.club_about.split('\n').filter(Boolean) : [],
+    gallery:        [] as string[],
+    competencies:   [] as string[],
+    activities_list:[] as string[],
+    purpose:        null as string | null,
+    cover_url:      null as string | null,
+  };
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { data } = await db.from('clubs').select('name, tagline').eq('slug', slug).single();
-  if (!data) return {};
-  return { title: data.name, description: data.tagline };
+  const club = await getClubBySlug(slug);
+  if (!club) return {};
+  return { title: club.name, description: club.tagline };
 }
 
 const OFFICE_ROLES = [
@@ -27,8 +51,8 @@ const OFFICE_ROLES = [
 export default async function ClubDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const [{ data: club }, { data: allActivities }] = await Promise.all([
-    db.from('clubs').select('*').eq('slug', slug).single(),
+  const [club, { data: allActivities }] = await Promise.all([
+    getClubBySlug(slug),
     db
       .from('activities')
       .select('*')

@@ -5,10 +5,20 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Clubs — KL SAC' };
 
 export default async function ClubsPage() {
-  const { data: clubs } = await db
+  const { data: dbClubs } = await db
     .from('clubs')
-    .select('id, slug, name, domain_code, domain_slug, tagline, logo_url')
-    .order('name', { ascending: true });
+    .select('*')
+    .order('club_name', { ascending: true });
 
-  return <ClubsPageClient clubs={clubs ?? []} />;
+  const clubs = (dbClubs ?? []).map((c: any) => ({
+    id: c.id,
+    slug: c.club_name ? c.club_name.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') : '',
+    name: c.club_name,
+    domain_code: c.club_domain,
+    domain_slug: c.club_domain ? c.club_domain.toLowerCase() : '',
+    tagline: c.club_description,
+    logo_url: c.club_logo,
+  }));
+
+  return <ClubsPageClient clubs={clubs} />;
 }

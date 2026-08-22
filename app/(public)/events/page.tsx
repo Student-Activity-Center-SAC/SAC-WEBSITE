@@ -67,7 +67,7 @@ export default async function EventsPage() {
 
               <div style={{ borderTop: '1px solid #E4E4E7' }}>
                 {upcoming.map((ev: any) => (
-                  <EventRow key={ev.code} ev={ev} dim={false} />
+                  <EventRow key={ev.code || ev.id} ev={ev} dim={false} />
                 ))}
               </div>
             </FadeIn>
@@ -92,7 +92,7 @@ export default async function EventsPage() {
 
               <div style={{ borderTop: '1px solid #E4E4E7' }}>
                 {past.map((ev: any) => (
-                  <EventRow key={ev.code} ev={ev} dim={true} />
+                  <EventRow key={ev.code || ev.id} ev={ev} dim={true} />
                 ))}
               </div>
             </FadeIn>
@@ -115,7 +115,7 @@ export default async function EventsPage() {
 }
 
 function EventRow({ ev, dim }: { ev: any; dim: boolean }) {
-  const dmeta  = DOMAIN_META[ev.domain];
+  const dmeta  = DOMAIN_META[ev.domain || 'TEC'];
   const color  = dmeta?.color ?? '#8B0000';
   const date   = new Date(ev.activity_date);
 
@@ -137,15 +137,15 @@ function EventRow({ ev, dim }: { ev: any; dim: boolean }) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <h3 className="font-bold text-base sm:text-lg leading-snug mb-1.5" style={{ color: '#0D0D0D' }}>
-          {ev.title}
+          {ev.title || ev.activity_name}
         </h3>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" style={{ color: '#A1A1AA' }}>
-          <span className="font-black uppercase text-[10px]" style={{ color }}>{ev.domain}</span>
-          {ev.venue && <><span>·</span><span>{ev.venue}</span></>}
+          <span className="font-black uppercase text-[10px]" style={{ color }}>{ev.domain || 'SAC'}</span>
+          {(ev.venue || ev.activity_venue) && <><span>·</span><span>{ev.venue || ev.activity_venue}</span></>}
         </div>
-        {ev.description && (
+        {(ev.description || ev.activity_description) && (
           <p className="text-sm mt-2 line-clamp-1" style={{ color: '#71717A' }}>
-            {ev.description}
+            {ev.description || ev.activity_description}
           </p>
         )}
       </div>

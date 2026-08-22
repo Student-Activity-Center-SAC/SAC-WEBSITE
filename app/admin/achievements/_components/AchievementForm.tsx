@@ -117,7 +117,7 @@ export default function AchievementForm({ achievement }: Props) {
       <Field label="Title" hint="Full achievement title as it should appear on the page"
              value={form.title} onChange={v => set('title', v)} />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-bold mb-1" style={{ color: '#0D0D0D' }}>Level</label>
           <select value={form.level} onChange={e => set('level', e.target.value)}
@@ -134,7 +134,7 @@ export default function AchievementForm({ achievement }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Club / Team Name" value={form.club_name} onChange={v => set('club_name', v)} />
         <Field label="Year" value={form.year} onChange={v => set('year', v)} />
       </div>

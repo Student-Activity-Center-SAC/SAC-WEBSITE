@@ -141,7 +141,7 @@ export default function ActivityForm({ initial, mode }: Props) {
       )}
 
       {/* Domain + Club */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Domain *">
           <select value={form.domain} onChange={e => onDomainChange(e.target.value)} className={inp} style={is}>
             {['TEC','LCH','ESO','HWB','IIE'].map(d => <option key={d}>{d}</option>)}
@@ -161,7 +161,7 @@ export default function ActivityForm({ initial, mode }: Props) {
       </Field>
 
       {/* Month + Week (required) */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Month *">
           <select required value={form.month} onChange={e => set('month', e.target.value)} className={inp} style={is}>
             {MONTH_OPTIONS.map(m => <option key={m}>{m}</option>)}
@@ -175,7 +175,7 @@ export default function ActivityForm({ initial, mode }: Props) {
       </div>
 
       {/* Date + Time (optional) */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Exact Date (optional — add later when confirmed)">
           <input type="date" value={form.activity_date}
                  onChange={e => set('activity_date', e.target.value)} className={inp} style={is} />

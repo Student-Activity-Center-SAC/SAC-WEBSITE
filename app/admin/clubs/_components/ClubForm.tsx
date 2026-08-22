@@ -103,6 +103,7 @@ export default function ClubForm({ initial, mode }: Props) {
     setSaving(true);
     try {
       const payload = {
+        ...(mode === 'edit' && initial?.id ? { id: initial.id } : {}),
         ...form,
         slug:            form.slug || slugify(form.name),
         about:           fromLines(form.about),
@@ -135,7 +136,7 @@ export default function ClubForm({ initial, mode }: Props) {
                className={inp} style={sty} />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Slug (URL) *">
           <input required value={form.slug}
                  onChange={e => set('slug', slugify(e.target.value))}

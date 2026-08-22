@@ -103,7 +103,7 @@ export default function MemberForm({ initial, mode }: Props) {
                className={inp} style={sty} />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Role *">
           <select value={form.role} onChange={e => set('role', e.target.value)}
                   className={inp} style={sty}>
@@ -123,7 +123,7 @@ export default function MemberForm({ initial, mode }: Props) {
                placeholder="e.g. Administration, Strategy & Student Engagement" />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Year">
           <input value={form.year_of_study} onChange={e => set('year_of_study', e.target.value)}
                  className={inp} style={sty} placeholder="e.g. 3rd Year" />

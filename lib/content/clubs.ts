@@ -96,30 +96,49 @@ export const CLUBS: Club[] = [
     ],
   },
   {
-    slug: 'ev-automation-club',
-    name: 'Electric Vehicle & Automation Club',
+    slug: 'electric-vehicle-club',
+    name: 'Electric Vehicle Club',
     domainCode: 'TEC',
     domainSlug: 'technology',
-    tagline: 'Engineering the future of mobility and automation.',
+    tagline: 'Engineering the future of mobility.',
     about: [
-      'The Electric Vehicle & Automation Club brings together two frontier engineering disciplines: sustainable electric mobility and intelligent automation. Members work on EV component design, battery technology, and motor systems — while also exploring robotics, IoT, and industrial automation that make modern industry smarter and more efficient.',
-      'The club collaborates with industry partners to provide hands-on experience in EV control systems, embedded platforms, robotic arms, and sensor networks. Members compete in national EV and robotics competitions, and engage with industry mentors who bring real-world challenges into the club environment.',
+      'The Electric Vehicle Club brings together students interested in sustainable electric mobility. Members work on EV component design, battery technology, and motor systems.',
+      'The club collaborates with industry partners to provide hands-on experience in EV control systems. Members compete in national EV competitions, and engage with industry mentors who bring real-world challenges into the club environment.',
     ],
     purpose:
-      'To prepare students for leadership in electric mobility and automation — equipping them with the engineering skills to design sustainable transport systems and build intelligent automated solutions.',
+      'To prepare students for leadership in electric mobility by equipping them with the engineering skills to design sustainable transport systems.',
     competencies: [
       'EV System Engineering & Battery Technology',
       'Motor Control & Regenerative Systems',
+      'Embedded Systems (Arduino, Raspberry Pi)',
+    ],
+    activities: [
+      'EV component design and prototyping challenges',
+      'Industry visits to EV manufacturing facilities',
+      'Inter-university EV competitions',
+    ],
+  },
+  {
+    slug: 'automation-club',
+    name: 'Automation Club',
+    domainCode: 'TEC',
+    domainSlug: 'technology',
+    tagline: 'Engineering intelligent automation.',
+    about: [
+      'The Automation Club explores robotics, IoT, and industrial automation that make modern industry smarter and more efficient.',
+      'The club provides hands-on experience in embedded platforms, robotic arms, and sensor networks. Members compete in national robotics competitions and engage with industry mentors.',
+    ],
+    purpose:
+      'To prepare students for leadership in automation by equipping them with the engineering skills to build intelligent automated solutions.',
+    competencies: [
       'Robotics Design & Programming',
       'IoT Development & Sensor Networks',
       'Embedded Systems (Arduino, Raspberry Pi)',
     ],
     activities: [
-      'EV component design and prototyping challenges',
       'Robotics build challenges and competitions',
       'IoT prototype development sprints',
-      'Industry visits to EV manufacturing and automation facilities',
-      'Inter-university robotics and EV competitions',
+      'Inter-university robotics competitions',
     ],
   },
 
@@ -475,6 +494,33 @@ export const CLUBS: Club[] = [
       'Guided meditation and stress reduction sessions',
       'International Yoga Day programmes',
       'Yoga retreat and wellness camp',
+    ],
+  },
+  {
+    slug: 'marathon-club',
+    name: 'Marathon Club',
+    domainCode: 'HWB',
+    domainSlug: 'health-wellbeing',
+    tagline: 'Run. Endure. Achieve.',
+    about: [
+      'Marathon Club promotes running, endurance activities, physical fitness, and an active lifestyle among students.',
+      'The club provides opportunities for students to participate in structured training, running events, fitness challenges, and endurance-based activities while developing discipline and resilience.',
+    ],
+    purpose:
+      'To encourage students to adopt an active lifestyle and develop physical endurance, discipline, resilience, and fitness through running and endurance activities.',
+    competencies: [
+      'Running Technique',
+      'Endurance & Stamina',
+      'Physical Fitness',
+      'Goal Setting',
+      'Resilience',
+    ],
+    activities: [
+      'Weekly campus runs and training sessions',
+      'Participation in city marathons',
+      'Endurance challenges',
+      'Fitness workshops',
+      'Running technique clinics',
     ],
   },
 

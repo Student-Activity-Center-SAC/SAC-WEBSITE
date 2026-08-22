@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'KL SAC — Student Activity Center, KL University',
   description:
-    'KL SAC is KL University\'s Student Activity Center — 25 clubs, 5 domains, one mission: to develop the complete student.',
+    'KL SAC is KL University\'s Student Activity Center — 24 clubs, 5 domains, one mission: to develop the complete student.',
 };
 
 const JOURNEY_STEPS = [
@@ -143,21 +143,20 @@ export default async function HomePage() {
       {/* ════════════════════════════════════════════════ AT A GLANCE ══ */}
       <section style={{ background: '#faf6f1' }}>
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-20">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-0"
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: '20+', label: 'Active Clubs',      delay: 0    },
-              { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  delay: 120  },
-              { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Students Annually', delay: 240  },
-              { value: statActivities > 0 ? `${statActivities}+`     : '300+', label: 'Annual Activities', delay: 360 },
-            ].map((s, i) => (
+              { value: '20+', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
+              { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  borderCls: 'hairline border-b lg:border-b-0 lg:border-r' },
+              { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Students Annually', borderCls: 'hairline border-r' },
+              { value: statActivities > 0 ? `${statActivities}+`     : '300+', label: 'Annual Activities', borderCls: '' },
+            ].map((s) => (
               <StatCounter
                 key={s.label}
                 value={s.value}
                 label={s.label}
                 duration={1800}
-                className="px-0 lg:px-10 py-10"
-                style={{ borderRight: i < 3 ? '1px solid var(--hairline)' : 'none' }}
+                className={`px-6 lg:px-10 py-8 lg:py-10 ${s.borderCls}`}
               />
             ))}
           </div>
@@ -384,6 +383,7 @@ export default async function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════ STUDENT STORIES ══ */}
+      {false && (
       <section style={{ background: '#fffdfb' }}>
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
@@ -482,6 +482,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ════════════════════════════════════ UPCOMING ACTIVITIES ══ */}
       <section style={{ background: '#faf6f1' }}>
@@ -682,7 +683,7 @@ export default async function HomePage() {
                         src={p.partner_image}
                         alt={p.partner_name}
                         className="object-contain transition-transform duration-300 group-hover:scale-110"
-                        style={{ height: '52px', maxWidth: '160px' }}
+                        style={{ height: '84px', maxWidth: '240px' }}
                       />
                     </div>
                   ))}
@@ -891,7 +892,7 @@ export default async function HomePage() {
               Ready to make your university years count?
             </h2>
             <p className="text-[15px] sm:text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
-              Join one of 25 clubs, participate in activities, and build experiences that will define your career.
+              Join one of 24 clubs, participate in activities, and build experiences that will define your career.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link href="/clubs"

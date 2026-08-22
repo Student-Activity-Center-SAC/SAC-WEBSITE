@@ -365,6 +365,37 @@ export default function CouncilGrid({
 
   return (
     <>
+      {/* ── Faculty Mentors & In-Charges ─────────────────────────────── */}
+      <section style={{ background: '#F7F7F8' }}>
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+          <SectionLabel label="Faculty" sub="Mentors & In-Charges." />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
+
+            <div>
+              <p className="text-xs font-black tracking-widest uppercase mb-5" style={{ color: '#A1A1AA' }}>
+                Faculty Mentors
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {mentors.length > 0
+                  ? mentors.map(m => <MemberCard key={m.id} member={m} size="sm" onClick={open} />)
+                  : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" size="sm" />)}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-black tracking-widest uppercase mb-5" style={{ color: '#A1A1AA' }}>
+                Faculty In-Charges
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {incharges.length > 0
+                  ? incharges.map(m => <MemberCard key={m.id} member={m} size="sm" onClick={open} />)
+                  : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" size="sm" />)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Presidents ──────────────────────────────────────────────── */}
       <section style={{ background: '#fff' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
@@ -428,37 +459,6 @@ export default function CouncilGrid({
           </div>
         </section>
       )}
-
-      {/* ── Faculty ─────────────────────────────────────────────────── */}
-      <section style={{ background: '#F7F7F8' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <SectionLabel label="Faculty" sub="Mentors & In-Charges." />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
-
-            <div>
-              <p className="text-xs font-black tracking-widest uppercase mb-5" style={{ color: '#A1A1AA' }}>
-                Faculty Mentors
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {mentors.length > 0
-                  ? mentors.map(m => <MemberCard key={m.id} member={m} size="sm" onClick={open} />)
-                  : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" size="sm" />)}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-black tracking-widest uppercase mb-5" style={{ color: '#A1A1AA' }}>
-                Faculty In-Charges
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {incharges.length > 0
-                  ? incharges.map(m => <MemberCard key={m.id} member={m} size="sm" onClick={open} />)
-                  : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" size="sm" />)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── Profile Modal ────────────────────────────────────────────── */}
       {selected && <ProfileModal member={selected} onClose={close} />}
