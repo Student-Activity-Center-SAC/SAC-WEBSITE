@@ -2,39 +2,55 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Save, Upload } from 'lucide-react';
+import { Save, Upload, ChevronLeft } from 'lucide-react';
 
-const ROLES = ['President', 'Vice President', 'Secretary', 'Joint Secretary', 'Club Lead', 'Faculty Mentor', 'Faculty In-Charge'];
+interface Club { id: string; name: string; }
 
-interface Props { initial?: any; mode: 'create' | 'edit'; }
+interface Props {
+  initial?: any;
+  mode: 'create' | 'edit';
+  clubs?: Club[];
+}
 
-function lines(arr: string[]) { return (arr ?? []).join('\n'); }
-function fromLines(s: string) { return s.split('\n').map(l => l.trim()).filter(Boolean); }
+type Category = 'Deputy Director' | 'Faculty' | 'President' | 'Vice President' | 'Club Lead';
 
-export default function MemberForm({ initial, mode }: Props) {
+const CATEGORIES: { label: string; sub?: string; cat: Category }[] = [
+  { label: 'Deputy Directors of SAC',  cat: 'Deputy Director' },
+  { label: 'Mentors & In-Charges',     cat: 'Faculty' },
+  { label: 'Presidents of KL SAC',     cat: 'President' },
+  { label: 'Vice Presidents',          sub: 'Domain & division leadership', cat: 'Vice President' },
+  { label: 'Club Leads',               sub: `Coordinators of clubs`,         cat: 'Club Lead' },
+];
+
+const FACULTY_ROLES = ['Faculty Mentor', 'Faculty In-Charge'];
+
+function autoId(role: string) {
+  return role.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString(36);
+}
+
+export default function MemberForm({ initial, mode, clubs = [] }: Props) {
   const router = useRouter();
-  const [saving, setSaving] = useState(false);
+  const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const [form, setForm] = useState({
-    id:            initial?.id            ?? '',
-    name:          initial?.name          ?? '',
-    role:          initial?.role          ?? 'Secretary',
-    subtitle:      initial?.subtitle      ?? '',
-    photo:         initial?.photo         ?? '',
-    year_of_study: initial?.year_of_study ?? '',
-    branch:        initial?.branch        ?? '',
-    linkedin:      initial?.linkedin      ?? '',
-    journey:       initial?.journey       ?? '',
-    achievements:  lines(initial?.achievements ?? []),
-    clubs_list:    lines(initial?.clubs_list ?? []),
-    club_lead:     initial?.club_lead     ?? '',
-    is_faculty:    initial?.is_faculty    ?? false,
-    designation:   initial?.designation   ?? '',
-    sort_order:    initial?.sort_order    ?? 0,
-  });
+  // In edit mode, derive category from role
+  const initCat: Category | null = initial
+    ? initial.role === 'Deputy Director'  ? 'Deputy Director'
+    : initial.role === 'Faculty Mentor' || initial.role === 'Faculty In-Charge' ? 'Faculty'
+    : initial.role === 'President'        ? 'President'
+    : initial.role === 'Vice President'   ? 'Vice President'
+    : initial.role === 'Club Lead'        ? 'Club Lead'
+    : null
+    : null;
 
-  function set(k: string, v: any) { setForm(f => ({ ...f, [k]: v })); }
+  const [category,     setCategory]     = useState<Category | null>(initCat);
+  const [facultyRole,  setFacultyRole]  = useState<string>(initial?.role ?? 'Faculty Mentor');
+  const [clubName,     setClubName]     = useState<string>(initial?.club_lead ?? '');
+  const [name,         setName]         = useState(initial?.name       ?? '');
+  const [subtitle,     setSubtitle]     = useState(initial?.subtitle   ?? '');
+  const [linkedin,     setLinkedin]     = useState(initial?.linkedin   ?? '');
+  const [photo,        setPhoto]        = useState(initial?.photo      ?? '');
+  const [sortOrder,    setSortOrder]    = useState<number>(initial?.sort_order ?? 0);
 
   async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -47,7 +63,7 @@ export default function MemberForm({ initial, mode }: Props) {
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const d   = await res.json();
       if (!res.ok) throw new Error(d.error);
-      set('photo', d.url);
+      setPhoto(d.url);
       toast.success('Photo uploaded');
     } catch (err: any) {
       toast.error(err.message);
@@ -58,20 +74,33 @@ export default function MemberForm({ initial, mode }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!category)    return toast.error('Select a category');
+    if (!name.trim()) return toast.error('Name is required');
+    if (category === 'Club Lead' && !clubName) return toast.error('Select a club');
+
+    const role = category === 'Faculty' ? facultyRole : category;
+
+    const payload = {
+      id:         initial?.id ?? autoId(role),
+      name:       name.trim(),
+      role,
+      subtitle:   subtitle.trim() || null,
+      linkedin:   linkedin.trim() || null,
+      photo:      photo   || null,
+      club_lead:  category === 'Club Lead' ? clubName : null,
+      is_faculty: category === 'Faculty',
+      sort_order: sortOrder,
+      // clear unused fields
+      year_of_study: null,
+      branch:        null,
+      journey:       null,
+      achievements:  [],
+      clubs_list:    [],
+      designation:   null,
+    };
+
     setSaving(true);
     try {
-      const payload = {
-        ...form,
-        achievements: fromLines(form.achievements),
-        clubs_list:   fromLines(form.clubs_list),
-        sort_order:   Number(form.sort_order),
-        photo:        form.photo || null,
-        subtitle:     form.subtitle || null,
-        linkedin:     form.linkedin || null,
-        journey:      form.journey || null,
-        club_lead:    form.club_lead || null,
-        designation:  form.designation || null,
-      };
       const res = await fetch('/api/admin/leadership', {
         method: mode === 'create' ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -90,112 +119,144 @@ export default function MemberForm({ initial, mode }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5 max-w-2xl">
-      <Field label="Member ID * (unique, e.g. p1, vp3, cl-music)">
-        <input required value={form.id} onChange={e => set('id', e.target.value)}
-               disabled={mode === 'edit'}
-               className={inp} style={{ ...sty, opacity: mode === 'edit' ? 0.6 : 1 }}
-               placeholder="e.g. vp8" />
-      </Field>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl">
 
-      <Field label="Full Name *">
-        <input required value={form.name} onChange={e => set('name', e.target.value)}
-               className={inp} style={sty} />
-      </Field>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Role *">
-          <select value={form.role} onChange={e => set('role', e.target.value)}
-                  className={inp} style={sty}>
-            {ROLES.map(r => <option key={r}>{r}</option>)}
-          </select>
-        </Field>
-        <Field label="Sort Order">
-          <input type="number" value={form.sort_order}
-                 onChange={e => set('sort_order', e.target.value)}
-                 className={inp} style={sty} />
-        </Field>
+      {/* ── Step 1: Category ── */}
+      <div>
+        <p className="text-xs font-black tracking-[0.2em] uppercase mb-4" style={{ color: '#8B0000' }}>
+          Step 1 — Select Category
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {CATEGORIES.map(c => (
+            <button
+              key={c.cat}
+              type="button"
+              onClick={() => { setCategory(c.cat); setClubName(''); }}
+              className="text-left px-5 py-4 rounded-2xl border-2 transition-all"
+              style={{
+                borderColor:  category === c.cat ? '#8B0000' : '#E4E4E7',
+                background:   category === c.cat ? '#8B000008' : '#F7F7F8',
+              }}>
+              <p className="font-black text-sm leading-tight" style={{ color: '#0D0D0D' }}>{c.label}</p>
+              {c.sub && <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>{c.sub}</p>}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <Field label="Subtitle / Portfolio">
-        <input value={form.subtitle} onChange={e => set('subtitle', e.target.value)}
-               className={inp} style={sty}
-               placeholder="e.g. Administration, Strategy & Student Engagement" />
-      </Field>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Year">
-          <input value={form.year_of_study} onChange={e => set('year_of_study', e.target.value)}
-                 className={inp} style={sty} placeholder="e.g. 3rd Year" />
-        </Field>
-        <Field label="Branch">
-          <input value={form.branch} onChange={e => set('branch', e.target.value)}
-                 className={inp} style={sty} placeholder="e.g. CSE" />
-        </Field>
-      </div>
-
-      <Field label="LinkedIn URL">
-        <input value={form.linkedin} onChange={e => set('linkedin', e.target.value)}
-               className={inp} style={sty} placeholder="https://linkedin.com/in/..." />
-      </Field>
-
-      <Field label="Club Lead (if applicable)">
-        <input value={form.club_lead} onChange={e => set('club_lead', e.target.value)}
-               className={inp} style={sty} placeholder="e.g. Swara Music Club" />
-      </Field>
-
-      <label className="flex items-center gap-2 cursor-pointer select-none">
-        <input type="checkbox" checked={form.is_faculty}
-               onChange={e => set('is_faculty', e.target.checked)}
-               className="w-4 h-4 accent-red-800" />
-        <span className="text-sm font-semibold" style={{ color: '#0D0D0D' }}>Faculty member</span>
-      </label>
-
-      {form.is_faculty && (
-        <Field label="Designation">
-          <input value={form.designation} onChange={e => set('designation', e.target.value)}
-                 className={inp} style={sty} placeholder="e.g. Assistant Professor" />
-        </Field>
+      {/* ── Step 1b: Faculty sub-type ── */}
+      {category === 'Faculty' && (
+        <div>
+          <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>
+            Faculty Type
+          </p>
+          <div className="flex gap-3">
+            {FACULTY_ROLES.map(r => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setFacultyRole(r)}
+                className="px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
+                style={{
+                  borderColor: facultyRole === r ? '#8B0000' : '#E4E4E7',
+                  background:  facultyRole === r ? '#8B000010' : '#F7F7F8',
+                  color:       facultyRole === r ? '#8B0000'   : '#71717A',
+                }}>
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
-      <Field label="Journey / Bio">
-        <textarea rows={4} value={form.journey} onChange={e => set('journey', e.target.value)}
-                  className={inp} style={sty} placeholder="Their story in SAC…" />
-      </Field>
-
-      <Field label="Achievements (one per line)">
-        <textarea rows={4} value={form.achievements} onChange={e => set('achievements', e.target.value)}
-                  className={inp} style={sty} />
-      </Field>
-
-      <Field label="Club Memberships (one per line)">
-        <textarea rows={2} value={form.clubs_list} onChange={e => set('clubs_list', e.target.value)}
-                  className={inp} style={sty} placeholder="e.g.&#10;SafeLife Club&#10;Yuva Tourism Club" />
-      </Field>
-
-      <Field label="Photo">
-        <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>400 × 400 px · Square · Professional headshot, face centred</p>
-        <div className="flex flex-col gap-2">
-          {form.photo && (
-            <img src={form.photo} alt="preview"
-                 className="w-20 h-20 rounded-xl object-cover border"
-                 style={{ borderColor: '#E4E4E7' }} />
+      {/* ── Step 1b: Club picker for Club Leads ── */}
+      {category === 'Club Lead' && (
+        <div>
+          <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>
+            Select Club
+          </p>
+          {clubs.length === 0 ? (
+            <p className="text-sm" style={{ color: '#A1A1AA' }}>No clubs found in database.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+              {clubs.map(c => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setClubName(c.name)}
+                  className="text-left px-3 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all"
+                  style={{
+                    borderColor: clubName === c.name ? '#8B0000' : '#E4E4E7',
+                    background:  clubName === c.name ? '#8B000010' : '#F7F7F8',
+                    color:       clubName === c.name ? '#8B0000'   : '#3F3F46',
+                  }}>
+                  {c.name}
+                </button>
+              ))}
+            </div>
           )}
-          <input value={form.photo} onChange={e => set('photo', e.target.value)}
-                 className={inp} style={sty} placeholder="Paste URL or upload" />
-          <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold px-4 py-2.5 rounded-xl border w-fit transition-colors hover:bg-gray-50"
-                 style={{ borderColor: '#E4E4E7', color: '#0D0D0D' }}>
-            <Upload size={13} /> {uploading ? 'Uploading…' : 'Upload photo'}
-            <input type="file" accept="image/*" className="hidden" onChange={uploadPhoto} disabled={uploading} />
-          </label>
         </div>
-      </Field>
+      )}
 
-      <button type="submit" disabled={saving}
-              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
-              style={{ background: '#8B0000', color: '#fff' }}>
-        <Save size={14} /> {saving ? 'Saving…' : mode === 'create' ? 'Add Member' : 'Save Changes'}
-      </button>
+      {/* ── Step 2: Details ── */}
+      {category && (
+        <div className="flex flex-col gap-5">
+          <p className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: '#8B0000' }}>
+            Step 2 — Member Details
+          </p>
+
+          <Field label="Full Name *">
+            <input required value={name} onChange={e => setName(e.target.value)}
+                   className={inp} style={sty} placeholder="e.g. Ravi Kumar" />
+          </Field>
+
+          <Field label="Description (shown below role)">
+            <input value={subtitle} onChange={e => setSubtitle(e.target.value)}
+                   className={inp} style={sty}
+                   placeholder="e.g. Administration & Student Engagement" />
+          </Field>
+
+          <Field label="LinkedIn URL">
+            <input value={linkedin} onChange={e => setLinkedin(e.target.value)}
+                   className={inp} style={sty} placeholder="https://linkedin.com/in/..." />
+          </Field>
+
+          <Field label="Photo">
+            <p className="text-xs mb-2" style={{ color: '#A1A1AA' }}>
+              400 × 400 px recommended · Square · Professional headshot
+            </p>
+            <div className="flex items-center gap-4">
+              {photo && (
+                <img src={photo} alt="preview"
+                     className="w-16 h-16 rounded-xl object-cover border"
+                     style={{ borderColor: '#E4E4E7' }} />
+              )}
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold px-4 py-2.5 rounded-xl border transition-colors hover:bg-gray-50"
+                     style={{ borderColor: '#E4E4E7', color: '#0D0D0D' }}>
+                <Upload size={13} /> {uploading ? 'Uploading…' : 'Upload photo'}
+                <input type="file" accept="image/*" className="hidden"
+                       onChange={uploadPhoto} disabled={uploading} />
+              </label>
+              {photo && (
+                <button type="button" onClick={() => setPhoto('')}
+                        className="text-xs font-semibold px-3 py-2 rounded-lg"
+                        style={{ background: '#FEE2E2', color: '#991B1B' }}>
+                  Remove
+                </button>
+              )}
+            </div>
+          </Field>
+        </div>
+      )}
+
+      {category && (
+        <button type="submit" disabled={saving}
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
+                style={{ background: '#8B0000', color: '#fff' }}>
+          <Save size={14} />
+          {saving ? 'Saving…' : mode === 'create' ? 'Add Member' : 'Save Changes'}
+        </button>
+      )}
     </form>
   );
 }

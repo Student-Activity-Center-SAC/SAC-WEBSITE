@@ -12,8 +12,13 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
   const { error } = await requireAdmin();
   if (error) redirect('/admin/login');
 
-  const { data } = await db.from('council_members').select('*').eq('id', id).single();
+  const [{ data }, { data: clubRows }] = await Promise.all([
+    db.from('council_members').select('*').eq('id', id).single(),
+    db.from('clubs').select('*').order('club_name', { ascending: true }),
+  ]);
   if (!data) notFound();
+
+  const clubs = (clubRows ?? []).map((c: any) => ({ id: c.id, name: c.club_name }));
 
   return (
     <div>
@@ -25,7 +30,7 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
       <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>Edit Member</h1>
       <p className="text-sm mb-8" style={{ color: '#71717A' }}>{data.name}</p>
       <div className="rounded-2xl border p-6" style={{ background: '#fff', borderColor: '#E4E4E7' }}>
-        <MemberForm mode="edit" initial={data} />
+        <MemberForm mode="edit" initial={data} clubs={clubs} />
       </div>
     </div>
   );
