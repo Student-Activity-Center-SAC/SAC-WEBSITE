@@ -668,7 +668,7 @@ export default async function HomePage() {
           {/* Partners marquee */}
           {partners.length > 0 && (
             <FadeIn delay={0.2} className="mt-20 -mx-5 sm:-mx-6">
-              <p className="kicker justify-center mb-8 px-5 sm:px-6" style={{ color: 'rgba(25,19,19,0.3)' }}>
+              <p className="kicker justify-center mb-8 px-5 sm:px-6" style={{ color: '#8B0000', fontWeight: 800, letterSpacing: '0.05em' }}>
                 Partners & Collaborators
               </p>
               {/* Overflow clip — hairline border on both sides */}
