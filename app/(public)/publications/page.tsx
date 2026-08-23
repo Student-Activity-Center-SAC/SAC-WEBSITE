@@ -1,7 +1,7 @@
 ﻿import { db } from '@/lib/query-builder';
 import Link from 'next/link';
 import { FadeIn } from '../_components/FadeIn';
-import { Download, FileText, BookOpen } from 'lucide-react';
+import { Download, BookOpen } from 'lucide-react';
 import { LOCAL_PUBLICATIONS } from '@/lib/local-publications';
 
 export const revalidate = 0;
@@ -121,27 +121,13 @@ export default async function PublicationsPage() {
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
                       style={{ background: `${typeColor}15` }}>
-                      <FileText size={22} style={{ color: typeColor }} />
+                      <BookOpen size={22} style={{ color: typeColor }} />
                     </div>
                   </div>
 
                   {pub.pdf_url && (
-                    <div style={{ background: '#2A2A2A' }}>
-                      <iframe
-                        src={pub.pdf_url}
-                        title={pub.title}
-                        style={{ width: '100%', height: '700px', border: 'none', display: 'block' }}
-                      />
-                    </div>
-                  )}
-
-                  {pub.pdf_url && (
-                    <div
-                      className="px-6 sm:px-8 py-4 flex items-center justify-between gap-4 flex-wrap"
-                      style={{ borderTop: '1px solid #F0F0F0' }}>
-                      <p className="text-xs" style={{ color: '#A1A1AA' }}>
-                        Scroll inside the viewer to read · PDF document
-                      </p>
+                    <div className="px-6 sm:px-8 py-4 flex items-center justify-between gap-4 flex-wrap" style={{ borderTop: '1px solid #F0F0F0' }}>
+                      <p className="text-xs" style={{ color: '#A1A1AA' }}>Interactive ebook · Flip pages to read</p>
                       <div className="flex items-center gap-3 flex-wrap">
                         <Link
                           href={`/ebook/${pub.id}`}
@@ -150,16 +136,14 @@ export default async function PublicationsPage() {
                           <BookOpen size={13} />
                           Read as Ebook
                         </Link>
-                        {pub.download_available && (
-                          <a
-                            href={pub.pdf_url}
-                            download
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:opacity-80"
-                            style={{ border: '1.5px solid #8B0000', color: '#8B0000' }}>
-                            <Download size={13} />
-                            Download PDF
-                          </a>
-                        )}
+                        <a
+                          href={pub.pdf_url}
+                          download
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:opacity-80"
+                          style={{ border: '1.5px solid #8B0000', color: '#8B0000' }}>
+                          <Download size={13} />
+                          Download PDF
+                        </a>
                       </div>
                     </div>
                   )}
