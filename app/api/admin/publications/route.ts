@@ -4,6 +4,9 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
+  const { error } = await requireAdmin();
+  if (error) return NextResponse.json({ error }, { status: 401 });
+
   const { data } = await db.from('publications').select('*').order('sort_order');
   return NextResponse.json({ success: true, data: data ?? [] });
 }

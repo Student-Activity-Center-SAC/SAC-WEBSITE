@@ -255,59 +255,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* ─── Domains ──────────────────────────────────────────────────── */}
-      <section style={{ background: '#fffdfb' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <FadeIn className="mb-10">
-            <p className="kicker mb-4" style={{ color: '#970003' }}>Our Structure</p>
-            <h2
-              className="font-display font-medium leading-tight"
-              style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
-              {domainCount || 5} Domains. 20+ Clubs.
-            </h2>
-          </FadeIn>
-
-          <FadeIn>
-            {domains.length === 0 ? (
-              <div className="rounded-2xl p-12 text-center" style={{ background: '#faf6f1', border: '1px solid var(--hairline)' }}>
-                <p className="text-sm" style={{ color: 'rgba(25,19,19,0.3)' }}>
-                  Seed domains from Admin → Domains to show them here.
-                </p>
-              </div>
-            ) : (
-              <div style={{ borderTop: '1px solid var(--hairline)' }}>
-                {domains.map((d: any) => (
-                  <Link
-                    key={d.code}
-                    href={`/domains/${d.slug}`}
-                    className="group flex items-center gap-4 sm:gap-8 py-5 sm:py-6 transition-all"
-                    style={{ borderBottom: '1px solid var(--hairline)' }}>
-                    <div
-                      className="w-14 h-10 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
-                      style={{ background: d.accent_bg ?? '#fdf2f2', color: d.color ?? '#970003', letterSpacing: '0.1em' }}>
-                      {d.code}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-base sm:text-lg leading-tight group-hover:text-red-800 transition-colors" style={{ color: '#191313' }}>
-                        {d.name}
-                      </p>
-                      <p className="text-[13px] mt-0.5 hidden sm:block" style={{ color: 'rgba(25,19,19,0.4)' }}>
-                        {d.tagline}
-                      </p>
-                    </div>
-                    <span className="text-sm font-medium shrink-0" style={{ color: 'rgba(25,19,19,0.3)' }}>
-                      {clubCountByDomain[d.code] ?? 0} clubs
-                    </span>
-                    <ArrowRight size={18} className="shrink-0 transition-transform group-hover:translate-x-1"
-                                style={{ color: 'rgba(25,19,19,0.2)' }} />
-                  </Link>
-                ))}
-              </div>
-            )}
-          </FadeIn>
-        </div>
-      </section>
-
       {/* ─── CTA ──────────────────────────────────────────────────────── */}
       <section style={{ background: '#970003' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-16 flex flex-col sm:flex-row items-center justify-between gap-8">

@@ -34,8 +34,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# backups
+# local upload staging (production uses RustFS object storage)
+/uploads
+/public/uploads
+
+# backups (schema migrations under db/ are tracked, see exception below)
 *.sql
+!db/*.sql
 .claude/
 .env.production
 .env.local

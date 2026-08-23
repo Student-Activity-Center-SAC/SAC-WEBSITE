@@ -90,7 +90,7 @@ export default async function LeadershipPage() {
                 decoding="async"
                 src="/sai vijay sir.png"
                 alt="Er. P Sai Vijay"
-                className="h-full w-full object-cover object-top grayscale transition-all duration-700 group-hover:grayscale-0"
+                className="h-full w-full object-cover object-top transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0"
               />
             </div>
 

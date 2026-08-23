@@ -4,6 +4,9 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET(req: NextRequest) {
+  const { error } = await requireAdmin();
+  if (error) return NextResponse.json({ error }, { status: 401 });
+
   const domain   = req.nextUrl.searchParams.get('domain');
   const clubSlug = req.nextUrl.searchParams.get('club_slug');
   let query = db.from('activities').select('*').order('activity_date', { ascending: false });

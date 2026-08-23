@@ -374,7 +374,6 @@ export async function POST(req: NextRequest) {
     cover_url:       null,
     gallery:         [],
     activities_list: [],
-    updated_at:      new Date().toISOString(),
   }));
 
   const { error } = await db.from('clubs').upsert(rows, { onConflict: 'slug' });
@@ -382,7 +381,7 @@ export async function POST(req: NextRequest) {
 
   const { count } = await db.from('clubs').select('*', { count: 'exact', head: true });
   await db.from('sac_stats').upsert(
-    { key: 'clubs', value: count ?? 0, updated_at: new Date().toISOString() },
+    { key: 'clubs', value: count ?? 0 },
     { onConflict: 'key' },
   );
 

@@ -49,7 +49,7 @@ function MemberCard({
             alt={member.name}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-top grayscale transition-all duration-500 group-hover:grayscale-0"
+            className="absolute inset-0 w-full h-full object-cover object-top transition-[filter] duration-500 sm:grayscale sm:group-hover:grayscale-0"
           />
         ) : (
           <div

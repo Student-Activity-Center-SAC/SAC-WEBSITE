@@ -4,6 +4,9 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
+  const { error: authError } = await requireAdmin();
+  if (authError) return NextResponse.json({ error: authError }, { status: 401 });
+
   let { data, error } = await db
     .from('achievements')
     .select('*')
@@ -28,10 +31,7 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const body = await req.json();
-  const { data, error: e } = await db.from('achievements').insert({
-    ...body,
-    updated_at: new Date().toISOString(),
-  }).select().single();
+  const { data, error: e } = await db.from('achievements').insert(body).select().single();
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
 
   revalidatePath('/achievements');
@@ -44,8 +44,7 @@ export async function PUT(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id, ...rest } = await req.json();
-  const { error: e } = await db.from('achievements')
-    .update({ ...rest, updated_at: new Date().toISOString() }).eq('id', id);
+  const { error: e } = await db.from('achievements').update(rest).eq('id', id);
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
 
   revalidatePath('/achievements');

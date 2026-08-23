@@ -4,6 +4,9 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
+  const { error: authError } = await requireAdmin();
+  if (authError) return NextResponse.json({ error: authError }, { status: 401 });
+
   let { data, error } = await db
     .from('stories')
     .select('*')
@@ -50,8 +53,7 @@ export async function PUT(req: NextRequest) {
     await db.from('stories').update({ featured: false }).neq('slug', slug);
   }
 
-  const { error: e } = await db.from('stories')
-    .update({ ...rest, updated_at: new Date().toISOString() }).eq('slug', slug);
+  const { error: e } = await db.from('stories').update(rest).eq('slug', slug);
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
   revalidatePath('/stories');
   revalidatePath(`/stories/${slug}`);

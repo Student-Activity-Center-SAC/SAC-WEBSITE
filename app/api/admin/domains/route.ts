@@ -26,7 +26,7 @@ export async function PUT(req: NextRequest) {
 
   const { error: dbError } = await db
     .from('domains')
-    .update({ ...fields, updated_at: new Date().toISOString() })
+    .update(fields)
     .eq('slug', slug);
 
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });

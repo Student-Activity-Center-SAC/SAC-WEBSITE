@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   const res = NextResponse.json({ success: true });
-  res.cookies.set('sac_admin', '', { maxAge: 0, path: '/' });
+  // Attributes must match the login cookie or some browsers keep the original.
+  res.cookies.set('sac_admin', '', {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge:   0,
+    path:     '/',
+  });
   return res;
 }

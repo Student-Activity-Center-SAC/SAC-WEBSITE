@@ -14,6 +14,9 @@ async function findClubBySlug(slug: string): Promise<any | null> {
 }
 
 export async function GET(req: NextRequest) {
+  const { error } = await requireAdmin();
+  if (error) return NextResponse.json({ error }, { status: 401 });
+
   const domain = req.nextUrl.searchParams.get('domain');
   let query = db.from('clubs').select('*').order('id', { ascending: true });
   if (domain && domain !== 'all') query = query.eq('club_domain', domain);

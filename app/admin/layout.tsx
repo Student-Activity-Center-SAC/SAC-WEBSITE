@@ -19,11 +19,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     );
   }
 
+  // The SQL console link only appears when the console is actually enabled
+  // for this user — the same gate the page and its API route apply.
+  const showSqlConsole =
+    process.env.ADMIN_SQL_CONSOLE === 'true' &&
+    !!process.env.ADMIN_SQL_USER &&
+    session.username === process.env.ADMIN_SQL_USER;
+
   // Valid session → full sidebar layout
   return (
     <div className="min-h-screen flex" style={{ background: '#F4F4F6' }}>
       <Toaster position="top-right" />
-      <AdminSidebar username={session.username as string} />
+      <AdminSidebar username={session.username as string} showSqlConsole={showSqlConsole} />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <main className="flex-1 p-6 sm:p-8 max-w-5xl w-full">
           {children}

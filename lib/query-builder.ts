@@ -4,20 +4,31 @@ export const db = {
   from: (table: string) => {
     return {
       select: (columns: string = '*', options?: any) => {
-        let queryStr = `SELECT * FROM \`${table}\``;
-        let queryArgs: any[] = [];
+        const queryArgs: any[] = [];
 
-        let sortColumn: string | null = null;
-        let isAscending = true;
+        // Multiple .order() calls chain into a compound ORDER BY.
+        const sorts: { col: string; asc: boolean }[] = [];
         let eqColumn: string | null = null;
         let eqValue: any = null;
         let limitVal: number | null = null;
         let isSingle = false;
 
+        const build = (withOrder: boolean) => {
+          let sql = `SELECT * FROM \`${table}\``;
+          if (eqColumn) sql += ` WHERE \`${eqColumn}\` = ?`;
+          if (withOrder && sorts.length) {
+            sql += ' ORDER BY ' + sorts
+              .map(s => `\`${s.col}\` ${s.asc ? 'ASC' : 'DESC'}`)
+              .join(', ');
+          }
+          // limitVal is coerced to a non-negative integer before interpolation.
+          if (limitVal !== null) sql += ` LIMIT ${limitVal}`;
+          return sql;
+        };
+
         const chain = {
           order: (col: string, opts: { ascending?: boolean } = {}) => {
-            sortColumn = col;
-            if (opts.ascending === false) isAscending = false;
+            sorts.push({ col, asc: opts.ascending !== false });
             return chain;
           },
           eq: (col: string, val: any) => {
@@ -27,7 +38,8 @@ export const db = {
           },
           gt: (_col: string, _val: any) => chain,
           limit: (val: number) => {
-            limitVal = val;
+            const n = Number(val);
+            limitVal = Number.isFinite(n) && n >= 0 ? Math.floor(n) : null;
             return chain;
           },
           single: async () => {
@@ -38,28 +50,31 @@ export const db = {
             chain.execute().then(resolve).catch(reject);
           },
           execute: async () => {
+            if (eqColumn) queryArgs.push(eqValue);
+
+            const run = async (withOrder: boolean) =>
+              (await pool.query(build(withOrder), queryArgs))[0] as any;
+
             try {
-              if (eqColumn) {
-                queryStr += ` WHERE \`${eqColumn}\` = ?`;
-                queryArgs.push(eqValue);
-              }
-              if (sortColumn) {
-                queryStr += ` ORDER BY \`${sortColumn}\` ${isAscending ? 'ASC' : 'DESC'}`;
-              }
-              if (limitVal !== null) {
-                queryStr += ` LIMIT ${limitVal}`;
+              let rows: any;
+              try {
+                rows = await run(true);
+              } catch (err: any) {
+                // A sort column that does not exist in this schema should not
+                // blank the whole page — retry unsorted and warn.
+                if (err?.code === 'ER_BAD_FIELD_ERROR' && sorts.length) {
+                  console.warn(
+                    `[query-builder] ${table}: unknown sort column ` +
+                    `(${sorts.map(s => s.col).join(', ')}) — returning unsorted rows`,
+                  );
+                  rows = await run(false);
+                } else {
+                  throw err;
+                }
               }
 
-              const [rows]: any = await pool.query(queryStr, queryArgs);
-
-              if (isSingle) {
-                return { data: rows.length > 0 ? rows[0] : null, error: null };
-              }
-
-              const count = rows.length;
-              if (options?.count === 'exact') {
-                return { data: rows, count, error: null };
-              }
+              if (isSingle) return { data: rows.length > 0 ? rows[0] : null, error: null };
+              if (options?.count === 'exact') return { data: rows, count: rows.length, error: null };
               return { data: rows, error: null };
             } catch (error) {
               console.error(`Error querying table ${table}:`, error);
@@ -126,18 +141,40 @@ export const db = {
           then: (resolve: any, reject: any) => { chain.execute().then(resolve).catch(reject); },
           execute: async () => {
             try {
-              const row = rows[0];
-              const keys = Object.keys(row);
+              if (!rows.length) return { data: null, error: null };
+
+              // Column set is taken from the first row; every row is written
+              // with that same set so the multi-row VALUES stays well-formed.
+              const keys = Object.keys(rows[0]);
               const cols = keys.map(k => `\`${k}\``).join(', ');
-              const placeholders = keys.map(() => '?').join(', ');
-              const values = keys.map(k => row[k]);
+              const tuple = `(${keys.map(() => '?').join(', ')})`;
+              const values = rows.flatMap(r => keys.map(k => r[k] ?? null));
+
               const [result]: any = await pool.query(
-                `INSERT INTO \`${table}\` (${cols}) VALUES (${placeholders})`, values
+                `INSERT INTO \`${table}\` (${cols}) VALUES ${rows.map(() => tuple).join(', ')}`,
+                values,
               );
-              const [newRows]: any = await pool.query(
-                `SELECT * FROM \`${table}\` WHERE id = ?`, [result.insertId]
-              );
-              return { data: newRows[0] ?? null, error: null };
+
+              // Read the row back so callers get the stored representation.
+              // Auto-increment tables expose insertId; tables keyed by an
+              // explicit id/slug are looked up by the value we just wrote.
+              const pk = keys.includes('id') ? 'id' : keys.includes('slug') ? 'slug' : null;
+              if (rows.length === 1) {
+                if (result?.insertId) {
+                  const [back]: any = await pool.query(
+                    `SELECT * FROM \`${table}\` WHERE id = ?`, [result.insertId],
+                  );
+                  if (back[0]) return { data: back[0], error: null };
+                }
+                if (pk) {
+                  const [back]: any = await pool.query(
+                    `SELECT * FROM \`${table}\` WHERE \`${pk}\` = ?`, [rows[0][pk]],
+                  );
+                  if (back[0]) return { data: back[0], error: null };
+                }
+                return { data: rows[0], error: null };
+              }
+              return { data: rows, error: null };
             } catch (err: any) {
               console.error(`Error inserting into table ${table}:`, err);
               return { data: null, error: err };
@@ -147,16 +184,24 @@ export const db = {
         return chain;
       },
 
-      upsert: async (data: Record<string, any>, _opts?: { onConflict?: string }) => {
+      upsert: async (
+        data: Record<string, any> | Record<string, any>[],
+        _opts?: { onConflict?: string },
+      ) => {
         try {
-          const keys = Object.keys(data);
+          const rows = Array.isArray(data) ? data : [data];
+          if (!rows.length) return { error: null };
+
+          const keys = Object.keys(rows[0]);
           const cols = keys.map(k => `\`${k}\``).join(', ');
-          const placeholders = keys.map(() => '?').join(', ');
-          const values = keys.map(k => data[k]);
+          const tuple = `(${keys.map(() => '?').join(', ')})`;
+          const values = rows.flatMap(r => keys.map(k => r[k] ?? null));
           const updates = keys.map(k => `\`${k}\` = VALUES(\`${k}\`)`).join(', ');
+
           await pool.query(
-            `INSERT INTO \`${table}\` (${cols}) VALUES (${placeholders}) ON DUPLICATE KEY UPDATE ${updates}`,
-            values
+            `INSERT INTO \`${table}\` (${cols}) VALUES ${rows.map(() => tuple).join(', ')} ` +
+            `ON DUPLICATE KEY UPDATE ${updates}`,
+            values,
           );
           return { error: null };
         } catch (err: any) {

@@ -9,7 +9,6 @@ import {
   Menu, X, Terminal,
 } from 'lucide-react';
 
-const DEV_USER = '2400030188';
 import { useState } from 'react';
 
 const NAV = [
@@ -37,7 +36,13 @@ const NAV = [
   },
 ];
 
-export default function AdminSidebar({ username }: { username?: string }) {
+export default function AdminSidebar({
+  username,
+  showSqlConsole = false,
+}: {
+  username?: string;
+  showSqlConsole?: boolean;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -99,7 +104,7 @@ export default function AdminSidebar({ username }: { username?: string }) {
       </nav>
 
       {/* Dev-only: SQL Executor */}
-      {username === DEV_USER && (
+      {showSqlConsole && (
         <div className="px-3 mb-2">
           <p className="text-[10px] font-black tracking-[0.18em] uppercase px-3 mb-1.5 mt-2"
              style={{ color: '#C4C4CC' }}>

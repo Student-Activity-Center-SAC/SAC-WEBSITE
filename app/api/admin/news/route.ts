@@ -4,6 +4,9 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
+  const { error: authError } = await requireAdmin();
+  if (authError) return NextResponse.json({ error: authError }, { status: 401 });
+
   // Try sort_order first; fall back to date if column doesn't exist yet.
   let { data, error } = await db
     .from('news_articles')
@@ -57,8 +60,7 @@ export async function PUT(req: NextRequest) {
       .neq('slug', slug);
   }
 
-  const { error: e } = await db.from('news_articles')
-    .update({ ...rest, updated_at: new Date().toISOString() }).eq('slug', slug);
+  const { error: e } = await db.from('news_articles').update(rest).eq('slug', slug);
   if (e) return NextResponse.json({ error: e.message }, { status: 400 });
   revalidatePath('/news');
   revalidatePath(`/news/${slug}`);

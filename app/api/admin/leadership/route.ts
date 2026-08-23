@@ -4,6 +4,9 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
+  const { error } = await requireAdmin();
+  if (error) return NextResponse.json({ error }, { status: 401 });
+
   const { data } = await db.from('council_members').select('*').order('sort_order', { ascending: true });
   return NextResponse.json({ success: true, data: data ?? [] });
 }
