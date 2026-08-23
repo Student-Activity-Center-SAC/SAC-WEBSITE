@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import { DOMAINS } from '@/lib/content/domains';
 
 type Filter = 'all' | 'TEC' | 'LCH' | 'HWB' | 'ESO' | 'IIE';
@@ -29,6 +29,12 @@ interface Props { clubs: Club[]; }
 
 export default function ClubsPageClient({ clubs }: Props) {
   const [filter, setFilter] = useState<Filter>('all');
+  const [search, setSearch] = useState('');
+
+  const q = search.trim().toLowerCase();
+  const filteredClubs = q
+    ? clubs.filter(c => c.name.toLowerCase().includes(q) || c.tagline?.toLowerCase().includes(q))
+    : clubs;
 
   const visibleDomains = DOMAINS.filter(d => filter === 'all' || d.code === filter);
   const totalClubs = clubs.length;
@@ -50,6 +56,25 @@ export default function ClubsPageClient({ clubs }: Props) {
           <p className="text-lg mb-10" style={{ color: '#71717A', maxWidth: '56ch' }}>
             20+ clubs across {totalDomains} domains. Every passion, every ambition — there's a club for you at KL SAC.
           </p>
+
+          {/* Search */}
+          <div className="relative mb-5 max-w-sm">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#A1A1AA' }} />
+            <input
+              type="search"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search clubs…"
+              className="w-full pl-9 pr-4 py-2.5 rounded-full text-sm outline-none transition-shadow"
+              style={{
+                background: '#F7F7F8',
+                border: '1px solid #E4E4E7',
+                color: '#191313',
+              }}
+              onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 2px #97000330'; }}
+              onBlur={e => { e.currentTarget.style.boxShadow = 'none'; }}
+            />
+          </div>
 
           {/* Filter tabs */}
           <div className="flex flex-wrap gap-2 pb-0">
@@ -78,7 +103,7 @@ export default function ClubsPageClient({ clubs }: Props) {
       <section style={{ background: '#fff' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-10 pb-24">
           {visibleDomains.map(domain => {
-            const domainClubs = clubs.filter(c => c.domain_code === domain.code);
+            const domainClubs = filteredClubs.filter(c => c.domain_code === domain.code);
             if (!domainClubs.length) return null;
             return (
               <div key={domain.code} id={domain.code} className="mb-16">
@@ -142,10 +167,10 @@ export default function ClubsPageClient({ clubs }: Props) {
             );
           })}
 
-          {clubs.length === 0 && (
+          {filteredClubs.length === 0 && (
             <div className="py-24 text-center" style={{ color: '#A1A1AA' }}>
-              <p className="font-bold text-lg mb-2">No clubs found.</p>
-              <p className="text-sm">Seed clubs via the admin panel to see them here.</p>
+              <p className="font-bold text-lg mb-2">{q ? `No clubs matching "${search}"` : 'No clubs found.'}</p>
+              {q && <p className="text-sm">Try a different search term.</p>}
             </div>
           )}
         </div>

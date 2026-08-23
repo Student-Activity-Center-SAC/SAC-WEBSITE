@@ -43,8 +43,8 @@ export default function Footer() {
 
           <p className="text-sm leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.38)' }}>
             Student Activity Center<br />
-            KL University, Vijayawada<br />
-            Andhra Pradesh — 522 502
+            KL University, Vaddeswaram, Guntur<br />
+            Andhra Pradesh — 522 302
           </p>
 
           <p className="kicker mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>

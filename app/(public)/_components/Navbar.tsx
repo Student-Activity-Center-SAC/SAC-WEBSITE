@@ -10,11 +10,11 @@ const NAV_LINKS_LEFT = [
 ];
 
 const NAV_LINKS_RIGHT = [
-  { href: '/leadership', label: 'Team'       },
-  { href: '/news',       label: 'News'       },
-  { href: '/events',     label: 'Events'     },
-  { href: '/clubs',      label: 'Clubs'      },
-  { href: '/activities', label: 'Activities' },
+  { href: '/leadership',   label: 'Team'         },
+  { href: '/news',         label: 'News'         },
+  { href: '/clubs',        label: 'Clubs'        },
+  { href: '/activities',   label: 'Activities'   },
+  { href: '/publications', label: 'Publications' },
   { href: 'https://svr.kluniversity.in/', label: 'SVR', external: true },
 ];
 

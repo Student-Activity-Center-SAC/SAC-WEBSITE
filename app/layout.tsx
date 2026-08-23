@@ -57,7 +57,6 @@ export const metadata: Metadata = {
     title: 'KL SAC — Student Activity Center, KL University',
     description:
       '24 clubs. 5 domains. One mission: to develop the complete student. KL SAC is where KL University students discover their passion, develop their potential, and lead with purpose.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'KL SAC — Student Activity Center' }],
   },
   twitter: {
     card: 'summary_large_image',

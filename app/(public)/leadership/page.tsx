@@ -1,5 +1,4 @@
 import { Camera } from 'lucide-react';
-import Link from 'next/link';
 import { db } from '@/lib/query-builder';
 import CouncilGrid from './_components/CouncilGrid';
 
@@ -61,15 +60,7 @@ export default async function LeadershipPage() {
                 Complete Student Council — Group Photo
               </p>
               <p className="text-xs mt-1" style={{ color: '#A1A1AA' }}>
-                Upload via{' '}
-                <Link
-                  href="https://sacactivities.kluniversity.in/auth/login"
-                  target="_blank"
-                  rel="noopener"
-                  className="font-bold hover:underline"
-                  style={{ color: '#8B0000' }}>
-                  Student Dashboard
-                </Link>
+                Coming soon
               </p>
             </div>
           </div>
