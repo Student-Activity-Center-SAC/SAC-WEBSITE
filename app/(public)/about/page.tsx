@@ -55,11 +55,11 @@ export default async function AboutPage() {
           <p className="kicker mb-6" style={{ color: '#970003' }}>About KL SAC</p>
           <h1
             className="font-display font-medium leading-[1.05] mb-6"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '18ch' }}>
-            Building Tomorrow's Leaders, Today.
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
+            The Centre for Student Excellence.
           </h1>
-          <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '54ch' }}>
-            KL SAC is KL University's Student Activity Center — the official ecosystem for student development across culture, technology, wellness, service, and entrepreneurship.
+          <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '58ch' }}>
+            KL SAC is KL University's Student Activity Centre — the institution through which students discover their potential, lead with purpose, and build the skills that define remarkable careers and meaningful lives.
           </p>
         </div>
       </section>
@@ -71,7 +71,7 @@ export default async function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10 lg:gap-16 items-start">
 
               {/* Photo + identity */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start lg:pt-10">
                 <div className="rounded-2xl overflow-hidden w-full mb-5"
                   style={{ aspectRatio: '3/4', maxWidth: '300px', boxShadow: '0 8px 40px -8px rgba(25,19,19,0.18)' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -83,14 +83,14 @@ export default async function AboutPage() {
                 </div>
                 <div style={{ borderLeft: '3px solid #970003', paddingLeft: '14px' }}>
                   <p className="font-bold text-base leading-snug" style={{ color: '#191313' }}>Er. Koneru Satyanarayana</p>
-                  <p className="text-sm font-semibold mt-1" style={{ color: '#970003' }}>President</p>
+                  <p className="text-sm font-semibold mt-1" style={{ color: '#970003' }}>Chancellor &amp; President</p>
                   <p className="text-xs mt-0.5" style={{ color: 'rgba(25,19,19,0.4)' }}>KLEF</p>
                 </div>
               </div>
 
               {/* Message */}
               <div className="pt-1">
-                <p className="kicker mb-2" style={{ color: '#970003' }}>Hon’ble KLEF President’s Message</p>
+                <p className="kicker mb-2" style={{ color: '#970003' }}>Hon'ble KLEF President's Message</p>
                 <p className="font-display leading-none mb-3" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
                 <blockquote
                   className="font-display font-medium leading-[1.2] mb-7"
@@ -122,7 +122,7 @@ export default async function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10 lg:gap-16 items-start">
 
               {/* Photo + identity */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start lg:pt-10">
                 <div className="rounded-2xl overflow-hidden w-full mb-5"
                   style={{ aspectRatio: '3/4', maxWidth: '300px', boxShadow: '0 8px 40px -8px rgba(25,19,19,0.18)' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -141,7 +141,7 @@ export default async function AboutPage() {
 
               {/* Message */}
               <div className="pt-1">
-                <p className="kicker mb-2" style={{ color: '#970003' }}>Hon’ble SAC Director’s Message</p>
+                <p className="kicker mb-2" style={{ color: '#970003' }}>Hon'ble SAC Director's Message</p>
                 <p className="font-display leading-none mb-3" style={{ fontSize: '4rem', color: '#c67374', lineHeight: 0.8 }}>“</p>
                 <blockquote
                   className="font-display font-medium leading-[1.2] mb-7"
@@ -156,7 +156,7 @@ export default async function AboutPage() {
                     We understand that every student is unique, which is why our domains are so diverse. Whether you're building a robot, organizing a national-level cultural fest, or dedicating your weekend to social service, you are contributing to a legacy. It's here that you'll meet your future co-founders, lifelong friends, and mentors.
                   </p>
                   <p>
-                    My advice to you is simple: do not sit on the sidelines. Dive in, take on responsibilities, make mistakes, and learn from them. Our doors are always open, and our team is always here to support your ambitions. Let’s create something amazing together.
+                    My advice to you is simple: do not sit on the sidelines. Dive in, take on responsibilities, make mistakes, and learn from them. Our doors are always open, and our team is always here to support your ambitions. Let's create something amazing together.
                   </p>
                 </div>
               </div>

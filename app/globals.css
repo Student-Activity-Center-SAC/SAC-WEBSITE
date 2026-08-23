@@ -97,11 +97,14 @@
     text-size-adjust: 100%;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    /* Prevent rubber-band overscroll on Android/Firefox; JS handles iOS Safari */
+    overscroll-behavior: none;
   }
 
   body {
     overflow-x: clip;
     background-color: var(--background);
+    overscroll-behavior: none;
     color:            var(--foreground);
     font-family:      var(--font-sans, system-ui, -apple-system, 'Segoe UI', Helvetica, sans-serif);
     line-height:      1.65;
