@@ -74,7 +74,11 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
       try {
         const lib = await import('pdfjs-dist');
         lib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
-        const pdf = await lib.getDocument({ url: pdfUrl, cMapPacked: true }).promise;
+        // External URLs are proxied server-side to avoid CORS restrictions
+        const effectiveUrl = /^https?:\/\//i.test(pdfUrl)
+          ? `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
+          : pdfUrl;
+        const pdf = await lib.getDocument({ url: effectiveUrl, cMapPacked: true }).promise;
         if (cancelled) return;
         setTotalPgs(pdf.numPages);
         const out: string[] = [];
