@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronDown, Camera } from 'lucide-react';
 import { DOMAINS } from '@/lib/content/domains';
 import { DEMO_CLUBS, DOMAIN_META } from '@/lib/demo-data';
 import { FadeIn } from './_components/FadeIn';
@@ -26,7 +26,7 @@ const JOURNEY_STEPS = [
 ];
 
 export default async function HomePage() {
-  const [events, storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, councilRes, partnersRes] = await Promise.all([
+  const [events, storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes] = await Promise.all([
     getHomepageEvents(5),
     db.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
     db.from('site_settings').select('key, value'),
@@ -34,14 +34,12 @@ export default async function HomePage() {
     db.from('domains').select('slug, code, name, tagline, color, accent_bg').order('sort_order', { ascending: true }),
     db.from('clubs').select('domain_code, slug, name'),
     db.from('sac_stats').select('key, value'),
-    db.from('council_members').select('*').order('sort_order', { ascending: true }).limit(9),
     db.from('partners').select('*'),
   ]);
 
   const stories      = storiesRes.data ?? [];
   const newsArticles = newsRes.data ?? [];
   const domains      = domainsRes.data ?? [];
-  const leaders      = councilRes.data ?? [];
   const partners     = partnersRes.data ?? [];
   const settingsMap: Record<string, string> = {};
   (settingsRes.data ?? []).forEach((s: any) => { if (s.value) settingsMap[s.key] = s.value; });
@@ -698,88 +696,25 @@ export default async function HomePage() {
             </Link>
           </FadeIn>
 
-          {leaders.length === 0 ? (
-            <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.3)' }}>
-              <p className="font-display font-medium text-2xl mb-2">Leadership coming soon</p>
-              <p className="text-sm">Council profiles will appear here once added.</p>
+          <FadeIn>
+            <div
+              className="w-full rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-4 px-6 text-center"
+              style={{
+                aspectRatio: '16/7',
+                background: 'linear-gradient(135deg, #97000310 0%, #97000305 100%)',
+                border: '2px dashed #97000325',
+              }}>
+              <Camera size={40} style={{ color: '#97000335' }} />
+              <div>
+                <p className="font-display font-medium" style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', color: 'rgba(25,19,19,0.45)', letterSpacing: '-0.02em' }}>
+                  SAC Council 2026&ndash;27
+                </p>
+                <p className="text-sm mt-2" style={{ color: 'rgba(25,19,19,0.35)' }}>
+                  Announcing soon
+                </p>
+              </div>
             </div>
-          ) : (() => {
-            const director = leaders.find((l: any) =>
-              l.role?.toLowerCase().includes('director') || l.sort_order === 1
-            );
-            const council = leaders.filter((l: any) => l.id !== director?.id);
-
-            return (
-              <>
-                {/* Featured Director card */}
-                {director && (
-                  <FadeIn className="mb-8">
-                    <div className="hover-card rounded-2xl overflow-hidden border grid sm:grid-cols-[280px_1fr] group"
-                      style={{ background: '#fffdfb', borderColor: 'var(--hairline)' }}>
-                      <div className="relative overflow-hidden" style={{ minHeight: '320px', background: '#faf6f1' }}>
-                        {director.photo ? (
-                          <img src={director.photo} alt={director.name}
-                            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105 grayscale group-hover:grayscale-0"
-                            style={{ position: 'absolute', inset: 0 }} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center absolute inset-0">
-                            <span className="text-[10px] font-semibold tracking-widest uppercase"
-                              style={{ color: 'rgba(25,19,19,0.18)' }}>Photo</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-8 sm:p-10 flex flex-col justify-center">
-                        <p className="kicker mb-4" style={{ color: '#970003' }}>{director.role}</p>
-                        <h3 className="font-display font-medium mb-3"
-                          style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#191313', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
-                          {director.name}
-                        </h3>
-                        <p className="text-[15px] leading-relaxed mb-6" style={{ color: 'rgba(25,19,19,0.5)' }}>
-                          {director.subtitle || director.designation || director.bio || 'Student Activity Center, KL University'}
-                        </p>
-                        <div className="h-px w-12" style={{ background: 'var(--hairline)' }} />
-                      </div>
-                    </div>
-                  </FadeIn>
-                )}
-
-                {/* Council grid */}
-                {council.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {council.map((leader: any, i: number) => (
-                      <FadeIn key={leader.id} delay={i * 0.07}>
-                        <div className="hover-card rounded-xl overflow-hidden border flex flex-col group"
-                          style={{ background: '#fffdfb', borderColor: 'var(--hairline)' }}>
-                          <div className="aspect-[4/5] relative overflow-hidden" style={{ background: '#faf6f1' }}>
-                            {leader.photo ? (
-                              <img src={leader.photo} alt={leader.name}
-                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105 grayscale group-hover:grayscale-0" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <span className="text-[10px] font-semibold tracking-widest uppercase"
-                                  style={{ color: 'rgba(25,19,19,0.18)' }}>Photo</span>
-                              </div>
-                            )}
-                          </div>
-                          <div className="p-4">
-                            <p className="text-[9px] font-semibold tracking-[0.18em] uppercase mb-1" style={{ color: '#970003' }}>
-                              {leader.role}
-                            </p>
-                            <h3 className="font-semibold text-sm leading-snug mb-0.5" style={{ color: '#191313' }}>
-                              {leader.name}
-                            </h3>
-                            <p className="text-[12px] line-clamp-1" style={{ color: 'rgba(25,19,19,0.4)' }}>
-                              {leader.subtitle || leader.designation || 'Student Council'}
-                            </p>
-                          </div>
-                        </div>
-                      </FadeIn>
-                    ))}
-                  </div>
-                )}
-              </>
-            );
-          })()}
+          </FadeIn>
 
           <div className="mt-8 sm:hidden">
             <Link href="/leadership"

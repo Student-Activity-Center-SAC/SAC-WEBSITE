@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
@@ -34,6 +34,20 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
   const [soundOn,     setSoundOn]     = useState(true);
   const [autoplay,    setAutoplay]    = useState(false);
   const [bookSize,    setBookSize]    = useState({ w: 460, h: 651, portrait: false });
+  const [pan,         setPan]         = useState({ x: 0, y: 0 });
+  const [dragging,    setDragging]    = useState(false);
+  const dragStart = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const objectUrls = useRef<string[]>([]);
+  const imgRefs    = useRef<(HTMLImageElement | null)[]>([]);
+  const pageUrls   = useRef<string[]>([]);
+
+  useEffect(() => () => { objectUrls.current.forEach(URL.revokeObjectURL); }, []);
+
+  const paintPage = useCallback((i: number) => {
+    const el = imgRefs.current[i];
+    const url = pageUrls.current[i];
+    if (el && url && el.src !== url) { el.src = url; el.style.opacity = '1'; }
+  }, []);
 
   const flipRef       = useRef<any>(null);
   const containerRef  = useRef<HTMLDivElement>(null);
@@ -50,8 +64,10 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
   /* ── Responsive book sizing ── */
   useEffect(() => {
     const calc = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      // A hidden or not-yet-laid-out viewport reports 0, which would hand
+      // StPageFlip an invalid size and make it throw on every render.
+      const vw = window.innerWidth  || 1280;
+      const vh = window.innerHeight || 800;
       const portrait = vw < 640;
       const availH = vh - 56 - 52 - 40;
       if (portrait) {
@@ -74,25 +90,65 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
       try {
         const lib = await import('pdfjs-dist');
         lib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
-        // External URLs are proxied server-side to avoid CORS restrictions
         const effectiveUrl = /^https?:\/\//i.test(pdfUrl)
           ? `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
           : pdfUrl;
         const pdf = await lib.getDocument({ url: effectiveUrl, cMapPacked: true }).promise;
         if (cancelled) return;
-        setTotalPgs(pdf.numPages);
-        const out: string[] = [];
-        for (let i = 1; i <= pdf.numPages; i++) {
-          if (cancelled) return;
+        const total = pdf.numPages;
+        setTotalPgs(total);
+
+        // Match the raster to the size the page is actually displayed at. A fixed
+        // scale over-renders large page boxes by several times, and that surplus
+        // is the bulk of the wait on image-heavy magazine PDFs.
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // innerWidth/innerHeight read 0 when the page renders while hidden, so
+        // floor the display width rather than deriving a bogus scale from it.
+        const vw = window.innerWidth  || 1280;
+        const vh = window.innerHeight || 800;
+        const displayW = vw < 640
+          ? Math.min(vw - 32, 360)
+          : Math.round(Math.min(Math.max(vh - 148, 280), 700) / 1.414);
+        const targetW = displayW * dpr;
+
+        // One reusable canvas, and toBlob instead of toDataURL — base64 encoding
+        // 22 full-page rasters on the main thread is itself a large share of the wait.
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { alpha: false })!;
+
+        const renderPage = async (i: number) => {
           const pg = await pdf.getPage(i);
-          const vp = pg.getViewport({ scale: 1.5 });
-          const canvas = document.createElement('canvas');
+          const base = pg.getViewport({ scale: 1 });
+          const vp = pg.getViewport({ scale: Math.min(Math.max(targetW / base.width, 1), 2) });
           canvas.width = vp.width; canvas.height = vp.height;
-          await pg.render({ canvasContext: canvas.getContext('2d')!, viewport: vp, canvas } as any).promise;
-          out.push(canvas.toDataURL('image/jpeg', 0.88));
+          await pg.render({ canvasContext: ctx, viewport: vp, canvas } as any).promise;
+          const blob = await new Promise<Blob | null>(r => canvas.toBlob(r, 'image/jpeg', 0.82));
+          pg.cleanup();
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          objectUrls.current.push(url);
+          pageUrls.current[i - 1] = url;
+          paintPage(i - 1);
+        };
+
+        // Open the book as soon as the opening spread is ready; the rest stream in
+        // behind it. On a 20+ page magazine that is a couple of seconds instead of
+        // waiting on every page first.
+        const eager = Math.min(2, total);
+        for (let i = 1; i <= eager; i++) {
+          if (cancelled) return;
+          await renderPage(i);
           setProgress(i);
         }
-        if (!cancelled) { setPages(out); setLoading(false); }
+        if (cancelled) return;
+        setPages(new Array(total).fill(''));
+        setLoading(false);
+
+        for (let i = eager + 1; i <= total; i++) {
+          if (cancelled) return;
+          await renderPage(i);
+          setProgress(i);
+        }
       } catch (e: any) {
         if (!cancelled) setError(e?.message ?? 'Failed to load PDF');
       }
@@ -160,12 +216,65 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
   }, [playFlipSound]);
 
   /* ── Zoom helpers ── */
-  const zoomOut = () => setZoom(z => Math.max(+(z - 0.2).toFixed(1), 0.4));
+  const zoomOut = () => setZoom(z => {
+    const next = Math.max(+(z - 0.2).toFixed(1), 0.4);
+    if (next <= 1) setPan({ x: 0, y: 0 });
+    return next;
+  });
   const zoomIn  = () => setZoom(z => Math.min(+(z + 0.2).toFixed(1), 2.4));
   const zoomPct = Math.round(zoom * 100);
 
+  /* ── Drag-to-pan when zoomed in ── */
+  const canPan = zoom > 1;
+
+  const onPanStart = useCallback((e: React.PointerEvent) => {
+    if (!canPan) return;
+    e.preventDefault();
+    e.stopPropagation();
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    dragStart.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
+    setDragging(true);
+  }, [canPan, pan.x, pan.y]);
+
+  const onPanMove = useCallback((e: React.PointerEvent) => {
+    if (!dragStart.current) return;
+    e.preventDefault();
+    setPan({
+      x: dragStart.current.panX + (e.clientX - dragStart.current.x),
+      y: dragStart.current.panY + (e.clientY - dragStart.current.y),
+    });
+  }, []);
+
+  const onPanEnd = useCallback(() => {
+    dragStart.current = null;
+    setDragging(false);
+  }, []);
+
   const canPrev = currentPage > 0;
   const canNext = currentPage < pages.length - 1;
+
+  // StPageFlip re-initialises whenever its children change, so these are built
+  // once and each page's image is assigned imperatively as it finishes.
+  const pageSlots = useMemo(
+    () => pages.map((_, i) => (
+      <div key={i} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: '#fff' }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+          <Loader2 size={20} className="animate-spin" style={{ color: '#D1D5DB' }} />
+          <span className="text-[10px] tracking-widest uppercase" style={{ color: '#C7C7CC' }}>
+            Page {i + 1}
+          </span>
+        </div>
+        <img
+          ref={el => { imgRefs.current[i] = el; if (el) paintPage(i); }}
+          alt=""
+          draggable={false}
+          className="absolute inset-0"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0, transition: 'opacity 0.25s' }}
+        />
+      </div>
+    )),
+    [pages.length, paintPage],
+  );
 
   return (
     <div
@@ -238,15 +347,20 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
       {!loading && pages.length > 0 && (
         <div
           className="flex-1 flex items-center justify-center overflow-hidden"
-          style={{ padding: '20px 16px' }}
+          style={{ padding: '20px 16px', touchAction: canPan ? 'none' : 'auto' }}
+          onPointerDownCapture={onPanStart}
+          onPointerMove={onPanMove}
+          onPointerUp={onPanEnd}
+          onPointerCancel={onPanEnd}
         >
           <div
             style={{
               // Cover sits in the right half of the spread; shift left to center it
-              transform: `translateX(${!bookSize.portrait && currentPage === 0 ? -(bookSize.w / 2) : 0}px) scale(${zoom})`,
+              transform: `translate(${(!bookSize.portrait && currentPage === 0 ? -(bookSize.w / 2) : 0) + pan.x}px, ${pan.y}px) scale(${zoom})`,
               transformOrigin: 'center center',
-              transition: 'transform 0.5s ease',
+              transition: dragging ? 'none' : 'transform 0.5s ease',
               filter: 'drop-shadow(0 16px 56px rgba(0,0,0,0.28))',
+              cursor: canPan ? (dragging ? 'grabbing' : 'grab') : 'default',
             }}
           >
             <HTMLFlipBook
@@ -271,16 +385,7 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
               startPage={0}
               onFlip={onFlip}
             >
-              {pages.map((src, i) => (
-                <div key={i} style={{ width: '100%', height: '100%', overflow: 'hidden', background: '#fff' }}>
-                  <img
-                    src={src}
-                    alt={`Page ${i + 1}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    draggable={false}
-                  />
-                </div>
-              ))}
+              {pageSlots}
             </HTMLFlipBook>
           </div>
         </div>

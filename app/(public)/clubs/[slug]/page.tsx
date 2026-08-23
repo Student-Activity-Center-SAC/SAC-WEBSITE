@@ -241,11 +241,6 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   Behind the scenes.
                 </h2>
               </div>
-              <span
-                className="text-xs font-semibold px-3 py-1.5 rounded-full"
-                style={{ background: domain.accentBg, color: domain.color }}>
-                Updated regularly
-              </span>
             </div>
           </FadeIn>
 

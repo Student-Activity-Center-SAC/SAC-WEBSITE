@@ -203,7 +203,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
       {clubs.length > 0 && (
         <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-            <SectionLabel label="Club Leads" sub={`Coordinators of all ${clubs.length} clubs.`} />
+            <SectionLabel label="Club Leads" sub={`Leads of all ${clubs.length} clubs.`} />
             <div className={GRID}>
               {clubs.map(club => {
                 const lead = members.find(m => m.role === 'Club Lead' && m.club_lead === club.name);
