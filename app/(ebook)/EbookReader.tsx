@@ -310,35 +310,76 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
 
       {/* ── Loading / Error ── */}
       {loading && (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          <style>{`
+            @keyframes sac-fan { 0%,100%{transform:rotate(-4deg) translateX(-6px);opacity:.35} 50%{transform:rotate(4deg) translateX(6px);opacity:.6} }
+            @keyframes sac-fan2{ 0%,100%{transform:rotate(3deg) translateX(5px);opacity:.25} 50%{transform:rotate(-3deg) translateX(-5px);opacity:.5} }
+            @keyframes sac-shimmer{ 0%{transform:translateX(-180px)} 100%{transform:translateX(360px)} }
+          `}</style>
+
           {error ? (
-            <div className="text-center rounded-2xl p-8" style={{ background: '#fff', border: '1px solid #E4E4E7' }}>
+            <div className="text-center rounded-2xl p-10" style={{ background: '#fff', border: '1px solid #E4E4E7', maxWidth: '340px', width: '100%' }}>
+              <BookOpen size={32} className="mx-auto mb-4" style={{ color: '#D1D5DB' }} />
               <p className="font-bold mb-2" style={{ color: '#0D0D0D' }}>Could not load PDF</p>
-              <p className="text-sm mb-4" style={{ color: '#71717A' }}>{error}</p>
-              <Link href="/publications" className="text-sm underline" style={{ color: '#8B0000' }}>← Back</Link>
+              <p className="text-sm mb-5" style={{ color: '#71717A' }}>{error}</p>
+              <Link href="/publications" className="text-sm font-semibold underline" style={{ color: '#8B0000' }}>← Back to Publications</Link>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-5">
-              <div className="relative w-20 h-20 flex items-center justify-center">
-                <BookOpen size={32} style={{ color: '#8B0000' }} />
-                <Loader2 size={64} className="animate-spin absolute" style={{ color: '#D1D5DB' }} />
-              </div>
-              <div>
-                <p className="font-bold text-center mb-4" style={{ color: '#0D0D0D' }}>Preparing your ebook…</p>
-                <div className="w-64">
-                  <div className="flex justify-between text-xs mb-2" style={{ color: '#A1A1AA' }}>
-                    <span>Rendering pages</span>
-                    <span>{progress} / {totalPgs || '…'}</span>
-                  </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#E4E4E7' }}>
-                    <div
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{ background: '#8B0000', width: totalPgs ? `${(progress / totalPgs) * 100}%` : '0%' }}
-                    />
-                  </div>
+            <>
+              {/* Animated book visual */}
+              <div className="relative mb-9" style={{ width: '72px', height: '88px' }}>
+                {/* Fanned pages behind */}
+                <div className="absolute inset-0 rounded-lg" style={{ background: 'rgba(139,0,0,0.12)', animation: 'sac-fan 2.6s ease-in-out infinite', transformOrigin: 'bottom center' }} />
+                <div className="absolute inset-0 rounded-lg" style={{ background: 'rgba(139,0,0,0.08)', animation: 'sac-fan2 2.1s ease-in-out infinite', transformOrigin: 'bottom center' }} />
+                {/* Book cover */}
+                <div
+                  className="absolute inset-0 rounded-lg flex items-center justify-center"
+                  style={{ background: '#fff', boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(139,0,0,0.18)' }}>
+                  <BookOpen size={28} style={{ color: '#8B0000' }} />
                 </div>
               </div>
-            </div>
+
+              {/* Publication info */}
+              <p className="font-bold text-center mb-1 text-base" style={{ color: '#191313', letterSpacing: '-0.01em', maxWidth: '26ch' }}>
+                {title}
+              </p>
+              <p className="text-[10px] font-black tracking-[0.18em] uppercase mb-10" style={{ color: 'rgba(25,19,19,0.35)' }}>
+                {type} · {year}
+              </p>
+
+              {/* Progress bar */}
+              <div style={{ width: '280px' }}>
+                <div className="relative h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(25,19,19,0.1)' }}>
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full"
+                    style={{
+                      background: 'linear-gradient(90deg, #8B0000, #c67374)',
+                      width: totalPgs ? `${Math.max(4, (progress / totalPgs) * 100)}%` : '6%',
+                      transition: 'width 0.4s ease',
+                    }}
+                  />
+                  {/* shimmer overlay */}
+                  <div
+                    className="absolute inset-y-0 w-16 rounded-full pointer-events-none"
+                    style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent)', animation: 'sac-shimmer 1.4s linear infinite' }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium" style={{ color: 'rgba(25,19,19,0.4)' }}>
+                    {totalPgs ? `${progress} of ${totalPgs} pages ready` : 'Loading…'}
+                  </span>
+                  {totalPgs > 0 && (
+                    <span className="text-xs font-bold tabular-nums" style={{ color: '#8B0000' }}>
+                      {Math.round((progress / totalPgs) * 100)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-[11px] mt-6" style={{ color: 'rgba(25,19,19,0.25)' }}>
+                Your ebook will open automatically
+              </p>
+            </>
           )}
         </div>
       )}
@@ -453,10 +494,20 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
             </button>
             <div
               className="flex items-center justify-center rounded px-2"
-              style={{ background: 'rgba(255,255,255,0.12)', height: '28px', minWidth: '62px' }}
+              style={{ background: 'rgba(255,255,255,0.12)', height: '28px', minWidth: '72px' }}
             >
               <span className="text-xs font-bold tabular-nums" style={{ color: '#fff' }}>
-                {currentPage + 1} / {pages.length}
+                {(() => {
+                  const total = pages.length;
+                  if (bookSize.portrait || currentPage === 0) {
+                    return `${currentPage + 1} / ${total}`;
+                  }
+                  const left  = currentPage + 1;
+                  const right = Math.min(currentPage + 2, total);
+                  return right > left
+                    ? `${left}–${right} / ${total}`
+                    : `${left} / ${total}`;
+                })()}
               </span>
             </div>
             <button

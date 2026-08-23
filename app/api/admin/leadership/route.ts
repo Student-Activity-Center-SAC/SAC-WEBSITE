@@ -34,6 +34,21 @@ export async function PUT(req: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
+export async function PATCH(req: NextRequest) {
+  const { error } = await requireAdmin();
+  if (error) return NextResponse.json({ error }, { status: 401 });
+
+  const { order } = await req.json() as { order: { id: string; sort_order: number }[] };
+  if (!Array.isArray(order)) return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+
+  for (const { id, sort_order } of order) {
+    await db.from('council_members').update({ sort_order }).eq('id', id);
+  }
+
+  revalidatePath('/leadership');
+  return NextResponse.json({ success: true });
+}
+
 export async function DELETE(req: NextRequest) {
   const { error } = await requireAdmin();
   if (error) return NextResponse.json({ error }, { status: 401 });
