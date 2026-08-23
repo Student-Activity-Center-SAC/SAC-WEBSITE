@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ success: true, name: admin.name });
     res.cookies.set('sac_admin', token, {
       httpOnly: true,
-      secure:   process.env.NODE_ENV === 'production',
+      secure:   false,
       sameSite: 'lax',
       maxAge:   60 * 60 * 12,
       path:     '/',

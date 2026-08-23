@@ -5,7 +5,7 @@ export async function POST() {
   // Attributes must match the login cookie or some browsers keep the original.
   res.cookies.set('sac_admin', '', {
     httpOnly: true,
-    secure:   process.env.NODE_ENV === 'production',
+    secure:   false,
     sameSite: 'lax',
     maxAge:   0,
     path:     '/',
