@@ -216,27 +216,38 @@ function ActivityCard({ act, completed }: { act: Activity; completed: boolean })
 const DOMAINS = ['all', 'TEC', 'LCH', 'HWB', 'ESO', 'IIE'];
 
 export default function ActivitiesPage() {
-  const [tab, setTab]       = useState<'upcoming' | 'completed'>('upcoming');
+  const [tab, setTab]       = useState<'upcoming' | 'completed'>('completed');
   const [domain, setDomain] = useState('all');
   const [upcoming, setUpcoming] = useState<Activity[]>([]);
   const [completed, setCompleted] = useState<Activity[]>([]);
   const [loadingU, setLoadingU] = useState(true);
   const [loadingC, setLoadingC] = useState(true);
+  const [errorU, setErrorU]     = useState(false);
+  const [errorC, setErrorC]     = useState(false);
 
   useEffect(() => {
     fetch('/api/activities-proxy?type=upcoming')
       .then(r => r.json())
-      .then(d => { setUpcoming(d.activities ?? []); setLoadingU(false); })
-      .catch(() => setLoadingU(false));
+      .then(d => {
+        if (d.error || !Array.isArray(d.activities)) { setErrorU(true); setUpcoming([]); }
+        else setUpcoming(d.activities);
+        setLoadingU(false);
+      })
+      .catch(() => { setErrorU(true); setLoadingU(false); });
 
     fetch('/api/activities-proxy?type=completed')
       .then(r => r.json())
-      .then(d => { setCompleted(d.activities ?? []); setLoadingC(false); })
-      .catch(() => setLoadingC(false));
+      .then(d => {
+        if (d.error || !Array.isArray(d.activities)) { setErrorC(true); setCompleted([]); }
+        else setCompleted(d.activities);
+        setLoadingC(false);
+      })
+      .catch(() => { setErrorC(true); setLoadingC(false); });
   }, []);
 
   const list    = tab === 'upcoming' ? upcoming : completed;
   const loading = tab === 'upcoming' ? loadingU : loadingC;
+  const hasError = tab === 'upcoming' ? errorU : errorC;
   const visible = domain === 'all' ? list : list.filter(a => a.domain === domain);
 
   return (
@@ -322,10 +333,18 @@ export default function ActivitiesPage() {
           <div className="text-center py-28">
             <Calendar size={40} className="mx-auto mb-4" style={{ color: '#D1D5DB' }} />
             <p className="font-bold text-base mb-1" style={{ color: '#52525B' }}>
-              {list.length === 0 ? (tab === 'upcoming' ? 'No upcoming activities scheduled yet.' : 'No completed activities yet.') : 'No activities in this domain.'}
+              {hasError
+                ? `Couldn't load ${tab} activities right now.`
+                : list.length === 0
+                  ? (tab === 'upcoming' ? 'No upcoming activities scheduled yet.' : 'No completed activities yet.')
+                  : 'No activities in this domain.'}
             </p>
             <p className="text-sm" style={{ color: '#A1A1AA' }}>
-              {list.length === 0 && tab === 'upcoming' ? 'Check back soon — activities are added regularly.' : 'Try selecting a different domain.'}
+              {hasError
+                ? 'Please try again in a moment.'
+                : list.length === 0 && tab === 'upcoming'
+                  ? 'Check back soon — activities are added regularly.'
+                  : 'Try selecting a different domain.'}
             </p>
           </div>
         ) : (

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import https from 'https';
 
+export const dynamic = 'force-dynamic';
+
 const AGENT = new https.Agent({ rejectUnauthorized: false });
 const UPSTREAM = 'https://sacactivities.kluniversity.in/api/public/activities';
 
