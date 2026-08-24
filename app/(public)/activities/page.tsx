@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, MapPin, Clock, Star, ExternalLink, FileText, ImageOff } from 'lucide-react';
 
+const UPSTREAM = 'https://sacactivities.kluniversity.in/api/public/activities';
+
 const DOMAIN_COLORS: Record<string, string> = {
   TEC: '#3B82F6', LCH: '#8B5CF6', HWB: '#10B981', ESO: '#F59E0B', IIE: '#EF4444',
 };
@@ -192,7 +194,7 @@ export default function ActivitiesPage() {
   const [errorC, setErrorC]     = useState(false);
 
   useEffect(() => {
-    fetchWithTimeout('/api/activities-proxy?type=upcoming')
+    fetchWithTimeout(`${UPSTREAM}/upcoming`)
       .then(r => r.json())
       .then(d => {
         if (d.error || !Array.isArray(d.activities)) { setErrorU(true); setUpcoming([]); }
@@ -201,7 +203,7 @@ export default function ActivitiesPage() {
       })
       .catch(() => { setErrorU(true); setLoadingU(false); });
 
-    fetchWithTimeout('/api/activities-proxy?type=completed')
+    fetchWithTimeout(`${UPSTREAM}/completed`)
       .then(r => r.json())
       .then(d => {
         if (d.error || !Array.isArray(d.activities)) { setErrorC(true); setCompleted([]); }

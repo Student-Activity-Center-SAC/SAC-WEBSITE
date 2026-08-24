@@ -78,7 +78,7 @@ export default function ReportPage({ params }: { params: Promise<{ code: string 
   useEffect(() => {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 12000);
-    fetch('/api/activities-proxy?type=completed', { signal: ctrl.signal })
+    fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { signal: ctrl.signal })
       .then(r => r.json())
       .then(d => {
         const found = (d.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code));
