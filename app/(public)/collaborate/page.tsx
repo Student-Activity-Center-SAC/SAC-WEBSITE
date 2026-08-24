@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { ArrowUpRight, Building2, GraduationCap, Globe2, HeartHandshake } from 'lucide-react';
 import { FadeIn } from '../_components/FadeIn';
 
@@ -53,6 +53,15 @@ const ENGAGEMENT_STEPS = [
   },
 ];
 
+const PARTNER_TYPES = [
+  'Technology Companies',
+  'Startups & VC Firms',
+  'NGOs & Non-Profits',
+  'Government Bodies',
+  'International Universities',
+  'Creative Agencies',
+];
+
 export default function CollaboratePage() {
   return (
     <>
@@ -70,8 +79,8 @@ export default function CollaboratePage() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-base transition-all hover:scale-[1.03]"
-            style={{ background: '#8B0000', color: '#ffffff' }}>
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-base transition-all hover:scale-[1.03]"
+            style={{ background: '#970003', color: '#ffffff' }}>
             Get in Touch
             <ArrowUpRight size={16} />
           </Link>
@@ -81,21 +90,30 @@ export default function CollaboratePage() {
       {/* ─── Collaboration Areas ──────────────────────────────────────── */}
       <section style={{ background: '#fff' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-          <FadeIn>
-            <p className="kicker mb-10" style={{ color: '#970003' }}>
-              Ways to Collaborate
-            </p>
+          <FadeIn className="mb-10">
+            <p className="kicker mb-5" style={{ color: '#970003' }}>Ways to Collaborate</p>
+            <h2
+              className="font-display font-medium leading-tight"
+              style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em', maxWidth: '28ch' }}>
+              Four ways to work with our students.
+            </h2>
           </FadeIn>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px" style={{ background: '#E4E4E7' }}>
-            {COLLAB_AREAS.map(area => (
-              <FadeIn key={area.title}>
-                <div className="flex flex-col h-full p-8" style={{ background: '#fff' }}>
-                  <area.icon size={28} className="mb-5" style={{ color: '#8B0000' }} />
-                  <h3 className="font-black text-lg mb-3" style={{ color: '#0D0D0D', letterSpacing: '-0.01em' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {COLLAB_AREAS.map((area, i) => (
+              <FadeIn key={area.title} delay={i * 0.06}>
+                <div
+                  className="flex flex-col h-full p-7 rounded-2xl transition-shadow hover:shadow-lg"
+                  style={{ background: '#fff', border: '1px solid var(--hairline)', boxShadow: '0 2px 16px -8px rgba(25,19,19,0.06)' }}>
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 shrink-0"
+                    style={{ background: 'rgba(151,0,3,0.08)' }}>
+                    <area.icon size={22} style={{ color: '#970003' }} />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2.5" style={{ color: '#191313', letterSpacing: '-0.01em' }}>
                     {area.title}
                   </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: '#71717A' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
                     {area.desc}
                   </p>
                 </div>
@@ -106,27 +124,19 @@ export default function CollaboratePage() {
       </section>
 
       {/* ─── Who Collaborates ─────────────────────────────────────────── */}
-      <section style={{ background: '#F7F7F8' }}>
+      <section style={{ background: '#faf6f1' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
           <FadeIn>
-            <p className="kicker mb-10" style={{ color: '#A1A1AA' }}>
-              Who We Work With
-            </p>
+            <p className="kicker mb-10" style={{ color: '#970003' }}>Who We Work With</p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[
-                'Technology Companies',
-                'Startups & VC Firms',
-                'NGOs & Non-Profits',
-                'Government Bodies',
-                'International Universities',
-                'Creative Agencies',
-              ].map(type => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {PARTNER_TYPES.map(type => (
                 <div
                   key={type}
-                  className="p-4 rounded-xl text-center"
-                  style={{ background: '#fff', border: '1px solid #E4E4E7' }}>
-                  <p className="text-xs font-bold leading-snug" style={{ color: '#3F3F46' }}>{type}</p>
+                  className="flex flex-col items-center gap-2.5 p-5 rounded-2xl text-center transition-all hover:shadow-md"
+                  style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#970003' }} />
+                  <p className="text-xs font-semibold leading-snug" style={{ color: '#191313' }}>{type}</p>
                 </div>
               ))}
             </div>
@@ -137,26 +147,24 @@ export default function CollaboratePage() {
       {/* ─── Engagement Process ───────────────────────────────────────── */}
       <section style={{ background: '#fff' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-          <FadeIn>
-            <p className="kicker mb-10" style={{ color: '#970003' }}>
-              How It Works
-            </p>
+          <FadeIn className="mb-2">
+            <p className="kicker mb-10" style={{ color: '#970003' }}>How It Works</p>
           </FadeIn>
 
-          <div className="max-w-2xl" style={{ borderTop: '1px solid #E4E4E7' }}>
-            {ENGAGEMENT_STEPS.map(step => (
-              <FadeIn key={step.num}>
-                <div className="flex gap-8 py-8" style={{ borderBottom: '1px solid #E4E4E7' }}>
+          <div className="max-w-2xl" style={{ borderTop: '1px solid var(--hairline)' }}>
+            {ENGAGEMENT_STEPS.map((step, i) => (
+              <FadeIn key={step.num} delay={i * 0.05}>
+                <div className="flex gap-8 py-8" style={{ borderBottom: '1px solid var(--hairline)' }}>
                   <span
-                    className="font-black text-3xl leading-none shrink-0 pt-0.5"
-                    style={{ color: '#E8E8EC', width: '3rem', fontVariantNumeric: 'tabular-nums' }}>
+                    className="font-display font-medium text-3xl leading-none shrink-0 pt-0.5"
+                    style={{ color: 'rgba(151,0,3,0.18)', width: '3rem', fontVariantNumeric: 'tabular-nums' }}>
                     {step.num}
                   </span>
                   <div>
-                    <h3 className="font-black text-lg mb-2" style={{ color: '#0D0D0D', letterSpacing: '-0.01em' }}>
+                    <h3 className="font-semibold text-lg mb-2" style={{ color: '#191313', letterSpacing: '-0.01em' }}>
                       {step.title}
                     </h3>
-                    <p className="text-sm leading-relaxed" style={{ color: '#71717A' }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
                       {step.desc}
                     </p>
                   </div>
@@ -168,24 +176,36 @@ export default function CollaboratePage() {
       </section>
 
       {/* ─── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background: '#8B0000' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+      <section
+        className="relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #7a0002 0%, #970003 55%, #6a0002 100%)' }}>
+        <div
+          className="absolute -top-32 -right-24 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'rgba(255,255,255,0.06)', filter: 'blur(70px)' }}
+          aria-hidden="true" />
+        <div
+          className="absolute -bottom-24 -left-16 w-80 h-80 rounded-full pointer-events-none"
+          style={{ background: 'rgba(0,0,0,0.15)', filter: 'blur(60px)' }}
+          aria-hidden="true" />
+
+        <div className="relative z-10 w-full px-6 sm:px-12 xl:px-20 py-20">
           <FadeIn>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
               <div>
+                <p className="kicker mb-4" style={{ color: 'rgba(255,255,255,0.55)' }}>Get Started</p>
                 <h2
                   className="font-display font-medium mb-2 leading-tight"
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#fff', letterSpacing: '-0.02em' }}>
                   Ready to collaborate with KL SAC?
                 </h2>
-                <p style={{ color: 'rgba(255,255,255,0.6)' }}>
+                <p style={{ color: 'rgba(255,255,255,0.65)' }}>
                   Reach out and our team will connect you to the right domain or club.
                 </p>
               </div>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-base transition-all hover:bg-white/90 shrink-0"
-                style={{ background: '#fff', color: '#8B0000' }}>
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-base transition-all hover:scale-[1.03] shrink-0"
+                style={{ background: '#fff', color: '#970003' }}>
                 Contact SAC
                 <ArrowUpRight size={16} />
               </Link>
@@ -196,4 +216,3 @@ export default function CollaboratePage() {
     </>
   );
 }
-
