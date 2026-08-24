@@ -121,7 +121,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
         <section style={{ background: '#F7F7F8' }}>
           <div className="max-w-4xl mx-auto px-5 sm:px-10 py-16">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#A1A1AA' }}>
+              <p className="kicker mb-4" style={{ color: '#A1A1AA' }}>
                 Next Story
               </p>
               <Link

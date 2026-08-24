@@ -285,15 +285,10 @@ export default async function HomePage() {
               </h2>
             </div>
             <div className="flex items-center gap-5 shrink-0">
-              <Link href="/domains"
-                className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-70"
-                style={{ color: '#970003' }}>
-                All domains <ArrowRight size={13} />
-              </Link>
               <Link href="/clubs"
                 className="inline-flex items-center gap-1.5 font-semibold text-sm transition-opacity hover:opacity-70"
-                style={{ color: 'rgba(25,19,19,0.4)' }}>
-                Browse clubs
+                style={{ color: '#970003' }}>
+                Browse clubs <ArrowRight size={13} />
               </Link>
             </div>
           </FadeIn>
@@ -315,11 +310,11 @@ export default async function HomePage() {
               });
 
               const domainRows = domains.length > 0 ? domains : [
-                { code: 'TEC', name: 'Central Technology Clubs',              slug: 'technology',    color: '#8B0000', accent_bg: '#fef2f2' },
-                { code: 'LCH', name: 'Liberal Arts, Creative Arts & Hobby',   slug: 'liberal-arts',  color: '#B91C1C', accent_bg: '#fef2f2' },
-                { code: 'ESO', name: 'Extension & Society Outreach Clubs',    slug: 'social-outreach', color: '#991B1B', accent_bg: '#fef2f2' },
-                { code: 'IIE', name: 'Innovation, Incubation & Entrepreneurship', slug: 'innovation', color: '#C53030', accent_bg: '#fef2f2' },
-                { code: 'HWB', name: 'Health and Wellbeing Clubs',            slug: 'health-wellbeing', color: '#7C0000', accent_bg: '#fef2f2' },
+                { code: 'TEC', name: 'Central Technology Clubs',              slug: 'technology',    color: '#970003', accent_bg: 'rgba(151,0,3,0.07)' },
+                { code: 'LCH', name: 'Liberal Arts, Creative Arts & Hobby',   slug: 'liberal-arts',  color: '#970003', accent_bg: 'rgba(151,0,3,0.07)' },
+                { code: 'ESO', name: 'Extension & Society Outreach Clubs',    slug: 'social-outreach', color: '#970003', accent_bg: 'rgba(151,0,3,0.07)' },
+                { code: 'IIE', name: 'Innovation, Incubation & Entrepreneurship', slug: 'innovation', color: '#970003', accent_bg: 'rgba(151,0,3,0.07)' },
+                { code: 'HWB', name: 'Health and Wellbeing Clubs',            slug: 'health-wellbeing', color: '#970003', accent_bg: 'rgba(151,0,3,0.07)' },
               ];
 
               return (
@@ -334,17 +329,15 @@ export default async function HomePage() {
 
                           {/* Domain badge + name + count */}
                           <div className="flex items-center gap-3 shrink-0 sm:w-64">
-                            <Link href={`/domains/${d.slug}`}
-                              className="w-11 h-7 rounded flex items-center justify-center text-[10px] font-black tracking-wider shrink-0 hover:opacity-80 transition-opacity"
+                            <div
+                              className="w-11 h-7 rounded flex items-center justify-center text-[10px] font-black tracking-wider shrink-0"
                               style={{ background: d.accent_bg ?? '#fdf2f2', color: d.color ?? '#970003' }}>
                               {d.code}
-                            </Link>
+                            </div>
                             <div className="min-w-0">
-                              <Link href={`/domains/${d.slug}`}
-                                className="font-semibold text-[13px] leading-tight hover:opacity-75 transition-opacity block"
-                                style={{ color: '#191313' }}>
+                              <p className="font-semibold text-[13px] leading-tight" style={{ color: '#191313' }}>
                                 {d.name}
-                              </Link>
+                              </p>
                               <span className="text-[11px]" style={{ color: 'rgba(25,19,19,0.35)' }}>
                                 {clubs.length || (clubCountByDomain[d.code] ?? 0)} clubs
                               </span>

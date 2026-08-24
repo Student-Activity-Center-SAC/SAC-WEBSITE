@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Upload, Save } from 'lucide-react';
+import { Upload, Save, Crop } from 'lucide-react';
+import ImageCropModal from '../../_components/ImageCropModal';
 
-const CATEGORIES = ['General', 'Achievement', 'Event', 'Workshop', 'Cultural', 'Sports', 'Tech', 'Social Outreach'];
+const CATEGORY_PRESETS = ['General', 'Achievement', 'Event', 'Workshop', 'Cultural', 'Sports', 'Tech', 'Social Outreach', 'Other'];
 
 interface Props { initial?: any; mode: 'create' | 'edit'; }
 
@@ -16,13 +17,17 @@ export default function NewsForm({ initial, mode }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+
+  const isPresetCategory = CATEGORY_PRESETS.slice(0, -1).includes(initial?.category);
 
   const [form, setForm] = useState({
     slug:       initial?.slug        ?? '',
     title:      initial?.title       ?? '',
     excerpt:    initial?.excerpt     ?? '',
     body:       initial?.body        ?? '',
-    category:   initial?.category    ?? 'General',
+    category:   initial?.category ? (isPresetCategory ? initial.category : 'Other') : 'General',
+    customCategory: initial?.category && !isPresetCategory ? initial.category : '',
     date:       initial?.date        ?? new Date().toISOString().split('T')[0],
     featured:   initial?.featured    ?? false,
     photo_url:  initial?.photo_url   ?? '',
@@ -30,13 +35,11 @@ export default function NewsForm({ initial, mode }: Props) {
 
   function set(k: string, v: any) { setForm(f => ({ ...f, [k]: v })); }
 
-  async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function uploadBlob(blob: Blob) {
     setUploading(true);
     try {
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', blob, 'cover.jpg');
       fd.append('folder', 'news');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const d   = await res.json();
@@ -50,11 +53,24 @@ export default function NewsForm({ initial, mode }: Props) {
     }
   }
 
+  function selectFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCropSrc(URL.createObjectURL(file));
+    e.target.value = '';
+  }
+
+  function reCropExisting() {
+    if (form.photo_url) setCropSrc(form.photo_url);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { ...form, slug: form.slug || slugify(form.title) };
+      const category = form.category === 'Other' ? (form.customCategory.trim() || 'Other') : form.category;
+      const { customCategory, ...rest } = form;
+      const payload = { ...rest, category, slug: form.slug || slugify(form.title) };
       const res = await fetch('/api/admin/news', {
         method: mode === 'create' ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -89,16 +105,22 @@ export default function NewsForm({ initial, mode }: Props) {
 
       {/* Date + Category + Featured */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Date *">
-          <input required type="date" value={form.date} onChange={e => set('date', e.target.value)}
+        <Field label="Date">
+          <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
                  className={input} style={inputStyle} />
         </Field>
         <Field label="Category">
           <select value={form.category} onChange={e => set('category', e.target.value)}
                   className={input} style={inputStyle}>
-            {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            {CATEGORY_PRESETS.map(c => <option key={c}>{c}</option>)}
           </select>
         </Field>
+        {form.category === 'Other' && (
+          <Field label="Specify category *">
+            <input required value={form.customCategory} onChange={e => set('customCategory', e.target.value)}
+                   className={input} style={inputStyle} placeholder="e.g. Alumni, Partnership…" />
+          </Field>
+        )}
       </div>
 
       {/* Featured */}
@@ -126,16 +148,24 @@ export default function NewsForm({ initial, mode }: Props) {
         <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>1200 × 630 px · 16:9 ratio · Article/event cover image</p>
         <div className="flex flex-col gap-2">
           {form.photo_url && (
-            <img src={form.photo_url} alt="preview"
-                 className="w-full max-h-48 object-cover rounded-xl border"
-                 style={{ borderColor: '#E4E4E7' }} />
+            <div className="relative w-full max-h-48 overflow-hidden rounded-xl border" style={{ borderColor: '#E4E4E7' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={form.photo_url} alt="preview" className="w-full max-h-48 object-cover" />
+              <button
+                type="button"
+                onClick={reCropExisting}
+                className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm"
+                style={{ background: 'rgba(0,0,0,0.65)', color: '#fff' }}>
+                <Crop size={12} /> Crop & Adjust
+              </button>
+            </div>
           )}
           <input value={form.photo_url} onChange={e => set('photo_url', e.target.value)}
                  className={input} style={inputStyle} placeholder="Paste URL or upload below" />
           <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold px-4 py-2.5 rounded-xl border transition-colors hover:bg-gray-50 w-fit"
                  style={{ borderColor: '#E4E4E7', color: uploading ? '#A1A1AA' : '#0D0D0D' }}>
             <Upload size={13} /> {uploading ? 'Uploading…' : 'Upload photo'}
-            <input type="file" accept="image/*" className="hidden" onChange={uploadPhoto} disabled={uploading} />
+            <input type="file" accept="image/*" className="hidden" onChange={selectFile} disabled={uploading} />
           </label>
         </div>
       </Field>
@@ -145,6 +175,18 @@ export default function NewsForm({ initial, mode }: Props) {
               style={{ background: '#8B0000', color: '#fff' }}>
         <Save size={14} /> {saving ? 'Saving…' : mode === 'create' ? 'Publish Article' : 'Save Changes'}
       </button>
+
+      {cropSrc && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          aspect={16 / 9}
+          onCancel={() => setCropSrc(null)}
+          onComplete={async blob => {
+            setCropSrc(null);
+            await uploadBlob(blob);
+          }}
+        />
+      )}
     </form>
   );
 }

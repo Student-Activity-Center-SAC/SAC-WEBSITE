@@ -26,7 +26,7 @@ export default async function NewsPage() {
     <>
       <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '56px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-8">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-4" style={{ color: '#8B0000' }}>
+          <p className="kicker mb-4" style={{ color: '#970003' }}>
             News & Updates
           </p>
           <h1
@@ -48,7 +48,7 @@ export default async function NewsPage() {
                 href={`/news/${featured.slug}`}
                 className="group grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl overflow-hidden transition-shadow hover:shadow-lg"
                 style={{ border: '1px solid #E4E4E7' }}>
-                <div className="lg:col-span-2 min-h-56 overflow-hidden" style={{ background: 'rgba(139,0,0,0.05)' }}>
+                <div className="lg:col-span-2 lg:self-start aspect-square overflow-hidden rounded-2xl" style={{ background: 'rgba(139,0,0,0.05)' }}>
                   {featured.photo_url ? (
                     <img src={featured.photo_url} alt={featured.title} className="w-full h-full object-cover" />
                   ) : (
@@ -115,7 +115,7 @@ export default async function NewsPage() {
                     </p>
                   </div>
                   {article.photo_url && (
-                    <div className="hidden sm:block w-28 h-20 shrink-0 rounded-xl overflow-hidden">
+                    <div className="hidden sm:block w-24 h-24 shrink-0 rounded-2xl overflow-hidden">
                       <img src={article.photo_url} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                   )}

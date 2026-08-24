@@ -5,7 +5,6 @@ import { DOMAINS } from '@/lib/content/domains';
 
 const NAVIGATE = [
   { href: '/about',         label: 'About SAC'      },
-  { href: '/domains',       label: 'Domains'         },
   { href: '/clubs',         label: 'All Clubs'       },
   { href: '/activities',     label: 'Activities'      },
   // { href: '/stories',       label: 'Student Stories' },
@@ -84,7 +83,7 @@ export default function Footer() {
 
         {/* Navigate */}
         <div>
-          <h4 className="text-[10px] font-black tracking-[0.18em] uppercase mb-5"
+          <h4 className="kicker mb-5"
               style={{ color: 'rgba(255,255,255,0.35)' }}>Navigate</h4>
           <ul className="space-y-3">
             {NAVIGATE.map(l => (
@@ -101,18 +100,13 @@ export default function Footer() {
 
         {/* Domains */}
         <div>
-          <h4 className="text-[10px] font-black tracking-[0.18em] uppercase mb-5"
+          <h4 className="kicker mb-5"
               style={{ color: 'rgba(255,255,255,0.35)' }}>Domains</h4>
           <ul className="space-y-3">
             {DOMAINS.map(d => (
-              <li key={d.code}>
-                <Link href={`/domains/${d.slug}`}
-                      className="flex items-center gap-2.5 text-sm transition-colors hover:text-white group"
-                      style={{ color: 'rgba(255,255,255,0.42)' }}>
-                  <span className="font-black text-xs shrink-0"
-                        style={{ color: d.color, opacity: 0.8 }}>{d.code}</span>
-                  <span>{d.shortName}</span>
-                </Link>
+              <li key={d.code} className="flex items-center gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                <span className="font-black text-xs shrink-0" style={{ color: d.color }}>{d.code}</span>
+                <span>{d.shortName}</span>
               </li>
             ))}
           </ul>
@@ -120,7 +114,7 @@ export default function Footer() {
 
         {/* Engage */}
         <div>
-          <h4 className="text-[10px] font-black tracking-[0.18em] uppercase mb-5"
+          <h4 className="kicker mb-5"
               style={{ color: 'rgba(255,255,255,0.35)' }}>Engage</h4>
           <ul className="space-y-3 mb-8">
             {ENGAGE.map(l => (

@@ -46,7 +46,7 @@ export default async function StoriesPage() {
         <section style={{ background: '#fff' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-6" style={{ color: '#8B0000' }}>
+              <p className="kicker mb-6" style={{ color: '#970003' }}>
                 Featured Story
               </p>
               <Link
@@ -103,7 +103,7 @@ export default async function StoriesPage() {
         <section style={{ background: '#F7F7F8' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-10" style={{ color: '#A1A1AA' }}>
+              <p className="kicker mb-10" style={{ color: '#A1A1AA' }}>
                 More Stories
               </p>
             </FadeIn>

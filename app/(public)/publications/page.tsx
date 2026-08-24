@@ -29,7 +29,7 @@ export default async function PublicationsPage() {
     <>
       <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '48px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-8">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-4" style={{ color: '#8B0000' }}>
+          <p className="kicker mb-4" style={{ color: '#970003' }}>
             Publications
           </p>
           <h1

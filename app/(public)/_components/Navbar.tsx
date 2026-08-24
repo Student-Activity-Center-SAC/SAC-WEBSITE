@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 
 const NAV_LINKS_LEFT = [
+  { href: '/',      label: 'Home'  },
   { href: '/about', label: 'About' },
 ];
 
@@ -34,7 +35,7 @@ export default function Navbar() {
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
-  const isActive = (href: string) => pathname.startsWith(href);
+  const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   const textColor = (active: boolean) =>
     glass

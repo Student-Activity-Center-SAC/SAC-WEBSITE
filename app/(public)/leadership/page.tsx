@@ -43,7 +43,7 @@ export default async function LeadershipPage() {
       {/* ─── Group Photo ──────────────────────────────────────────────── */}
       <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-10">
-          <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-5" style={{ color: '#8B0000' }}>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>
             Student Council Group Photo
           </p>
 

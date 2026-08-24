@@ -87,7 +87,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
         <section style={{ background: '#fff' }}>
           <div className="max-w-4xl mx-auto px-5 sm:px-10 py-16">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-5" style={{ color: '#A1A1AA' }}>
+              <p className="kicker mb-5" style={{ color: '#A1A1AA' }}>
                 Continue Reading
               </p>
               <Link

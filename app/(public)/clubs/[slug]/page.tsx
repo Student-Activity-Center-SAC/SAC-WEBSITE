@@ -106,11 +106,11 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
 
         <div className="w-full px-6 sm:px-12 xl:px-20" style={{ position: 'relative' }}>
           <Link
-            href={`/domains/${domain.slug}`}
+            href="/clubs"
             className="inline-flex items-center gap-2 text-xs font-bold mb-8 transition-opacity hover:opacity-70"
             style={{ color: club.cover_url ? '#fff' : domain.color }}>
             <ArrowLeft size={12} />
-            {domain.shortName} Domain
+            {domain.shortName}
           </Link>
 
           <div className="flex items-center gap-3 mb-4">
@@ -170,7 +170,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             <div className="lg:col-span-2">
               <FadeIn>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-6" style={{ color: domain.color }}>
+                <p className="kicker mb-6" style={{ color: domain.color }}>
                   About the Club
                 </p>
                 <div className="flex flex-col gap-5">
@@ -192,7 +192,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
               <FadeIn delay={0.1}>
                 {club.purpose && (
                   <div className="rounded-2xl p-6 mb-6" style={{ background: '#F7F7F8', border: '1px solid #E4E4E7' }}>
-                    <p className="text-[10px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#A1A1AA' }}>
+                    <p className="kicker mb-3" style={{ color: '#A1A1AA' }}>
                       Our Purpose
                     </p>
                     <p className="text-sm leading-relaxed" style={{ color: '#3F3F46' }}>
@@ -201,9 +201,8 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   </div>
                 )}
 
-                <Link
-                  href={`/domains/${domain.slug}`}
-                  className="flex items-center gap-3 p-4 rounded-xl transition-colors hover:bg-gray-50 group"
+                <div
+                  className="flex items-center gap-3 p-4 rounded-xl"
                   style={{ border: '1px solid #E4E4E7' }}>
                   <div
                     className="w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs shrink-0"
@@ -218,8 +217,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                       {domain.tagline}
                     </p>
                   </div>
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" style={{ color: '#D1D1D6' }} />
-                </Link>
+                </div>
               </FadeIn>
             </div>
           </div>
@@ -232,7 +230,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: domain.color }}>
+                <p className="kicker mb-3" style={{ color: domain.color }}>
                   Club Gallery
                 </p>
                 <h2
@@ -298,7 +296,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
         <section style={{ background: '#fff' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-8" style={{ color: domain.color }}>
+              <p className="kicker mb-8" style={{ color: domain.color }}>
                 Competencies You'll Develop
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -320,7 +318,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: domain.color }}>
+                <p className="kicker mb-3" style={{ color: domain.color }}>
                   Activities Programme
                 </p>
                 <h2
@@ -407,7 +405,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
         <section style={{ background: '#fff' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
             <FadeIn>
-              <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-8" style={{ color: domain.color }}>
+              <p className="kicker mb-8" style={{ color: domain.color }}>
                 What We Do
               </p>
               <div className="max-w-2xl" style={{ borderTop: '1px solid #E4E4E7' }}>
@@ -438,7 +436,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: domain.color }}>
+                <p className="kicker mb-3" style={{ color: domain.color }}>
                   Club Achievements
                 </p>
                 <h2
@@ -484,7 +482,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: domain.color }}>
+                <p className="kicker mb-3" style={{ color: domain.color }}>
                   Office Bearers
                 </p>
                 <h2

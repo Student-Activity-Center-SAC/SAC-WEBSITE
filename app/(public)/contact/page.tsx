@@ -13,7 +13,7 @@ export default function ContactPage() {
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
       <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '56px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-8">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-4" style={{ color: '#8B0000' }}>
+          <p className="kicker mb-4" style={{ color: '#970003' }}>
             Contact
           </p>
           <h1
@@ -35,7 +35,7 @@ export default function ContactPage() {
             {/* Left: Contact info */}
             <div className="lg:col-span-1">
               <FadeIn>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-6" style={{ color: '#8B0000' }}>
+                <p className="kicker mb-6" style={{ color: '#970003' }}>
                   Reach Us
                 </p>
 
@@ -100,7 +100,7 @@ export default function ContactPage() {
             {/* Right: Enquiry types */}
             <div className="lg:col-span-2">
               <FadeIn delay={0.1}>
-                <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-6" style={{ color: '#A1A1AA' }}>
+                <p className="kicker mb-6" style={{ color: '#A1A1AA' }}>
                   Enquiry Types
                 </p>
 

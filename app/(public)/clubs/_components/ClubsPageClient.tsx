@@ -45,7 +45,7 @@ export default function ClubsPageClient({ clubs }: Props) {
       {/* ─── Hero ────────────────────────────────────────────────────── */}
       <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '0' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-10 pb-0">
-          <p className="text-[10px] font-black tracking-[0.25em] uppercase mb-4" style={{ color: '#8B0000' }}>
+          <p className="kicker mb-4" style={{ color: '#970003' }}>
             20+ Clubs · {totalDomains} Domains
           </p>
           <h1
@@ -124,12 +124,6 @@ export default function ClubsPageClient({ clubs }: Props) {
                       {domain.tagline}
                     </p>
                   </div>
-                  <Link
-                    href={`/domains/${domain.slug}`}
-                    className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold transition-opacity hover:opacity-70"
-                    style={{ color: domain.color }}>
-                    About this domain <ArrowRight size={11} />
-                  </Link>
                 </div>
 
                 {/* Club rows */}
