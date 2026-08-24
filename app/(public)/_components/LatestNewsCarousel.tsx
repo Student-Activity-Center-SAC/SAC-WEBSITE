@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Article {
   slug: string;
@@ -16,6 +16,9 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = articles.length;
+
+  function prev() { setActive(i => (i - 1 + count) % count); }
+  function next() { setActive(i => (i + 1) % count); }
 
   useEffect(() => {
     if (count <= 1 || paused) return;
@@ -79,22 +82,40 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
         </div>
       </Link>
 
-      {/* Indicators */}
+      {/* Controls */}
       {count > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
-          {articles.map((a, i) => (
-            <button
-              key={a.slug}
-              onClick={() => setActive(i)}
-              aria-label={`Show news ${i + 1}`}
-              className="transition-all rounded-full"
-              style={{
-                height: '6px',
-                width: i === active ? '22px' : '6px',
-                background: i === active ? '#970003' : 'rgba(25,19,19,0.15)',
-              }}
-            />
-          ))}
+        <div className="flex items-center justify-between mt-6">
+          <button
+            onClick={prev}
+            aria-label="Previous article"
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+            style={{ background: 'rgba(25,19,19,0.06)', color: 'rgba(25,19,19,0.5)' }}>
+            <ChevronLeft size={18} />
+          </button>
+
+          <div className="flex items-center gap-2">
+            {articles.map((a, i) => (
+              <button
+                key={a.slug}
+                onClick={() => setActive(i)}
+                aria-label={`Show news ${i + 1}`}
+                className="transition-all rounded-full"
+                style={{
+                  height: '6px',
+                  width: i === active ? '22px' : '6px',
+                  background: i === active ? '#970003' : 'rgba(25,19,19,0.15)',
+                }}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={next}
+            aria-label="Next article"
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+            style={{ background: 'rgba(25,19,19,0.06)', color: 'rgba(25,19,19,0.5)' }}>
+            <ChevronRight size={18} />
+          </button>
         </div>
       )}
     </div>

@@ -8,6 +8,7 @@ import { db } from '@/lib/query-builder';
 import { PartnersMarquee } from './_components/PartnersMarquee';
 import { UpcomingActivitiesHome } from './_components/UpcomingActivitiesHome';
 import { LatestNewsCarousel } from './_components/LatestNewsCarousel';
+import { AchievementsCarousel } from './_components/AchievementsCarousel';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,7 @@ const JOURNEY_STEPS = [
 ];
 
 export default async function HomePage() {
-  const [storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes] = await Promise.all([
+  const [storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes, achievementsRes] = await Promise.all([
     db.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
     db.from('site_settings').select('key, value'),
     db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').gt('homepage_order', 0).order('homepage_order', { ascending: true }).limit(6),
@@ -35,12 +36,14 @@ export default async function HomePage() {
     db.from('clubs').select('domain_code, slug, name'),
     db.from('sac_stats').select('key, value'),
     db.from('partners').select('*'),
+    db.from('achievements').select('id, title, description, level, domain_code, club_name, year, photo, organization').order('sort_order', { ascending: true }).order('year', { ascending: false }).limit(20),
   ]);
 
-  const stories      = storiesRes.data ?? [];
-  const newsArticles = newsRes.data ?? [];
-  const domains      = domainsRes.data ?? [];
-  const partners     = partnersRes.data ?? [];
+  const stories       = storiesRes.data ?? [];
+  const newsArticles  = newsRes.data ?? [];
+  const domains       = domainsRes.data ?? [];
+  const partners      = partnersRes.data ?? [];
+  const achievements  = (achievementsRes.data ?? []) as any[];
   const settingsMap: Record<string, string> = {};
   (settingsRes.data ?? []).forEach((s: any) => { if (s.value) settingsMap[s.key] = s.value; });
   const heroVideoUrl = settingsMap['hero_video_url'] || 'https://pub-2172d3960f064d32b43c4d6ba9a3135d.r2.dev/hero.mp4';
@@ -494,49 +497,16 @@ export default async function HomePage() {
           </FadeIn>
 
           <FadeIn>
-            {(() => {
-              const levels = [
-                { label: 'National',   key: 'ach_national',  bar: 'linear-gradient(90deg, #970003, #c67374)' },
-                { label: 'State',      key: 'ach_state',     bar: 'linear-gradient(90deg, #970003 0%, #d97706 100%)' },
-                { label: 'University', key: 'ach_university', bar: 'linear-gradient(90deg, rgba(151,0,3,0.3), rgba(151,0,3,0.6))' },
-              ].map(l => ({ ...l, count: sacStatsMap[l.key] ?? 0 }));
-
-              const maxCount = Math.max(...levels.map(l => l.count), 1);
-              const hasAny   = levels.some(l => l.count > 0);
-
-              if (!hasAny) {
-                return (
-                  <p className="text-sm" style={{ color: 'rgba(25,19,19,0.3)' }}>
-                    No achievements added yet.
-                  </p>
-                );
-              }
-
-              return (
-                <div style={{ maxWidth: '580px' }}>
-                  <div className="flex flex-col gap-8">
-                    {levels.map(l => {
-                      const pct = l.count > 0 ? Math.round((l.count / maxCount) * 100) : 0;
-                      return (
-                        <div key={l.label}>
-                          <div className="flex items-end justify-between mb-3">
-                            <span className="kicker" style={{ color: 'rgba(25,19,19,0.4)' }}>{l.label}</span>
-                            <span className="font-display font-medium leading-none"
-                              style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: l.count > 0 ? '#970003' : 'rgba(25,19,19,0.1)', letterSpacing: '-0.03em' }}>
-                              {l.count > 0 ? l.count : '—'}
-                            </span>
-                          </div>
-                          <div className="w-full rounded-full overflow-hidden" style={{ height: '4px', background: 'rgba(25,19,19,0.07)' }}>
-                            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: l.bar }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })()}
+            <AchievementsCarousel achievements={achievements} />
           </FadeIn>
+
+          <div className="mt-8 sm:hidden">
+            <Link href="/achievements"
+              className="inline-flex items-center gap-2 font-semibold text-sm"
+              style={{ color: '#970003' }}>
+              View all achievements <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
       </section>
 

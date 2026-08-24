@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FadeIn } from './FadeIn';
 
 const UPSTREAM = 'https://sacactivities.kluniversity.in/api/public/activities/upcoming';
@@ -10,11 +10,17 @@ const DOMAIN_COLORS: Record<string, string> = {
   TEC: '#3B82F6', LCH: '#8B5CF6', HWB: '#10B981', ESO: '#F59E0B', IIE: '#EF4444',
 };
 
+const MONTH_NAMES = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
+
 interface Activity {
   code: string;
   title: string;
   domain: string;
   category: string;
+  club_name?: string;
   venue: string;
   activity_date: string;
 }
@@ -25,22 +31,73 @@ function fetchWithTimeout(url: string, ms = 12000): Promise<Response> {
   return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
 }
 
+function getCalendarDays(year: number, month: number): (number | null)[] {
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const days: (number | null)[] = [];
+  for (let i = 0; i < firstDay; i++) days.push(null);
+  for (let d = 1; d <= daysInMonth; d++) days.push(d);
+  while (days.length % 7 !== 0) days.push(null);
+  return days;
+}
+
+function toDateKey(year: number, month: number, day: number) {
+  return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
 export function UpcomingActivitiesHome() {
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+
+  const today = new Date();
+  const [calYear, setCalYear]   = useState(today.getFullYear());
+  const [calMonth, setCalMonth] = useState(today.getMonth());
 
   useEffect(() => {
     fetchWithTimeout(UPSTREAM)
       .then(r => r.json())
-      .then(d => setActivities(Array.isArray(d.activities) ? d.activities.slice(0, 5) : []))
+      .then(d => {
+        const acts: Activity[] = Array.isArray(d.activities) ? d.activities : [];
+        setActivities(acts);
+        if (acts.length > 0) {
+          const first = new Date(acts[0].activity_date);
+          if (!isNaN(first.getTime())) {
+            setCalYear(first.getFullYear());
+            setCalMonth(first.getMonth());
+          }
+        }
+      })
       .catch(() => setActivities([]))
       .finally(() => setLoading(false));
   }, []);
 
+  // Index activities by date key
+  const actsByDate: Record<string, Activity[]> = {};
+  activities.forEach(act => {
+    const key = act.activity_date?.slice(0, 10);
+    if (key) {
+      if (!actsByDate[key]) actsByDate[key] = [];
+      actsByDate[key].push(act);
+    }
+  });
+
+  const calDays = getCalendarDays(calYear, calMonth);
+  const todayKey = toDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+  function prevMonth() {
+    if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); }
+    else setCalMonth(m => m - 1);
+  }
+  function nextMonth() {
+    if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); }
+    else setCalMonth(m => m + 1);
+  }
+
   return (
     <section style={{ background: '#faf6f1' }}>
-      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
-        <FadeIn className="mb-12">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12 lg:py-16">
+        <FadeIn className="mb-8">
           <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
           <h2
             className="font-display font-medium leading-[1.07]"
@@ -50,63 +107,220 @@ export function UpcomingActivitiesHome() {
         </FadeIn>
 
         <FadeIn>
-          <div style={{ borderTop: '1px solid var(--hairline)' }}>
-            {loading ? (
-              [...Array(3)].map((_, i) => (
-                <div key={i} className="py-5" style={{ borderBottom: '1px solid var(--hairline)' }}>
-                  <div className="h-12 rounded-lg animate-pulse" style={{ background: 'rgba(25,19,19,0.06)' }} />
-                </div>
-              ))
-            ) : activities.length === 0 ? (
-              <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.4)' }}>
-                <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
-                <p className="text-sm">Check back soon or visit the activities page.</p>
-              </div>
-            ) : activities.map(act => {
-              const date  = new Date(act.activity_date);
-              const color = DOMAIN_COLORS[act.domain] ?? '#970003';
-              return (
-                <div key={act.code}
-                  className="group flex items-start gap-6 py-5"
-                  style={{ borderBottom: '1px solid var(--hairline)' }}>
-                  {/* Date stamp */}
-                  <div className="shrink-0 text-center"
-                    style={{ minWidth: '3.5rem', background: '#970003', borderRadius: '0.375rem', padding: '8px 10px' }}>
-                    <div className="font-display font-medium text-xl leading-none" style={{ color: '#fff' }}>
-                      {date.getDate()}
-                    </div>
-                    <div className="text-[10px] font-semibold tracking-wider uppercase mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                      {date.toLocaleString('en-IN', { month: 'short' })}
-                    </div>
-                  </div>
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1" style={{ color: '#191313' }}>
-                      {act.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>
-                      <span className="font-bold text-[10px] uppercase tracking-wider" style={{ color }}>{act.domain}</span>
-                      {act.category && <><span>·</span><span className="font-medium">{act.category}</span></>}
-                      {act.venue && <><span>·</span><span>{act.venue}</span></>}
-                    </div>
-                  </div>
-                  {/* CTA */}
-                  <a href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
-                    className="text-xs font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
-                    style={{ color: '#970003' }}>
-                    Register <ArrowUpRight size={12} />
-                  </a>
-                </div>
-              );
-            })}
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-10 lg:gap-12 items-start">
 
-          <div className="mt-8">
-            <Link href="/activities?tab=upcoming"
-              className="inline-flex items-center gap-2 font-semibold text-sm"
-              style={{ color: '#970003' }}>
-              View all activities <ArrowRight size={14} />
-            </Link>
+            {/* ── Mini Calendar ─────────────────────────────────────── */}
+            <div className="rounded-2xl overflow-visible" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+
+              {/* Month nav */}
+              <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <button
+                  onClick={prevMonth}
+                  className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                  style={{ color: 'rgba(25,19,19,0.4)' }}
+                  aria-label="Previous month">
+                  <ChevronLeft size={18} />
+                </button>
+                <span className="font-semibold text-base" style={{ color: '#191313' }}>
+                  {MONTH_NAMES[calMonth]} {calYear}
+                </span>
+                <button
+                  onClick={nextMonth}
+                  className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                  style={{ color: 'rgba(25,19,19,0.4)' }}
+                  aria-label="Next month">
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+
+              {/* Day-of-week headers */}
+              <div className="grid grid-cols-7 px-4 pt-4 pb-2">
+                {['S','M','T','W','T','F','S'].map((d, i) => (
+                  <div key={i} className="text-center text-xs font-semibold tracking-wide uppercase py-1"
+                       style={{ color: 'rgba(25,19,19,0.28)' }}>
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              {/* Days */}
+              <div className="grid grid-cols-7 px-4 pb-5 gap-y-1" style={{ position: 'relative' }}>
+                {calDays.map((day, i) => {
+                  if (!day) return <div key={`e-${i}`} className="h-11" />;
+                  const dateKey = toDateKey(calYear, calMonth, day);
+                  const hasAct  = !!actsByDate[dateKey];
+                  const isToday = dateKey === todayKey;
+                  const isPast  = dateKey < todayKey;
+
+                  return (
+                    <div
+                      key={dateKey}
+                      className="relative flex items-center justify-center"
+                      style={{ zIndex: hoveredDate === dateKey ? 50 : 'auto' }}
+                      onMouseEnter={() => hasAct && setHoveredDate(dateKey)}
+                      onMouseLeave={() => setHoveredDate(null)}>
+
+                      {/* Day cell */}
+                      <div
+                        className="w-11 h-11 rounded-full flex items-center justify-center text-sm transition-all select-none"
+                        style={{
+                          background: hasAct
+                            ? '#970003'
+                            : isToday
+                              ? 'rgba(151,0,3,0.09)'
+                              : 'transparent',
+                          color: hasAct
+                            ? '#fff'
+                            : isPast && !isToday
+                              ? 'rgba(25,19,19,0.18)'
+                              : isToday
+                                ? '#970003'
+                                : 'rgba(25,19,19,0.72)',
+                          fontWeight: hasAct || isToday ? 600 : 400,
+                          cursor: hasAct ? 'default' : 'default',
+                        }}>
+                        {day}
+                      </div>
+
+                      {/* Hover tooltip */}
+                      {hasAct && hoveredDate === dateKey && (
+                        <div
+                          className="absolute bottom-full left-1/2 mb-2.5 rounded-xl shadow-2xl pointer-events-none"
+                          style={{
+                            transform: 'translateX(-50%)',
+                            background: '#1a0404',
+                            minWidth: '200px',
+                            maxWidth: '250px',
+                            padding: '10px 12px',
+                            zIndex: 100,
+                          }}>
+                          {actsByDate[dateKey].map((act, j) => (
+                            <div key={act.code}
+                                 className={j > 0 ? 'mt-2 pt-2' : ''}
+                                 style={{ borderTop: j > 0 ? '1px solid rgba(255,255,255,0.08)' : 'none' }}>
+                              <p className="text-xs font-semibold leading-snug" style={{ color: '#fff' }}>
+                                {act.title}
+                              </p>
+                              <p className="text-[10px] mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                                {[act.domain, act.club_name || act.category, act.venue].filter(Boolean).join(' · ')}
+                              </p>
+                            </div>
+                          ))}
+                          {/* Triangle */}
+                          <div style={{
+                            position: 'absolute', top: '100%', left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: 0, height: 0,
+                            borderLeft: '6px solid transparent',
+                            borderRight: '6px solid transparent',
+                            borderTop: '6px solid #1a0404',
+                          }} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Legend */}
+              <div className="px-6 py-4 flex items-center gap-5" style={{ borderTop: '1px solid var(--hairline)' }}>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full" style={{ background: '#970003' }} />
+                  <span className="text-[10px]" style={{ color: 'rgba(25,19,19,0.4)' }}>Activity</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full" style={{ background: 'rgba(151,0,3,0.09)', border: '1px solid rgba(151,0,3,0.25)' }} />
+                  <span className="text-[10px]" style={{ color: 'rgba(25,19,19,0.4)' }}>Today</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Activity List ──────────────────────────────────────── */}
+            <div>
+              <div style={{ borderTop: '1px solid var(--hairline)' }}>
+                {loading ? (
+                  [...Array(4)].map((_, i) => (
+                    <div key={i} className="py-5 flex gap-6" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                      <div className="w-10 h-12 rounded animate-pulse shrink-0" style={{ background: 'rgba(25,19,19,0.06)' }} />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 rounded animate-pulse w-3/4" style={{ background: 'rgba(25,19,19,0.06)' }} />
+                        <div className="h-3 rounded animate-pulse w-1/2" style={{ background: 'rgba(25,19,19,0.04)' }} />
+                      </div>
+                    </div>
+                  ))
+                ) : activities.length === 0 ? (
+                  <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.4)' }}>
+                    <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
+                    <p className="text-sm">Check back soon or visit the activities page.</p>
+                  </div>
+                ) : activities.slice(0, 8).map(act => {
+                  const date  = new Date(act.activity_date);
+                  const color = DOMAIN_COLORS[act.domain] ?? '#970003';
+                  const meta  = [act.club_name || act.category, act.venue].filter(Boolean).join(' · ');
+                  return (
+                    <div
+                      key={act.code}
+                      className="group flex items-start gap-5 sm:gap-7 py-6"
+                      style={{ borderBottom: '1px solid var(--hairline)' }}>
+
+                      {/* Date stamp */}
+                      <div className="shrink-0 text-center" style={{ minWidth: '3rem' }}>
+                        <div
+                          className="font-display font-medium leading-none tabular-nums"
+                          style={{ fontSize: '2rem', color: '#970003' }}>
+                          {String(date.getDate()).padStart(2, '0')}
+                        </div>
+                        <div
+                          className="text-[10px] font-semibold tracking-widest uppercase mt-1"
+                          style={{ color: 'rgba(25,19,19,0.32)' }}>
+                          {date.toLocaleString('en-IN', { month: 'short' })}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="w-px self-stretch shrink-0 mt-1" style={{ background: 'rgba(151,0,3,0.15)' }} />
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        <h3 className="font-semibold text-base leading-snug mb-1.5" style={{ color: '#191313' }}>
+                          {act.title}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs"
+                             style={{ color: 'rgba(25,19,19,0.4)' }}>
+                          <span className="font-bold text-[10px] uppercase tracking-wider" style={{ color }}>
+                            {act.domain}
+                          </span>
+                          {meta && (
+                            <>
+                              <span style={{ color: 'rgba(25,19,19,0.22)' }}>·</span>
+                              <span>{meta}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Register CTA — appears on hover */}
+                      <a
+                        href="https://sacactivities.kluniversity.in/auth/login"
+                        target="_blank" rel="noopener"
+                        className="text-xs font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
+                        style={{ color: '#970003' }}>
+                        Register <ArrowUpRight size={12} />
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-8">
+                <Link
+                  href="/activities?tab=upcoming"
+                  className="inline-flex items-center gap-2 font-semibold text-sm"
+                  style={{ color: '#970003' }}>
+                  View all activities <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
           </div>
         </FadeIn>
       </div>
