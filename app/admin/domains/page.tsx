@@ -55,7 +55,7 @@ export default async function AdminDomainsPage() {
             Run the SQL in MySQL, then run the seed command in your browser console:
           </p>
           <code className="block text-xs rounded-xl p-4 text-left" style={{ background: '#F7F7F8', color: '#3F3F46' }}>
-            {`fetch('/api/admin/seed/domains', { method: 'POST', headers: { 'x-setup-key': 'KLSACsetup2026' } }).then(r => r.json()).then(console.log)`}
+            {`fetch('/api/admin/seed/domains', { method: 'POST', headers: { 'x-setup-key': process.env.ADMIN_SETUP_KEY } }).then(r => r.json()).then(console.log)`}
           </code>
         </div>
       ) : (

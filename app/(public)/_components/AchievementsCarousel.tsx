@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
 
@@ -29,7 +29,13 @@ interface Achievement {
 export function AchievementsCarousel({ achievements }: { achievements: Achievement[] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [needsClamp, setNeedsClamp] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
   const count = achievements.length;
+
+  // Reset expand state when active changes
+  useEffect(() => { setExpanded(false); }, [active]);
 
   useEffect(() => {
     if (count <= 1 || paused) return;
@@ -39,6 +45,18 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
 
   function prev() { setActive(i => (i - 1 + count) % count); }
   function next() { setActive(i => (i + 1) % count); }
+
+  // Measure if description overflows 3 lines
+  useLayoutEffect(() => {
+    const el = descRef.current;
+    if (!el) return;
+    el.style.webkitLineClamp = '3';
+    el.style.overflow = 'hidden';
+    const clamped = el.scrollHeight > el.clientHeight + 1;
+    el.style.webkitLineClamp = expanded ? 'unset' : '3';
+    el.style.overflow = expanded ? 'visible' : 'hidden';
+    setNeedsClamp(clamped);
+  }, [active, expanded]);
 
   if (count === 0) {
     return (
@@ -105,14 +123,33 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
 
           <h3
             className="font-display font-medium leading-tight mb-3"
-            style={{ fontSize: 'clamp(1.15rem, 2vw, 1.6rem)', color: '#191313', letterSpacing: '-0.01em' }}>
+            style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
             {ach.title}
           </h3>
 
           {ach.description && (
-            <p className="text-sm leading-relaxed mb-5 line-clamp-3" style={{ color: 'rgba(25,19,19,0.5)' }}>
-              {ach.description}
-            </p>
+            <div className="mb-5">
+              <p
+                ref={descRef}
+                className="text-sm leading-relaxed"
+                style={{
+                  color: 'rgba(25,19,19,0.5)',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: expanded ? 'unset' : 3,
+                  overflow: expanded ? 'visible' : 'hidden',
+                }}>
+                {ach.description}
+              </p>
+              {needsClamp && (
+                <button
+                  onClick={() => setExpanded(e => !e)}
+                  className="text-xs font-semibold mt-1.5 transition-opacity hover:opacity-70"
+                  style={{ color: '#970003' }}>
+                  {expanded ? 'Show less' : 'Read more'}
+                </button>
+              )}
+            </div>
           )}
 
           {ach.organization && (

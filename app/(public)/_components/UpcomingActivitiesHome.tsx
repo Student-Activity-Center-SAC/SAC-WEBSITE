@@ -282,7 +282,7 @@ export function UpcomingActivitiesHome() {
 
                       {/* Content */}
                       <div className="flex-1 min-w-0 pt-0.5">
-                        <h3 className="font-semibold text-base leading-snug mb-1.5" style={{ color: '#191313' }}>
+                        <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1.5" style={{ color: '#191313' }}>
                           {act.title}
                         </h3>
                         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs"

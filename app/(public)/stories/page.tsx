@@ -70,13 +70,13 @@ export default async function StoriesPage() {
 
                 <div className="lg:col-span-3 p-8 sm:p-12 flex flex-col justify-center">
                   <span
-                    className="text-[10px] font-black uppercase tracking-widest mb-4 inline-block"
+                    className="kicker mb-4"
                     style={{ color: DOMAIN_COLORS[featured.domain_code] ?? '#8B0000' }}>
                     {featured.domain_code} · {featured.club_name}
                   </span>
                   <h2
                     className="font-display font-medium leading-tight mb-4"
-                    style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                    style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                     {featured.title}
                   </h2>
                   <p className="text-sm mb-6 leading-relaxed" style={{ color: '#71717A' }}>
@@ -129,11 +129,11 @@ export default async function StoriesPage() {
                   </div>
 
                   <div className="p-5 flex flex-col flex-1">
-                    <span className="text-[9px] font-black tracking-widest uppercase mb-2"
+                    <span className="kicker mb-2"
                           style={{ color: DOMAIN_COLORS[story.domain_code] ?? '#8B0000' }}>
                       {story.domain_code} · {story.club_name}
                     </span>
-                    <h3 className="font-bold text-base leading-snug mb-2 flex-1" style={{ color: '#0D0D0D' }}>
+                    <h3 className="font-semibold text-base sm:text-lg leading-snug mb-2 flex-1" style={{ color: '#0D0D0D' }}>
                       {story.title}
                     </h3>
                     <p className="text-xs mb-4 line-clamp-2" style={{ color: '#71717A' }}>

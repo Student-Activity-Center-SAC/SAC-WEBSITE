@@ -27,16 +27,19 @@ export default async function PublicationsPage() {
 
   return (
     <>
-      <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '48px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '48px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-8">
           <p className="kicker mb-4" style={{ color: '#970003' }}>
             Publications
           </p>
           <h1
             className="font-display font-medium leading-[1.05] mb-4"
-            style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             Reports & Publications
           </h1>
+          <p className="text-lg" style={{ color: '#71717A', maxWidth: '54ch' }}>
+            Annual reports, magazines, newsletters, and research from across KL SAC's clubs and domains.
+          </p>
         </div>
       </section>
 
@@ -64,8 +67,8 @@ export default async function PublicationsPage() {
                         <span className="text-[10px] font-bold" style={{ color: '#C7C7CC' }}>{pub.year}</span>
                       </div>
                       <h2
-                        className="font-display font-medium text-xl sm:text-2xl leading-tight mb-2"
-                        style={{ color: '#0D0D0D', letterSpacing: '-0.01em' }}>
+                        className="font-display font-medium leading-tight mb-2"
+                        style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#0D0D0D', letterSpacing: '-0.01em' }}>
                         {pub.title}
                       </h2>
                       <p className="text-sm leading-relaxed" style={{ color: '#71717A', maxWidth: '64ch' }}>

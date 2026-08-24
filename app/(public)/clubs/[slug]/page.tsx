@@ -138,7 +138,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           <h1
             className="font-display font-medium leading-tight mb-3"
             style={{
-              fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+              fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
               color: club.cover_url ? '#fff' : '#0D0D0D',
               letterSpacing: '-0.025em',
             }}>
@@ -235,7 +235,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                 </p>
                 <h2
                   className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   Behind the scenes.
                 </h2>
               </div>
@@ -323,7 +323,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                 </p>
                 <h2
                   className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   What we do, all year.
                 </h2>
               </div>
@@ -441,7 +441,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                 </p>
                 <h2
                   className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   Honours & recognition.
                 </h2>
               </div>
@@ -487,7 +487,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                 </p>
                 <h2
                   className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   The team behind the club.
                 </h2>
               </div>
@@ -539,8 +539,8 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   <Users size={16} style={{ color: domain.color }} />
                 </div>
                 <h2
-                  className="font-display font-medium text-2xl sm:text-3xl mb-2 leading-tight"
-                  style={{ color: '#191313', letterSpacing: '-0.02em' }}>
+                  className="font-display font-medium mb-2 leading-tight"
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                   Ready to join {club.name}?
                 </h2>
                 <p style={{ color: 'rgba(25,19,19,0.55)' }}>

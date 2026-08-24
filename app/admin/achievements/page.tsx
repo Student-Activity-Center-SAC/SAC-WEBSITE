@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { Plus, Pencil, Trash2, Trophy, ArrowUp, ArrowDown, AlertCircle, Save } from 'lucide-react';
+import { Plus, Pencil, Trash2, Trophy, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
 
 const LEVEL_COLORS: Record<string, { bg: string; color: string }> = {
   International: { bg: 'rgba(139,0,0,0.08)', color: '#8B0000' },
@@ -16,50 +16,15 @@ export default function AchievementsAdminPage() {
   const [loading, setLoading]           = useState(true);
   const [needsMigration, setNeedsMigration] = useState(false);
   const [reordering, setReordering]     = useState(false);
-  const [achStats, setAchStats]         = useState({ national: '', state: '', university: '' });
-  const [savingStats, setSavingStats]   = useState(false);
 
   async function load() {
-    const [r, sr] = await Promise.all([
-      fetch('/api/admin/achievements'),
-      fetch('/api/admin/stats'),
-    ]);
-    const d  = await r.json();
-    const sd = await sr.json();
+    const r = await fetch('/api/admin/achievements');
+    const d = await r.json();
     setAchievements(d.data ?? []);
     setNeedsMigration(d.needsMigration ?? false);
-    const sm: Record<string, number> = {};
-    (sd.data ?? []).forEach((s: any) => { sm[s.key] = s.value; });
-    setAchStats({
-      national:   sm['ach_national']   ? String(sm['ach_national'])   : '',
-      state:      sm['ach_state']      ? String(sm['ach_state'])      : '',
-      university: sm['ach_university'] ? String(sm['ach_university']) : '',
-    });
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
-
-  async function saveAchStats() {
-    setSavingStats(true);
-    try {
-      const updates = [
-        { key: 'ach_national',   value: parseInt(achStats.national)   || 0 },
-        { key: 'ach_state',      value: parseInt(achStats.state)      || 0 },
-        { key: 'ach_university', value: parseInt(achStats.university) || 0 },
-      ];
-      const res = await fetch('/api/admin/stats', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      });
-      if (!res.ok) throw new Error('Failed to save stats');
-      toast.success('Recognition stats saved');
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setSavingStats(false);
-    }
-  }
 
   async function del(id: string, title: string) {
     if (!confirm(`Delete "${title}"?`)) return;
@@ -111,36 +76,6 @@ export default function AchievementsAdminPage() {
               style={{ background: '#8B0000', color: '#fff' }}>
           <Plus size={14} /> Add Achievement
         </Link>
-      </div>
-
-      {/* Recognition Stats Card */}
-      <div className="rounded-2xl border p-6 mb-6" style={{ background: '#fff', borderColor: '#E4E4E7' }}>
-        <h2 className="font-black text-base mb-0.5" style={{ color: '#0D0D0D' }}>Homepage Recognition Stats</h2>
-        <p className="text-sm mb-4" style={{ color: '#71717A' }}>These counts appear in the public Achievements section on the homepage.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-          {([
-            { label: 'National',   key: 'national'   as const },
-            { label: 'State',      key: 'state'      as const },
-            { label: 'University', key: 'university' as const },
-          ]).map(({ label, key }) => (
-            <div key={key}>
-              <label className="block text-xs font-bold mb-1" style={{ color: '#0D0D0D' }}>{label}</label>
-              <input
-                type="number" min="0"
-                value={achStats[key]}
-                onChange={e => setAchStats(s => ({ ...s, [key]: e.target.value }))}
-                className="w-full px-3 py-2 rounded-xl border text-sm outline-none transition-all"
-                style={{ borderColor: '#E4E4E7', background: '#F7F7F8' }}
-                placeholder="0"
-              />
-            </div>
-          ))}
-        </div>
-        <button onClick={saveAchStats} disabled={savingStats}
-          className="flex items-center gap-2 px-5 py-2 rounded-xl font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50"
-          style={{ background: '#8B0000', color: '#fff' }}>
-          <Save size={13} /> {savingStats ? 'Saving…' : 'Save Stats'}
-        </button>
       </div>
 
       {/* Migration banner */}

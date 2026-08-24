@@ -43,14 +43,14 @@ export default function ClubsPageClient({ clubs }: Props) {
   return (
     <>
       {/* ─── Hero ────────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '0' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '0' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-10 pb-0">
           <p className="kicker mb-4" style={{ color: '#970003' }}>
             20+ Clubs · {totalDomains} Domains
           </p>
           <h1
             className="font-display font-medium leading-[1.05] mb-5"
-            style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             Find Your Community.
           </h1>
           <p className="text-lg mb-10" style={{ color: '#71717A', maxWidth: '56ch' }}>

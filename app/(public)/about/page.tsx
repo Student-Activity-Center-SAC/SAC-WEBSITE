@@ -174,7 +174,7 @@ export default async function AboutPage() {
               <p className="kicker mb-5" style={{ color: '#970003' }}>What Is SAC?</p>
               <h2
                 className="font-display font-medium leading-tight mb-7"
-                style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 The Student Activity Center.
               </h2>
               <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)' }}>
@@ -224,7 +224,7 @@ export default async function AboutPage() {
             <p className="kicker mb-4" style={{ color: '#970003' }}>Our Philosophy</p>
             <h2
               className="font-display font-medium leading-tight"
-              style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em', maxWidth: '28ch' }}>
+              style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em', maxWidth: '28ch' }}>
               Three beliefs that guide everything we do.
             </h2>
           </FadeIn>
@@ -259,7 +259,8 @@ export default async function AboutPage() {
       <section style={{ background: '#970003' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-16 flex flex-col sm:flex-row items-center justify-between gap-8">
           <div>
-            <h3 className="font-display font-medium text-2xl sm:text-3xl mb-2" style={{ color: '#fff', letterSpacing: '-0.02em' }}>
+            <h3 className="font-display font-medium mb-2"
+                style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#fff', letterSpacing: '-0.02em' }}>
               Have questions about SAC?
             </h3>
             <p style={{ color: 'rgba(255,255,255,0.55)' }}>

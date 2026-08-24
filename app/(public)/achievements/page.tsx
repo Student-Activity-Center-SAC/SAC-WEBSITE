@@ -95,7 +95,7 @@ export default async function AchievementsPage() {
                             {ach.domain_code} · {ach.club_name}
                           </span>
                         </div>
-                        <h3 className="font-bold text-base sm:text-lg leading-snug mb-2" style={{ color: '#0D0D0D' }}>
+                        <h3 className="font-semibold text-base sm:text-lg leading-snug mb-2" style={{ color: '#0D0D0D' }}>
                           {ach.title}
                         </h3>
                         <p className="text-sm leading-relaxed" style={{ color: '#71717A' }}>

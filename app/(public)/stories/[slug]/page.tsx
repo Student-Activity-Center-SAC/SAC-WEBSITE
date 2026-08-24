@@ -45,7 +45,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
             All Stories
           </Link>
 
-          <span className="text-[10px] font-black uppercase tracking-widest mb-5 block" style={{ color: domainColor }}>
+          <span className="kicker mb-5" style={{ color: domainColor }}>
             {story.domain_code} · {story.club_name}
           </span>
 

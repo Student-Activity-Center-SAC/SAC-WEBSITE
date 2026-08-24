@@ -1,24 +1,38 @@
 import pool from './db';
 
+// Column/table names are interpolated directly into SQL strings (values are
+// always parameterized separately). Since some routes build `data`/`fields`
+// from request bodies, every identifier that reaches SQL must be validated
+// against this allow-list shape before use — otherwise a crafted key
+// (e.g. containing a backtick) could break out of the identifier and inject
+// arbitrary SQL.
+const SAFE_IDENT = /^[A-Za-z0-9_]+$/;
+function ident(name: string): string {
+  if (typeof name !== 'string' || !SAFE_IDENT.test(name)) {
+    throw new Error(`Invalid identifier: ${JSON.stringify(name)}`);
+  }
+  return name;
+}
+
+type Cond = { sql: string; val: any };
+
 export const db = {
   from: (table: string) => {
+    ident(table);
     return {
       select: (columns: string = '*', options?: any) => {
-        const queryArgs: any[] = [];
-
         // Multiple .order() calls chain into a compound ORDER BY.
         const sorts: { col: string; asc: boolean }[] = [];
-        let eqColumn: string | null = null;
-        let eqValue: any = null;
+        const conds: Cond[] = [];
         let limitVal: number | null = null;
         let isSingle = false;
 
         const build = (withOrder: boolean) => {
           let sql = `SELECT * FROM \`${table}\``;
-          if (eqColumn) sql += ` WHERE \`${eqColumn}\` = ?`;
+          if (conds.length) sql += ' WHERE ' + conds.map(c => c.sql).join(' AND ');
           if (withOrder && sorts.length) {
             sql += ' ORDER BY ' + sorts
-              .map(s => `\`${s.col}\` ${s.asc ? 'ASC' : 'DESC'}`)
+              .map(s => `\`${ident(s.col)}\` ${s.asc ? 'ASC' : 'DESC'}`)
               .join(', ');
           }
           // limitVal is coerced to a non-negative integer before interpolation.
@@ -32,11 +46,13 @@ export const db = {
             return chain;
           },
           eq: (col: string, val: any) => {
-            eqColumn = col;
-            eqValue = val;
+            conds.push({ sql: `\`${ident(col)}\` = ?`, val });
             return chain;
           },
-          gt: (_col: string, _val: any) => chain,
+          gt: (col: string, val: any) => {
+            conds.push({ sql: `\`${ident(col)}\` > ?`, val });
+            return chain;
+          },
           limit: (val: number) => {
             const n = Number(val);
             limitVal = Number.isFinite(n) && n >= 0 ? Math.floor(n) : null;
@@ -50,7 +66,7 @@ export const db = {
             chain.execute().then(resolve).catch(reject);
           },
           execute: async () => {
-            if (eqColumn) queryArgs.push(eqValue);
+            const queryArgs = conds.map(c => c.val);
 
             const run = async (withOrder: boolean) =>
               (await pool.query(build(withOrder), queryArgs))[0] as any;
@@ -87,19 +103,22 @@ export const db = {
       },
 
       update: (data: Record<string, any>) => {
-        let eqCol: string | null = null;
-        let eqVal: any = null;
+        const conds: Cond[] = [];
         const chain = {
-          eq: (col: string, val: any) => { eqCol = col; eqVal = val; return chain; },
+          eq: (col: string, val: any) => { conds.push({ sql: `\`${ident(col)}\` = ?`, val }); return chain; },
+          neq: (col: string, val: any) => { conds.push({ sql: `\`${ident(col)}\` != ?`, val }); return chain; },
           then: (resolve: any, reject: any) => { chain.execute().then(resolve).catch(reject); },
           execute: async () => {
             try {
               const keys = Object.keys(data);
               if (!keys.length) return { error: null };
-              const setClauses = keys.map(k => `\`${k}\` = ?`).join(', ');
-              const values = [...keys.map(k => data[k])];
+              const setClauses = keys.map(k => `\`${ident(k)}\` = ?`).join(', ');
+              const values = keys.map(k => data[k]);
               let sql = `UPDATE \`${table}\` SET ${setClauses}`;
-              if (eqCol) { sql += ` WHERE \`${eqCol}\` = ?`; values.push(eqVal); }
+              if (conds.length) {
+                sql += ' WHERE ' + conds.map(c => c.sql).join(' AND ');
+                values.push(...conds.map(c => c.val));
+              }
               await pool.query(sql, values);
               return { error: null };
             } catch (err: any) {
@@ -112,16 +131,18 @@ export const db = {
       },
 
       delete: () => {
-        let eqCol: string | null = null;
-        let eqVal: any = null;
+        const conds: Cond[] = [];
         const chain = {
-          eq: (col: string, val: any) => { eqCol = col; eqVal = val; return chain; },
+          eq: (col: string, val: any) => { conds.push({ sql: `\`${ident(col)}\` = ?`, val }); return chain; },
           then: (resolve: any, reject: any) => { chain.execute().then(resolve).catch(reject); },
           execute: async () => {
             try {
               const values: any[] = [];
               let sql = `DELETE FROM \`${table}\``;
-              if (eqCol) { sql += ` WHERE \`${eqCol}\` = ?`; values.push(eqVal); }
+              if (conds.length) {
+                sql += ' WHERE ' + conds.map(c => c.sql).join(' AND ');
+                values.push(...conds.map(c => c.val));
+              }
               await pool.query(sql, values);
               return { error: null };
             } catch (err: any) {
@@ -145,7 +166,7 @@ export const db = {
 
               // Column set is taken from the first row; every row is written
               // with that same set so the multi-row VALUES stays well-formed.
-              const keys = Object.keys(rows[0]);
+              const keys = Object.keys(rows[0]).map(ident);
               const cols = keys.map(k => `\`${k}\``).join(', ');
               const tuple = `(${keys.map(() => '?').join(', ')})`;
               const values = rows.flatMap(r => keys.map(k => r[k] ?? null));
@@ -192,7 +213,7 @@ export const db = {
           const rows = Array.isArray(data) ? data : [data];
           if (!rows.length) return { error: null };
 
-          const keys = Object.keys(rows[0]);
+          const keys = Object.keys(rows[0]).map(ident);
           const cols = keys.map(k => `\`${k}\``).join(', ');
           const tuple = `(${keys.map(() => '?').join(', ')})`;
           const values = rows.flatMap(r => keys.map(k => r[k] ?? null));

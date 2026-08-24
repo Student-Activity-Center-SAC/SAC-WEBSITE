@@ -69,7 +69,7 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
           </div>
           <h3
             className="font-display font-medium leading-tight mb-3"
-            style={{ fontSize: 'clamp(1.15rem, 2vw, 1.6rem)', color: '#191313', letterSpacing: '-0.01em' }}>
+            style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
             {article.title}
           </h3>
           <p className="text-sm leading-relaxed mb-6 line-clamp-2" style={{ color: 'rgba(25,19,19,0.5)' }}>

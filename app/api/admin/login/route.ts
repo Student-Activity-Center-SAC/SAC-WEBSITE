@@ -7,36 +7,57 @@ import bcrypt from 'bcryptjs';
 // ── Brute-force protection ────────────────────────────────────────────────────
 // In-memory sliding window. Resets on deploy, which is acceptable for a single
 // PM2 instance; move to Redis if the app is ever scaled horizontally.
-const MAX_ATTEMPTS  = 5;
-const WINDOW_MS     = 15 * 60 * 1000; // 15 minutes
-const attempts = new Map<string, { count: number; first: number }>();
+//
+// Two independent limiters are enforced:
+//  - by IP:       cheap first line of defense, but `x-forwarded-for` is
+//                 client-suppliable when there's no trusted reverse proxy in
+//                 front of this app overwriting it, so it alone is spoofable.
+//  - by username: not spoofable via headers (an attacker can't change which
+//                 account they're trying to break into), so this is what
+//                 actually bounds brute force against one admin account even
+//                 if the IP limiter is defeated. Given a generous longer
+//                 fuse than the IP limiter to keep accidental lockout of a
+//                 legitimate admin (e.g. a third party hammering their
+//                 username) unlikely.
+const MAX_ATTEMPTS_IP       = 5;
+const WINDOW_MS_IP          = 15 * 60 * 1000; // 15 minutes
+const MAX_ATTEMPTS_USER     = 10;
+const WINDOW_MS_USER        = 30 * 60 * 1000; // 30 minutes
 
-function rateLimit(ip: string): { allowed: boolean; retryAfter: number } {
+const ipAttempts   = new Map<string, { count: number; first: number }>();
+const userAttempts = new Map<string, { count: number; first: number }>();
+
+function checkLimit(
+  store: Map<string, { count: number; first: number }>,
+  key: string,
+  max: number,
+  windowMs: number,
+): { allowed: boolean; retryAfter: number } {
   const now = Date.now();
-  const rec = attempts.get(ip);
+  const rec = store.get(key);
 
-  if (!rec || now - rec.first > WINDOW_MS) {
-    attempts.set(ip, { count: 1, first: now });
+  if (!rec || now - rec.first > windowMs) {
+    store.set(key, { count: 1, first: now });
     return { allowed: true, retryAfter: 0 };
   }
   rec.count++;
-  if (rec.count > MAX_ATTEMPTS) {
-    return { allowed: false, retryAfter: Math.ceil((WINDOW_MS - (now - rec.first)) / 1000) };
+  if (rec.count > max) {
+    return { allowed: false, retryAfter: Math.ceil((windowMs - (now - rec.first)) / 1000) };
   }
   return { allowed: true, retryAfter: 0 };
 }
 
-function clearAttempts(ip: string) {
-  attempts.delete(ip);
+function clearAttempts(ip: string, username: string) {
+  ipAttempts.delete(ip);
+  userAttempts.delete(username.toLowerCase());
 }
 
-// Periodically evict stale entries so the map cannot grow unbounded.
+// Periodically evict stale entries so the maps cannot grow unbounded.
 setInterval(() => {
   const now = Date.now();
-  for (const [ip, rec] of attempts) {
-    if (now - rec.first > WINDOW_MS) attempts.delete(ip);
-  }
-}, WINDOW_MS).unref?.();
+  for (const [k, rec] of ipAttempts)   if (now - rec.first > WINDOW_MS_IP)   ipAttempts.delete(k);
+  for (const [k, rec] of userAttempts) if (now - rec.first > WINDOW_MS_USER) userAttempts.delete(k);
+}, WINDOW_MS_USER).unref?.();
 
 function clientIp(req: NextRequest) {
   return (
@@ -49,17 +70,24 @@ function clientIp(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
 
-  const { allowed, retryAfter } = rateLimit(ip);
-  if (!allowed) {
-    return NextResponse.json(
-      { error: `Too many login attempts. Try again in ${Math.ceil(retryAfter / 60)} minutes.` },
-      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
-    );
-  }
-
   try {
     const body = await req.json().catch(() => ({}));
     const { username, password } = body;
+
+    const usernameKey = typeof username === 'string' ? username.toLowerCase() : '';
+
+    const ipCheck = checkLimit(ipAttempts, ip, MAX_ATTEMPTS_IP, WINDOW_MS_IP);
+    const userCheck = usernameKey
+      ? checkLimit(userAttempts, usernameKey, MAX_ATTEMPTS_USER, WINDOW_MS_USER)
+      : { allowed: true, retryAfter: 0 };
+
+    if (!ipCheck.allowed || !userCheck.allowed) {
+      const retryAfter = Math.max(ipCheck.retryAfter, userCheck.retryAfter);
+      return NextResponse.json(
+        { error: `Too many login attempts. Try again in ${Math.ceil(retryAfter / 60)} minutes.` },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      );
+    }
 
     if (typeof username !== 'string' || typeof password !== 'string' || !username || !password)
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
@@ -95,7 +123,7 @@ export async function POST(req: NextRequest) {
       if (!valid) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    clearAttempts(ip);
+    clearAttempts(ip, username);
 
     const token = await signToken({
       username: admin.username,

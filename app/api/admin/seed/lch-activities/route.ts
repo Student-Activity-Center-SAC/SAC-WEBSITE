@@ -243,7 +243,7 @@ const LCH_ACTIVITIES = [
 ];
 
 export async function POST(req: NextRequest) {
-  if (req.headers.get('x-setup-key') !== 'KLSACsetup2026')
+  if (req.headers.get('x-setup-key') !== process.env.ADMIN_SETUP_KEY)
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const rows = LCH_ACTIVITIES.map(a => ({

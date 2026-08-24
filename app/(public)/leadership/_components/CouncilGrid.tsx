@@ -101,7 +101,7 @@ function SectionLabel({ label, sub }: { label: string; sub?: string }) {
       <p className="kicker mb-3" style={{ color: '#970003' }}>{label}</p>
       {sub && (
         <h2 className="font-display font-medium leading-tight text-foreground"
-            style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.02em' }}>
+            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', letterSpacing: '-0.02em' }}>
           {sub}
         </h2>
       )}

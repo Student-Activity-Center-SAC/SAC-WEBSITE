@@ -113,7 +113,7 @@ export default async function LeadershipPage() {
           <p className="kicker mb-5" style={{ color: '#970003' }}>Governance Framework</p>
           <h2
             className="font-display font-medium leading-tight mb-10"
-            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+            style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
             How SAC is organised.
           </h2>
 
@@ -127,7 +127,7 @@ export default async function LeadershipPage() {
               { title: 'Open Membership',                desc: 'Any enrolled KL University student may join clubs and participate in activities regardless of branch or year.' },
             ].map(item => (
               <div key={item.title} className="p-6 rounded-2xl" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
-                <h3 className="font-semibold text-base mb-2" style={{ color: '#191313' }}>{item.title}</h3>
+                <h3 className="font-semibold text-base sm:text-lg mb-2" style={{ color: '#191313' }}>{item.title}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>{item.desc}</p>
               </div>
             ))}

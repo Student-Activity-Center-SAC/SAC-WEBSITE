@@ -31,9 +31,8 @@ export async function PUT(req: NextRequest) {
 
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
 
-  revalidatePath('/domains');
-  revalidatePath(`/domains/${slug}`);
   revalidatePath('/');
+  revalidatePath('/about');
 
   return NextResponse.json({ success: true });
 }

@@ -63,7 +63,7 @@ function Section({ icon: Icon, label, color, text }: { icon: any; label: string;
   if (!text) return null;
   return (
     <div className="report-section py-7" style={{ borderTop: '1px solid #ECECEC' }}>
-      <p className="text-[11px] font-black tracking-[0.15em] uppercase mb-3 flex items-center gap-2" style={{ color }}>
+      <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-3 flex items-center gap-2" style={{ color }}>
         <Icon size={13} /> {label}
       </p>
       <p className="text-[15px] leading-[1.8] whitespace-pre-line" style={{ color: '#27272A' }}>{text}</p>
@@ -161,7 +161,8 @@ export default function ReportPage({ params }: { params: Promise<{ code: string 
                     style={{ background: color, color: '#fff' }}>
                 {act.domain} · {DOMAIN_LABEL[act.domain] ?? act.domain}
               </span>
-              <h1 className="font-display font-medium text-2xl sm:text-3xl leading-tight" style={{ color: poster ? '#fff' : '#0D0D0D' }}>
+              <h1 className="font-display font-medium leading-tight"
+                  style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: poster ? '#fff' : '#0D0D0D' }}>
                 {act.title}
               </h1>
               <p className="text-sm font-semibold mt-1" style={{ color: poster ? 'rgba(255,255,255,0.85)' : color }}>
@@ -216,7 +217,7 @@ export default function ReportPage({ params }: { params: Promise<{ code: string 
           {/* Gallery */}
           {gallery.length > 0 && (
             <div className="report-section px-6 sm:px-10 py-7" style={{ borderTop: '1px solid #ECECEC' }}>
-              <p className="text-[11px] font-black tracking-[0.15em] uppercase mb-3 flex items-center gap-2" style={{ color }}>
+              <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-3 flex items-center gap-2" style={{ color }}>
                 <ImageIcon size={13} /> Gallery
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">

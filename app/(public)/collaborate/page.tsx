@@ -174,8 +174,8 @@ export default function CollaboratePage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
               <div>
                 <h2
-                  className="font-display font-medium text-2xl sm:text-3xl mb-2 leading-tight"
-                  style={{ color: '#fff', letterSpacing: '-0.02em' }}>
+                  className="font-display font-medium mb-2 leading-tight"
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#fff', letterSpacing: '-0.02em' }}>
                   Ready to collaborate with KL SAC?
                 </h2>
                 <p style={{ color: 'rgba(255,255,255,0.6)' }}>

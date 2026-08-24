@@ -173,13 +173,6 @@ export default function ClubsAdminPage() {
         </div>
       )}
 
-      <div className="mt-8 p-4 rounded-xl text-sm" style={{ background: '#FFF7ED', color: '#92400E' }}>
-        <strong>First time?</strong> Run the seed to populate clubs from the existing static data:
-        <code className="ml-2 text-xs px-2 py-0.5 rounded" style={{ background: '#FEF3C7' }}>
-          POST /api/admin/seed/clubs-leadership
-        </code>{' '}
-        with header <code className="text-xs px-2 py-0.5 rounded" style={{ background: '#FEF3C7' }}>x-setup-key: KLSACsetup2026</code>
-      </div>
     </div>
   );
 }

@@ -40,12 +40,12 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
           <Link href="/news" className="inline-flex items-center gap-2 text-xs font-bold mb-8 transition-opacity hover:opacity-70" style={{ color: '#A1A1AA' }}>
             <ArrowLeft size={12} /> All News
           </Link>
-          <span className="text-[10px] font-black uppercase tracking-widest block mb-4" style={{ color: '#8B0000' }}>
+          <span className="kicker mb-4" style={{ color: '#8B0000' }}>
             {article.category}
           </span>
           <h1
             className="font-display font-medium leading-tight mb-5"
-            style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
+            style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             {article.title}
           </h1>
           <div className="flex items-center gap-4 text-sm" style={{ color: '#A1A1AA' }}>
@@ -95,10 +95,10 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
                 className="group flex items-center gap-5 py-6 transition-colors"
                 style={{ borderTop: '1px solid #E4E4E7', borderBottom: '1px solid #E4E4E7' }}>
                 <div className="flex-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider block mb-1" style={{ color: '#8B0000' }}>
+                  <span className="kicker mb-1" style={{ color: '#8B0000' }}>
                     {next.category}
                   </span>
-                  <h3 className="font-bold text-base sm:text-lg leading-tight" style={{ color: '#0D0D0D' }}>
+                  <h3 className="font-semibold text-base sm:text-lg leading-tight" style={{ color: '#0D0D0D' }}>
                     {next.title}
                   </h3>
                 </div>

@@ -24,14 +24,14 @@ export default async function NewsPage() {
 
   return (
     <>
-      <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '56px' }}>
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '56px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 pt-8">
           <p className="kicker mb-4" style={{ color: '#970003' }}>
             News & Updates
           </p>
           <h1
             className="font-display font-medium leading-[1.05] mb-4"
-            style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             What's Happening at SAC.
           </h1>
           <p className="text-lg" style={{ color: '#71717A', maxWidth: '54ch' }}>
@@ -58,12 +58,12 @@ export default async function NewsPage() {
                   )}
                 </div>
                 <div className="lg:col-span-3 p-8 sm:p-12 flex flex-col justify-center">
-                  <span className="text-[10px] font-black uppercase tracking-widest mb-3 block" style={{ color: '#8B0000' }}>
+                  <span className="kicker mb-3" style={{ color: '#8B0000' }}>
                     {featured.category}
                   </span>
                   <h2
                     className="font-display font-medium leading-tight mb-4"
-                    style={{ fontSize: 'clamp(1.25rem, 2.5vw, 2rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                    style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                     {featured.title}
                   </h2>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: '#71717A' }}>
@@ -104,10 +104,10 @@ export default async function NewsPage() {
                     </p>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-wider block mb-1" style={{ color: '#8B0000' }}>
+                    <span className="kicker mb-1" style={{ color: '#8B0000' }}>
                       {article.category}
                     </span>
-                    <h3 className="font-bold text-base sm:text-lg leading-snug mb-2" style={{ color: '#0D0D0D' }}>
+                    <h3 className="font-semibold text-base sm:text-lg leading-snug mb-2" style={{ color: '#0D0D0D' }}>
                       {article.title}
                     </h3>
                     <p className="text-sm line-clamp-2" style={{ color: '#71717A' }}>

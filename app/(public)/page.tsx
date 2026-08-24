@@ -54,7 +54,6 @@ export default async function HomePage() {
   (clubsRes.data ?? []).forEach((c: any) => {
     clubCountByDomain[c.domain_code] = (clubCountByDomain[c.domain_code] ?? 0) + 1;
   });
-  const totalClubs = Object.values(clubCountByDomain).reduce((a, b) => a + b, 0);
 
   const sacStatsMap: Record<string, number> = {};
   (statsRes.data ?? []).forEach((s: any) => { sacStatsMap[s.key] = s.value; });
@@ -100,7 +99,7 @@ export default async function HomePage() {
           </h1>
 
           {/* Body */}
-          <p className="text-[15px] sm:text-base leading-relaxed mb-10 animate-fade-up delay-100"
+          <p className="text-lg leading-relaxed mb-10 animate-fade-up delay-100"
             style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '48ch' }}>
             KL SAC is where 20+ clubs, {domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
           </p>
@@ -170,7 +169,7 @@ export default async function HomePage() {
               <p className="kicker mb-3" style={{ color: '#970003' }}>The SAC Journey</p>
               <h2
                 className="font-display font-medium leading-[1.07]"
-                style={{ fontSize: 'clamp(1.6rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 What happens when<br className="hidden sm:block" /> you join KL SAC?
               </h2>
             </div>
@@ -199,7 +198,7 @@ export default async function HomePage() {
                     <p className="font-semibold text-sm uppercase tracking-[0.08em] mb-1.5" style={{ color: '#191313' }}>
                       {step.title}
                     </p>
-                    <p className="text-[12.5px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                    <p className="text-xs leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
                       {step.description}
                     </p>
                   </div>
@@ -260,7 +259,7 @@ export default async function HomePage() {
                   <p className="font-semibold text-xs uppercase tracking-[0.08em] mb-1" style={{ color: '#191313' }}>
                     {step.title}
                   </p>
-                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                  <p className="text-xs leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
                     {step.description}
                   </p>
                 </div>
@@ -283,7 +282,7 @@ export default async function HomePage() {
               </p>
               <h2
                 className="font-display font-medium leading-[1.07]"
-                style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Every passion. One ecosystem.
               </h2>
             </div>
@@ -300,8 +299,6 @@ export default async function HomePage() {
           <FadeIn>
             {(() => {
               const dbClubs = (clubsRes.data ?? []) as any[];
-              const dbByDomain: Record<string, boolean> = {};
-              dbClubs.forEach(c => { if (c.domain_code) dbByDomain[c.domain_code] = true; });
               const hasMappedClubs = dbClubs.some(c => c.domain_code && c.name);
               const allClubs = hasMappedClubs
                 ? dbClubs
@@ -518,7 +515,7 @@ export default async function HomePage() {
               <p className="kicker mb-5" style={{ color: '#970003' }}>Industry & Collaboration</p>
               <h2
                 className="font-display font-medium leading-[1.07] mb-6"
-                style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Where industry meets student talent.
               </h2>
               <p className="text-[15px] sm:text-base leading-relaxed mb-8" style={{ color: 'rgba(25,19,19,0.5)' }}>
@@ -658,7 +655,7 @@ export default async function HomePage() {
             </p>
             <h2
               className="font-display font-medium leading-[1.06] mb-6 mx-auto"
-              style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)', color: '#fff', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
+              style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)', color: '#fff', letterSpacing: '-0.02em', maxWidth: '22ch' }}>
               Ready to make your university years count?
             </h2>
             <p className="text-[15px] sm:text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
