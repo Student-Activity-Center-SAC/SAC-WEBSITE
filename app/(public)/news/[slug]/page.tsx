@@ -35,7 +35,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
 
   return (
     <>
-      <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '48px' }}>
+      <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="max-w-4xl mx-auto px-5 sm:px-10">
           <Link href="/news" className="inline-flex items-center gap-2 text-xs font-bold mb-8 transition-opacity hover:opacity-70" style={{ color: '#A1A1AA' }}>
             <ArrowLeft size={12} /> All News

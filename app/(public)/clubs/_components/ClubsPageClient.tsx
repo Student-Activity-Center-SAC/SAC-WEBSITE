@@ -43,8 +43,8 @@ export default function ClubsPageClient({ clubs }: Props) {
   return (
     <>
       {/* ─── Hero ────────────────────────────────────────────────────── */}
-      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '0' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 pt-10 pb-0">
+      <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
+        <div className="w-full px-6 sm:px-12 xl:px-20">
           <p className="kicker mb-4" style={{ color: '#970003' }}>
             20+ Clubs · {totalDomains} Domains
           </p>
