@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronDown, Camera } from 'lucide-react';
 import { DOMAINS } from '@/lib/content/domains';
-import { DEMO_CLUBS, DOMAIN_META } from '@/lib/demo-data';
+import { DEMO_CLUBS } from '@/lib/demo-data';
 import { FadeIn } from './_components/FadeIn';
 import StatCounter from './_components/StatCounter';
-import { getHomepageEvents } from '@/lib/data/homepage';
 import { db } from '@/lib/query-builder';
 import { PartnersMarquee } from './_components/PartnersMarquee';
+import { UpcomingActivitiesHome } from './_components/UpcomingActivitiesHome';
+import { LatestNewsCarousel } from './_components/LatestNewsCarousel';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,11 +27,10 @@ const JOURNEY_STEPS = [
 ];
 
 export default async function HomePage() {
-  const [events, storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes] = await Promise.all([
-    getHomepageEvents(5),
+  const [storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes] = await Promise.all([
     db.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
     db.from('site_settings').select('key, value'),
-    db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').gt('homepage_order', 0).order('homepage_order', { ascending: true }).limit(3),
+    db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').gt('homepage_order', 0).order('homepage_order', { ascending: true }).limit(6),
     db.from('domains').select('slug, code, name, tagline, color, accent_bg').order('sort_order', { ascending: true }),
     db.from('clubs').select('domain_code, slug, name'),
     db.from('sac_stats').select('key, value'),
@@ -48,10 +48,8 @@ export default async function HomePage() {
   const sideStories   = stories.filter(s => (s.homepage_order ?? 0) > 1).slice(0, 2);
 
   const clubCountByDomain: Record<string, number> = {};
-  const clubNameMap: Record<string, string> = {};
   (clubsRes.data ?? []).forEach((c: any) => {
     clubCountByDomain[c.domain_code] = (clubCountByDomain[c.domain_code] ?? 0) + 1;
-    if (c.slug) clubNameMap[c.slug] = c.name;
   });
   const totalClubs = Object.values(clubCountByDomain).reduce((a, b) => a + b, 0);
 
@@ -59,9 +57,6 @@ export default async function HomePage() {
   (statsRes.data ?? []).forEach((s: any) => { sacStatsMap[s.key] = s.value; });
   const statStudents   = sacStatsMap['students']   ?? 0;
   const statActivities = sacStatsMap['activities'] ?? 0;
-
-  const today          = new Date().toISOString().split('T')[0];
-  const upcomingEvents = events.filter((e: any) => e.activity_date >= today).slice(0, 5);
 
   return (
     <>
@@ -468,7 +463,7 @@ export default async function HomePage() {
             <div className="rounded-2xl p-14 text-center hairline-t hairline-b"
               style={{ color: 'rgba(25,19,19,0.35)' }}>
               <p className="font-display font-medium text-2xl mb-2">Stories coming soon</p>
-              <p className="text-sm">Add student stories from the admin panel to display them here.</p>
+              <p className="text-sm">Check back soon for student stories.</p>
             </div>
           )}
 
@@ -484,81 +479,7 @@ export default async function HomePage() {
       )}
 
       {/* ════════════════════════════════════ UPCOMING ACTIVITIES ══ */}
-      <section style={{ background: '#faf6f1' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
-          <FadeIn className="flex items-end justify-between mb-12 gap-6">
-            <div>
-              <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
-              <h2
-                className="font-display font-medium leading-[1.07]"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
-                Upcoming Activities
-              </h2>
-            </div>
-            <Link href="/activities"
-              className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm shrink-0 mb-1 transition-opacity hover:opacity-70"
-              style={{ color: '#970003' }}>
-              Full calendar <ArrowRight size={14} />
-            </Link>
-          </FadeIn>
-
-          <FadeIn>
-            <div style={{ borderTop: '1px solid var(--hairline)' }}>
-              {upcomingEvents.length === 0 ? (
-                <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.4)' }}>
-                  <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
-                  <p className="text-sm">Check back soon or visit the activities page.</p>
-                </div>
-              ) : upcomingEvents.map((ev: any) => {
-                const date  = new Date(ev.activity_date);
-                const dmeta = DOMAIN_META[ev.domain];
-                const color = dmeta?.color ?? '#970003';
-                return (
-                  <div key={ev.code}
-                    className="group flex items-start gap-6 py-5"
-                    style={{ borderBottom: '1px solid var(--hairline)' }}>
-                    {/* Date stamp */}
-                    <div className="shrink-0 text-center"
-                      style={{ minWidth: '3.5rem', background: '#970003', borderRadius: '0.375rem', padding: '8px 10px' }}>
-                      <div className="font-display font-medium text-xl leading-none" style={{ color: '#fff' }}>
-                        {date.getDate()}
-                      </div>
-                      <div className="text-[10px] font-semibold tracking-wider uppercase mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                        {date.toLocaleString('en-IN', { month: 'short' })}
-                      </div>
-                    </div>
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1" style={{ color: '#191313' }}>
-                        {ev.title}
-                      </h3>
-                      <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>
-                        <span className="font-bold text-[10px] uppercase tracking-wider" style={{ color }}>{ev.domain}</span>
-                        {clubNameMap[ev.club_slug] && <><span>·</span><span className="font-medium">{clubNameMap[ev.club_slug]}</span></>}
-                        {ev.venue && <><span>·</span><span>{ev.venue}</span></>}
-                      </div>
-                    </div>
-                    {/* CTA */}
-                    <a href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
-                      className="text-xs font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
-                      style={{ color: '#970003' }}>
-                      Register <ArrowUpRight size={12} />
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-8">
-              <Link href="/activities"
-                className="inline-flex items-center gap-2 font-semibold text-sm"
-                style={{ color: '#970003' }}>
-                View all activities <ArrowRight size={14} />
-              </Link>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+      <UpcomingActivitiesHome />
 
       {/* ══════════════════════════════════════════ ACHIEVEMENTS ══ */}
       <section style={{ background: '#faf6f1' }}>
@@ -745,50 +666,16 @@ export default async function HomePage() {
             </Link>
           </FadeIn>
 
-          {newsArticles.length === 0 && (
-            <p className="text-[13px] mb-8" style={{ color: 'rgba(25,19,19,0.35)' }}>
-              No featured articles yet. Check "Feature on homepage" in Admin → News to show articles here.
-            </p>
-          )}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {newsArticles.map((article, i) => (
-              <FadeIn key={article.slug} delay={i * 0.1}>
-                <Link href={`/news/${article.slug}`} className="group block h-full">
-                  <article className="hover-card h-full rounded-2xl overflow-hidden flex flex-col border"
-                    style={{ background: '#faf6f1', borderColor: 'var(--hairline)' }}>
-                    <div className="h-44 overflow-hidden relative"
-                      style={{ background: 'linear-gradient(135deg, #6a0002 0%, #970003 100%)' }}>
-                      {article.photo_url ? (
-                        <img src={article.photo_url} alt={article.title}
-                          className="w-full h-full object-cover" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="font-display text-2xl font-medium opacity-20" style={{ color: '#fff' }}>KL SAC</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5 flex flex-col gap-3 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="kicker" style={{ color: '#970003' }}>{article.category}</span>
-                        <span className="text-xs" style={{ color: 'rgba(25,19,19,0.3)' }}>
-                          {new Date(article.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </span>
-                      </div>
-                      <h3 className="font-semibold text-base leading-snug flex-1" style={{ color: '#191313' }}>
-                        {article.title}
-                      </h3>
-                      <p className="text-[13px] line-clamp-2" style={{ color: 'rgba(25,19,19,0.5)' }}>
-                        {article.excerpt}
-                      </p>
-                      <p className="text-xs font-semibold flex items-center gap-1.5 group-hover:gap-2.5 transition-all"
-                        style={{ color: '#970003' }}>
-                        Read more <ArrowRight size={11} />
-                      </p>
-                    </div>
-                  </article>
-                </Link>
-              </FadeIn>
-            ))}
+          <FadeIn>
+            <LatestNewsCarousel articles={newsArticles} />
+          </FadeIn>
+
+          <div className="mt-8 sm:hidden">
+            <Link href="/news"
+              className="inline-flex items-center gap-2 font-semibold text-sm"
+              style={{ color: '#970003' }}>
+              All news <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>

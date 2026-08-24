@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, MapPin, Clock, Star, ExternalLink, FileText, ImageOff } from 'lucide-react';
 
@@ -60,12 +60,20 @@ interface Activity {
 
 /* ── Activity Card ─────────────────────────────────────────────────── */
 function ActivityCard({ act, completed }: { act: Activity; completed: boolean }) {
+  const [expandedDesc, setExpandedDesc] = useState(false);
+  const [isTruncated, setIsTruncated]   = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
   const color = DOMAIN_COLORS[act.domain] ?? '#8B0000';
   const bg    = DOMAIN_BG[act.domain]     ?? '#FFF0F0';
   const poster = act.report?.poster_url
     ? (act.report.poster_url.startsWith('http') ? act.report.poster_url : `https://sacactivities.kluniversity.in${act.report.poster_url}`)
     : null;
   const hasReport = completed && !!act.report;
+
+  useLayoutEffect(() => {
+    const el = descRef.current;
+    if (el && !expandedDesc) setIsTruncated(el.scrollHeight > el.clientHeight + 1);
+  }, [act.description, expandedDesc]);
 
   return (
     <div
@@ -132,7 +140,19 @@ function ActivityCard({ act, completed }: { act: Activity; completed: boolean })
         </div>
 
         {/* Description */}
-        <p className="text-sm leading-relaxed line-clamp-2 flex-1" style={{ color: '#71717A' }}>{act.description}</p>
+        <div className="flex-1">
+          <p ref={descRef} className={`text-sm leading-relaxed ${expandedDesc ? '' : 'line-clamp-2'}`} style={{ color: '#71717A' }}>
+            {act.description}
+          </p>
+          {(isTruncated || expandedDesc) && (
+            <button
+              onClick={() => setExpandedDesc(v => !v)}
+              className="text-xs font-bold mt-1 transition-opacity hover:opacity-70"
+              style={{ color }}>
+              {expandedDesc ? 'Show less' : 'Read more'}
+            </button>
+          )}
+        </div>
 
         {/* Meta */}
         <div className="flex flex-col gap-1.5 text-xs pt-3" style={{ borderTop: '1px solid #F4F4F5', color: '#A1A1AA' }}>
@@ -192,6 +212,10 @@ export default function ActivitiesPage() {
   const [loadingC, setLoadingC] = useState(true);
   const [errorU, setErrorU]     = useState(false);
   const [errorC, setErrorC]     = useState(false);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('tab') === 'upcoming') setTab('upcoming');
+  }, []);
 
   useEffect(() => {
     fetchWithTimeout(`${UPSTREAM}/upcoming`)

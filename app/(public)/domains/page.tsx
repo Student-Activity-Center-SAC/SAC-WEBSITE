@@ -48,7 +48,7 @@ export default async function DomainsPage() {
           {domains.length === 0 ? (
             <div className="rounded-2xl border p-16 text-center" style={{ borderColor: '#E4E4E7' }}>
               <p className="text-sm" style={{ color: '#A1A1AA' }}>
-                Seed domains from the admin panel to display them here.
+                Domains will appear here soon.
               </p>
             </div>
           ) : (

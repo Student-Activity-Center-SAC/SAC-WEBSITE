@@ -161,7 +161,7 @@ export default function ReportPage({ params }: { params: Promise<{ code: string 
                     style={{ background: color, color: '#fff' }}>
                 {act.domain} · {DOMAIN_LABEL[act.domain] ?? act.domain}
               </span>
-              <h1 className="font-black text-2xl sm:text-3xl leading-tight" style={{ color: poster ? '#fff' : '#0D0D0D' }}>
+              <h1 className="font-display font-medium text-2xl sm:text-3xl leading-tight" style={{ color: poster ? '#fff' : '#0D0D0D' }}>
                 {act.title}
               </h1>
               <p className="text-sm font-semibold mt-1" style={{ color: poster ? 'rgba(255,255,255,0.85)' : color }}>

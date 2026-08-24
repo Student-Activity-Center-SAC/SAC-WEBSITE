@@ -136,7 +136,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           </div>
 
           <h1
-            className="font-black leading-tight mb-3"
+            className="font-display font-medium leading-tight mb-3"
             style={{
               fontSize: 'clamp(2rem, 5vw, 3.75rem)',
               color: club.cover_url ? '#fff' : '#0D0D0D',
@@ -236,7 +236,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   Club Gallery
                 </p>
                 <h2
-                  className="font-black leading-tight"
+                  className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   Behind the scenes.
                 </h2>
@@ -285,7 +285,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   ))}
                 </div>
                 <p className="text-xs text-center" style={{ color: '#A1A1AA' }}>
-                  Activity photos uploaded by the admin will appear here.
+                  Photos coming soon.
                 </p>
               </>
             )}
@@ -324,7 +324,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   Activities Programme
                 </p>
                 <h2
-                  className="font-black leading-tight"
+                  className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   What we do, all year.
                 </h2>
@@ -394,7 +394,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   No activities posted yet.
                 </p>
                 <p className="text-xs" style={{ color: '#A1A1AA' }}>
-                  Activity details will appear here once added by the admin.
+                  Check back soon for new activities.
                 </p>
               </div>
             </FadeIn>
@@ -442,7 +442,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   Club Achievements
                 </p>
                 <h2
-                  className="font-black leading-tight"
+                  className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   Honours & recognition.
                 </h2>
@@ -488,7 +488,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   Office Bearers
                 </p>
                 <h2
-                  className="font-black leading-tight"
+                  className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   The team behind the club.
                 </h2>

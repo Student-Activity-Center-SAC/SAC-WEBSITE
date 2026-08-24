@@ -83,7 +83,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                 Domain
               </p>
               <h1
-                className="font-black leading-tight"
+                className="font-display font-medium leading-tight"
                 style={{ fontSize: 'clamp(2rem, 4.5vw, 3.75rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
                 {domain.name}
               </h1>
@@ -116,7 +116,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                 About This Domain
               </p>
               <h2
-                className="font-black leading-tight mb-8"
+                className="font-display font-medium leading-tight mb-8"
                 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                 {domain.headline}
               </h2>
@@ -154,7 +154,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                   Activity Gallery
                 </p>
                 <h2
-                  className="font-black leading-tight"
+                  className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   Moments from our activities.
                 </h2>
@@ -197,7 +197,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                   ))}
                 </div>
                 <p className="text-xs text-center" style={{ color: '#A1A1AA' }}>
-                  Upload photos from the admin panel → Domains → {domain.short_name}
+                  Photos coming soon.
                 </p>
               </>
             )}
@@ -215,7 +215,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                   Upcoming Activities
                 </p>
                 <h2
-                  className="font-black leading-tight"
+                  className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   What's coming up.
                 </h2>
@@ -286,7 +286,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
               <div className="rounded-2xl p-14 text-center" style={{ background: '#F7F7F8', border: '1.5px dashed #D1D1D6' }}>
                 <Calendar size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
                 <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>No upcoming activities yet.</p>
-                <p className="text-xs" style={{ color: '#A1A1AA' }}>Add activities from Admin → Activities.</p>
+                <p className="text-xs" style={{ color: '#A1A1AA' }}>Check back soon for new activities.</p>
               </div>
             </FadeIn>
           )}
@@ -300,7 +300,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
             <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-4" style={{ color: domain.color }}>
               {clubs.length} Clubs in {domain.short_name}
             </p>
-            <h2 className="font-black leading-tight"
+            <h2 className="font-display font-medium leading-tight"
                 style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
               Find your community.
             </h2>
@@ -310,7 +310,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
             {clubs.length === 0 ? (
               <div className="rounded-2xl border p-12 text-center" style={{ borderColor: '#E4E4E7', background: '#fff' }}>
                 <p className="text-sm" style={{ color: '#A1A1AA' }}>
-                  No clubs added to this domain yet. Add clubs from Admin → Clubs.
+                  No clubs added to this domain yet.
                 </p>
               </div>
             ) : (
@@ -344,7 +344,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
                 <p className="text-[10px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: domain.color }}>
                   Achievements
                 </p>
-                <h2 className="font-black leading-tight"
+                <h2 className="font-display font-medium leading-tight"
                     style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                   What our clubs have won.
                 </h2>
@@ -374,7 +374,7 @@ export default async function DomainDetailPage({ params }: { params: Promise<{ s
       <section style={{ background: domain.color }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20 flex flex-col sm:flex-row items-center justify-between gap-8">
           <div>
-            <h2 className="font-black text-2xl sm:text-3xl mb-2 leading-tight"
+            <h2 className="font-display font-medium text-2xl sm:text-3xl mb-2 leading-tight"
                 style={{ color: '#fff', letterSpacing: '-0.02em' }}>
               Explore {domain.short_name} clubs.
             </h2>

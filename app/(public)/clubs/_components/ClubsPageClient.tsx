@@ -49,7 +49,7 @@ export default function ClubsPageClient({ clubs }: Props) {
             20+ Clubs · {totalDomains} Domains
           </p>
           <h1
-            className="font-black leading-[1.05] mb-5"
+            className="font-display font-medium leading-[1.05] mb-5"
             style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             Find Your Community.
           </h1>

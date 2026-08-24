@@ -75,7 +75,7 @@ export default async function StoriesPage() {
                     {featured.domain_code} · {featured.club_name}
                   </span>
                   <h2
-                    className="font-black leading-tight mb-4"
+                    className="font-display font-medium leading-tight mb-4"
                     style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                     {featured.title}
                   </h2>
@@ -158,7 +158,7 @@ export default async function StoriesPage() {
         <section style={{ background: '#F7F7F8' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24 text-center">
             <p className="font-bold text-lg mb-2" style={{ color: '#71717A' }}>No stories yet.</p>
-            <p className="text-sm" style={{ color: '#A1A1AA' }}>Add stories from the admin panel.</p>
+            <p className="text-sm" style={{ color: '#A1A1AA' }}>Check back soon for student stories.</p>
           </div>
         </section>
       )}

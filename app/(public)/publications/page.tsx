@@ -33,7 +33,7 @@ export default async function PublicationsPage() {
             Publications
           </p>
           <h1
-            className="font-black leading-[1.05] mb-4"
+            className="font-display font-medium leading-[1.05] mb-4"
             style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             Reports & Publications
           </h1>
@@ -64,7 +64,7 @@ export default async function PublicationsPage() {
                         <span className="text-[10px] font-bold" style={{ color: '#C7C7CC' }}>{pub.year}</span>
                       </div>
                       <h2
-                        className="font-black text-xl sm:text-2xl leading-tight mb-2"
+                        className="font-display font-medium text-xl sm:text-2xl leading-tight mb-2"
                         style={{ color: '#0D0D0D', letterSpacing: '-0.01em' }}>
                         {pub.title}
                       </h2>

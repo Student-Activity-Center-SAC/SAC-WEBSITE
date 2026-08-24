@@ -44,7 +44,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
             {article.category}
           </span>
           <h1
-            className="font-black leading-tight mb-5"
+            className="font-display font-medium leading-tight mb-5"
             style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             {article.title}
           </h1>

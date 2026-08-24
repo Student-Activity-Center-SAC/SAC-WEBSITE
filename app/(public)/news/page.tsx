@@ -30,7 +30,7 @@ export default async function NewsPage() {
             News & Updates
           </p>
           <h1
-            className="font-black leading-[1.05] mb-4"
+            className="font-display font-medium leading-[1.05] mb-4"
             style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             What's Happening at SAC.
           </h1>
@@ -62,7 +62,7 @@ export default async function NewsPage() {
                     {featured.category}
                   </span>
                   <h2
-                    className="font-black leading-tight mb-4"
+                    className="font-display font-medium leading-tight mb-4"
                     style={{ fontSize: 'clamp(1.25rem, 2.5vw, 2rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                     {featured.title}
                   </h2>
