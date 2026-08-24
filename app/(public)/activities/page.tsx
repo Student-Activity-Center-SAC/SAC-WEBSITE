@@ -1,10 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Star, ChevronDown, ChevronUp, ExternalLink, BookOpen, Award, Lightbulb, FileText, Image as ImageIcon } from 'lucide-react';
-
-const CDN = 'https://sacactivities.kluniversity.in';
-const img = (p: string | null | undefined) =>
-  p ? (p.startsWith('http') ? p : `${CDN}${p}`) : null;
+import Link from 'next/link';
+import { Calendar, MapPin, Clock, Star, ExternalLink, FileText, ImageOff } from 'lucide-react';
 
 const DOMAIN_COLORS: Record<string, string> = {
   TEC: '#3B82F6', LCH: '#8B5CF6', HWB: '#10B981', ESO: '#F59E0B', IIE: '#EF4444',
@@ -33,19 +30,15 @@ function fmtDate(d: string) {
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function fetchWithTimeout(url: string, ms = 12000): Promise<Response> {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
 interface Report {
   status: string;
-  generated_at: string;
-  overview: string;
-  objectives: string;
-  proceedings: string;
-  key_highlights: string;
-  learning_outcomes: string;
-  conclusion: string;
-  gallery: { url: string }[];
   poster_url: string | null;
-  permission_letter_url: string | null;
-  attendance_sheets: string[];
 }
 
 interface Activity {
@@ -65,50 +58,63 @@ interface Activity {
 
 /* ── Activity Card ─────────────────────────────────────────────────── */
 function ActivityCard({ act, completed }: { act: Activity; completed: boolean }) {
-  const [expanded, setExpanded] = useState(false);
-  const color  = DOMAIN_COLORS[act.domain] ?? '#8B0000';
-  const bg     = DOMAIN_BG[act.domain]     ?? '#FFF0F0';
-  const poster = img(act.report?.poster_url);
+  const color = DOMAIN_COLORS[act.domain] ?? '#8B0000';
+  const bg    = DOMAIN_BG[act.domain]     ?? '#FFF0F0';
+  const poster = act.report?.poster_url
+    ? (act.report.poster_url.startsWith('http') ? act.report.poster_url : `https://sacactivities.kluniversity.in${act.report.poster_url}`)
+    : null;
   const hasReport = completed && !!act.report;
-  const gallery = (act.report?.gallery ?? []).map(g => img(g.url)).filter(Boolean) as string[];
 
   return (
     <div
       className="rounded-2xl border flex flex-col overflow-hidden transition-all hover:shadow-lg"
       style={{ background: '#fff', borderColor: '#E4E4E7' }}>
 
-      {/* ── Card header ── */}
-      {poster ? (
-        <div className="relative h-44 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={poster} alt={act.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.55))' }} />
-          <div className="absolute bottom-3 left-4 flex gap-1.5 flex-wrap">
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: color, color: '#fff' }}>{act.domain}</span>
-            {completed && <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.45)', color: '#fff' }}>Completed</span>}
+      {/* ── Card header: poster or placeholder — always same height ── */}
+      <div className="relative h-44 overflow-hidden shrink-0">
+        {poster ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={poster} alt={act.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.55))' }} />
+          </>
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2" style={{ background: bg }}>
+            <ImageOff size={22} style={{ color: `${color}80` }} />
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: `${color}90` }}>
+              Poster unavailable
+            </span>
           </div>
+        )}
+        <div className="absolute bottom-3 left-4 flex gap-1.5 flex-wrap">
+          <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
+                style={{ background: poster ? color : '#fff', color: poster ? '#fff' : color, boxShadow: poster ? 'none' : `0 0 0 1px ${color}30` }}>
+            {act.domain}
+          </span>
+          {completed && (
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
+                  style={{ background: poster ? 'rgba(0,0,0,0.45)' : '#fff', color: poster ? '#fff' : '#52525B', boxShadow: poster ? 'none' : '0 0 0 1px #E4E4E7' }}>
+              Completed
+            </span>
+          )}
         </div>
-      ) : (
-        <div className="h-2 w-full" style={{ background: `linear-gradient(90deg, ${color}, ${color}aa)` }} />
-      )}
+      </div>
 
-      {/* ── Body ── */}
+      {/* ── Body — identical structure for every card ── */}
       <div className="p-5 flex flex-col gap-3 flex-1">
 
         {/* Badges row */}
         <div className="flex items-center gap-2 flex-wrap">
-          {!poster && (
-            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full" style={{ background: bg, color }}>
-              {act.domain} · {DOMAIN_LABEL[act.domain] ?? act.domain}
-            </span>
-          )}
+          <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full" style={{ background: bg, color }}>
+            {act.domain} · {DOMAIN_LABEL[act.domain] ?? act.domain}
+          </span>
           <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border"
                 style={{ borderColor: `${DIFF_COLOR[act.difficulty] ?? '#6B7280'}40`, color: DIFF_COLOR[act.difficulty] ?? '#6B7280' }}>
             {act.difficulty}
           </span>
           <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1"
                 style={{ background: '#FFF7ED', color: '#D97706' }}>
-            <Star size={9} /> {act.sdc_credits} SDC Credits
+            <Star size={9} /> {act.sdc_credits} SAMAM Points
           </span>
           {!completed && (
             <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full" style={{ background: '#F0FDF4', color: '#16A34A' }}>
@@ -158,55 +164,15 @@ function ActivityCard({ act, completed }: { act: Activity; completed: boolean })
             </a>
           )}
           {hasReport && (
-            <button
-              onClick={() => setExpanded(v => !v)}
+            <Link
+              href={`/activities/report/${encodeURIComponent(act.code)}`}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-gray-50 border"
               style={{ borderColor: '#E4E4E7', color: '#52525B' }}>
               <FileText size={11} style={{ color }} />
-              {expanded ? 'Hide Report' : 'View Report'}
-              {expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-            </button>
+              View Report
+            </Link>
           )}
         </div>
-
-        {/* ── Expanded report ── */}
-        {expanded && act.report && (
-          <div className="mt-1 rounded-xl overflow-hidden" style={{ border: `1px solid ${color}25`, background: bg }}>
-
-            {/* Gallery */}
-            {gallery.length > 0 && (
-              <div className="p-3 border-b" style={{ borderColor: `${color}20` }}>
-                <p className="text-[10px] font-black tracking-widest uppercase mb-2 flex items-center gap-1" style={{ color }}>
-                  <ImageIcon size={10} /> Gallery
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {gallery.slice(0, 8).map((u, i) => (
-                    <a key={i} href={u} target="_blank" rel="noopener" className="block">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={u} alt="" className="w-full aspect-square object-cover rounded-lg hover:opacity-90 transition-opacity" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Report sections */}
-            {[
-              { icon: BookOpen,   label: 'Overview',          text: act.report.overview          },
-              { icon: Lightbulb,  label: 'Key Highlights',    text: act.report.key_highlights    },
-              { icon: Award,      label: 'Learning Outcomes', text: act.report.learning_outcomes  },
-            ].filter(s => s.text).map(s => (
-              <div key={s.label} className="p-4 border-b last:border-b-0" style={{ borderColor: `${color}15` }}>
-                <p className="text-[10px] font-black tracking-widest uppercase mb-2 flex items-center gap-1.5" style={{ color }}>
-                  <s.icon size={10} /> {s.label}
-                </p>
-                <p className="text-xs leading-relaxed whitespace-pre-line" style={{ color: '#374151' }}>
-                  {s.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
@@ -226,7 +192,7 @@ export default function ActivitiesPage() {
   const [errorC, setErrorC]     = useState(false);
 
   useEffect(() => {
-    fetch('/api/activities-proxy?type=upcoming')
+    fetchWithTimeout('/api/activities-proxy?type=upcoming')
       .then(r => r.json())
       .then(d => {
         if (d.error || !Array.isArray(d.activities)) { setErrorU(true); setUpcoming([]); }
@@ -235,7 +201,7 @@ export default function ActivitiesPage() {
       })
       .catch(() => { setErrorU(true); setLoadingU(false); });
 
-    fetch('/api/activities-proxy?type=completed')
+    fetchWithTimeout('/api/activities-proxy?type=completed')
       .then(r => r.json())
       .then(d => {
         if (d.error || !Array.isArray(d.activities)) { setErrorC(true); setCompleted([]); }
@@ -263,7 +229,7 @@ export default function ActivitiesPage() {
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '54ch' }}>
             Hands-on workshops, inter-club competitions, and co-curricular activities spanning all five SAC domains.
-            Every activity earns SDC credits toward your student development record.
+            Every activity earns SAMAM points toward your student development record.
           </p>
         </div>
       </section>
