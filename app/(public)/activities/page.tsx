@@ -55,6 +55,7 @@ interface Activity {
   start_time: string;
   end_time: string;
   venue: string;
+  poster_url: string | null;
   report: Report | null;
 }
 
@@ -65,8 +66,10 @@ function ActivityCard({ act, completed }: { act: Activity; completed: boolean })
   const descRef = useRef<HTMLParagraphElement>(null);
   const color = DOMAIN_COLORS[act.domain] ?? '#8B0000';
   const bg    = DOMAIN_BG[act.domain]     ?? '#FFF0F0';
-  const poster = act.report?.poster_url
-    ? (act.report.poster_url.startsWith('http') ? act.report.poster_url : `https://sacactivities.kluniversity.in${act.report.poster_url}`)
+  
+  const rawPoster = act.poster_url || act.report?.poster_url;
+  const poster = rawPoster
+    ? (rawPoster.startsWith('http') ? rawPoster : `https://sacactivities.kluniversity.in${rawPoster}`)
     : null;
   const hasReport = completed && !!act.report;
 
