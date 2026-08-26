@@ -5,6 +5,13 @@ import { ArrowLeft } from 'lucide-react';
 import { db } from '@/lib/query-builder';
 import ClubForm from '../_components/ClubForm';
 
+/** Safely parse a JSON column (string | array | null) → string[] */
+function parseJsonCol(val: any): string[] {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  try { return JSON.parse(val); } catch { return []; }
+}
+
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Edit Club — KL SAC Admin' };
 
@@ -31,11 +38,11 @@ export default async function EditClubPage({ params }: { params: Promise<{ slug:
     tagline:        raw.club_description ?? '',
     logo_url:       raw.club_logo ?? '',
     about:          raw.club_about ? raw.club_about.split('\n').filter(Boolean) : [],
-    purpose:        '',
-    competencies:   [],
-    activities_list:[],
-    cover_url:      '',
-    gallery:        [] as string[],
+    purpose:        raw.purpose ?? '',
+    competencies:   parseJsonCol(raw.competencies),
+    activities_list:parseJsonCol(raw.activities_list),
+    cover_url:      raw.cover_url ?? '',
+    gallery:        parseJsonCol(raw.gallery),
     sort_order:     0,
   };
 

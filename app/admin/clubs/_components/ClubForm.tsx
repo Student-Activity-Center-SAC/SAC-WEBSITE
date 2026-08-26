@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Save, Upload, X, Image } from 'lucide-react';
+import { Save, Upload, X, Image, Crop, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
 
 const DOMAINS = [
   { code: 'TEC', slug: 'technology',       label: 'TEC — Technology' },
@@ -20,10 +20,264 @@ function slugify(s: string) {
 function lines(arr: string[]) { return arr.join('\n'); }
 function fromLines(s: string) { return s.split('\n').map(l => l.trim()).filter(Boolean); }
 
+// ── Crop Modal ────────────────────────────────────────────────────────────────
+
+interface CropOptions {
+  aspectRatio: number; // e.g. 1 for square, 16/5 for cover, 4/3 for gallery
+  label: string;
+  targetWidth: number;
+  targetHeight: number;
+}
+
+interface CropModalProps {
+  src: string;
+  options: CropOptions;
+  onCancel: () => void;
+  onApply: (blob: Blob) => void;
+}
+
+function CropModal({ src, options, onCancel, onApply }: CropModalProps) {
+  const imgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef({ mx: 0, my: 0, ox: 0, oy: 0 });
+
+  // Container preview size (fixed 560×(560/ar) capped at 320h)
+  const PREVIEW_W = 560;
+  const PREVIEW_H = Math.min(320, Math.round(PREVIEW_W / options.aspectRatio));
+
+  const onLoad = useCallback(() => {
+    setImgLoaded(true);
+    setZoom(1);
+    setOffset({ x: 0, y: 0 });
+  }, []);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setDragging(true);
+    dragStart.current = { mx: e.clientX, my: e.clientY, ox: offset.x, oy: offset.y };
+  };
+  const onMouseMove = useCallback((e: MouseEvent) => {
+    if (!dragging) return;
+    setOffset({
+      x: dragStart.current.ox + (e.clientX - dragStart.current.mx),
+      y: dragStart.current.oy + (e.clientY - dragStart.current.my),
+    });
+  }, [dragging]);
+  const onMouseUp = useCallback(() => setDragging(false), []);
+
+  useEffect(() => {
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [onMouseMove, onMouseUp]);
+
+  function apply() {
+    const img = imgRef.current;
+    if (!img || !imgLoaded) return;
+    const canvas = document.createElement('canvas');
+    canvas.width  = options.targetWidth;
+    canvas.height = options.targetHeight;
+    const ctx = canvas.getContext('2d')!;
+
+    // Calculate how img is rendered in preview box
+    const naturalAr = img.naturalWidth / img.naturalHeight;
+    let renderedW: number, renderedH: number;
+    if (naturalAr > options.aspectRatio) {
+      renderedH = PREVIEW_H * zoom;
+      renderedW = renderedH * naturalAr;
+    } else {
+      renderedW = PREVIEW_W * zoom;
+      renderedH = renderedW / naturalAr;
+    }
+
+    // Centred offset in preview
+    const baseX = (PREVIEW_W - renderedW) / 2 + offset.x;
+    const baseY = (PREVIEW_H - renderedH) / 2 + offset.y;
+
+    // Map preview crop rect → source coords
+    const scaleX = img.naturalWidth / renderedW;
+    const scaleY = img.naturalHeight / renderedH;
+    const srcX = -baseX * scaleX;
+    const srcY = -baseY * scaleY;
+    const srcW = PREVIEW_W * scaleX;
+    const srcH = PREVIEW_H * scaleY;
+
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, options.targetWidth, options.targetHeight);
+    canvas.toBlob(blob => { if (blob) onApply(blob); }, 'image/jpeg', 0.9);
+  }
+
+  const naturalAr = imgRef.current ? imgRef.current.naturalWidth / imgRef.current.naturalHeight : 1;
+  let renderedW: number, renderedH: number;
+  if (naturalAr > options.aspectRatio) {
+    renderedH = PREVIEW_H * zoom;
+    renderedW = renderedH * naturalAr;
+  } else {
+    renderedW = PREVIEW_W * zoom;
+    renderedH = renderedW / naturalAr;
+  }
+  const baseX = (PREVIEW_W - renderedW) / 2 + offset.x;
+  const baseY = (PREVIEW_H - renderedH) / 2 + offset.y;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
+    >
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #E4E4E7' }}>
+          <div>
+            <h3 className="font-black text-base" style={{ color: '#0D0D0D' }}>
+              <Crop size={14} className="inline mr-1.5 mb-0.5" />
+              Crop & Resize
+            </h3>
+            <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>
+              {options.label} · {options.targetWidth}×{options.targetHeight}px
+            </p>
+          </div>
+          <button onClick={onCancel} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <X size={16} style={{ color: '#71717A' }} />
+          </button>
+        </div>
+
+        {/* Preview */}
+        <div className="px-5 pt-4">
+          <div
+            ref={containerRef}
+            className="relative overflow-hidden rounded-xl mx-auto select-none"
+            style={{
+              width: PREVIEW_W, height: PREVIEW_H,
+              background: '#1a1a1a',
+              cursor: dragging ? 'grabbing' : 'grab',
+              border: '2px solid #8B0000',
+            }}
+            onMouseDown={onMouseDown}
+          >
+            {/* Hidden img for measurements */}
+            <img
+              ref={imgRef}
+              src={src}
+              alt=""
+              onLoad={onLoad}
+              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 1 }}
+            />
+            {imgLoaded && (
+              <img
+                src={src}
+                alt="preview"
+                draggable={false}
+                style={{
+                  position: 'absolute',
+                  width: renderedW,
+                  height: renderedH,
+                  left: baseX,
+                  top: baseY,
+                  userSelect: 'none',
+                }}
+              />
+            )}
+            {/* Crop overlay grid */}
+            <div style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none',
+              background: [
+                'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)',
+                'linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
+              ].join(', '),
+              backgroundSize: `${PREVIEW_W/3}px ${PREVIEW_H/3}px`,
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderRadius: 10,
+            }} />
+          </div>
+
+          {/* Zoom controls */}
+          <div className="flex items-center gap-3 mt-3">
+            <button
+              onClick={() => { setZoom(z => Math.max(0.5, z - 0.1)); setOffset({ x: 0, y: 0 }); }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100"
+            >
+              <ZoomOut size={14} style={{ color: '#71717A' }} />
+            </button>
+            <input
+              type="range" min={0.5} max={3} step={0.05}
+              value={zoom}
+              onChange={e => { setZoom(Number(e.target.value)); setOffset({ x: 0, y: 0 }); }}
+              className="flex-1 accent-red-800"
+            />
+            <button
+              onClick={() => { setZoom(z => Math.min(3, z + 0.1)); setOffset({ x: 0, y: 0 }); }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100"
+            >
+              <ZoomIn size={14} style={{ color: '#71717A' }} />
+            </button>
+            <button
+              onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100"
+              title="Reset"
+            >
+              <RotateCw size={13} style={{ color: '#71717A' }} />
+            </button>
+            <span className="text-xs tabular-nums w-10 text-right" style={{ color: '#A1A1AA' }}>
+              {Math.round(zoom * 100)}%
+            </span>
+          </div>
+          <p className="text-xs mt-1.5 mb-4" style={{ color: '#A1A1AA' }}>
+            Drag the image to reposition · Zoom to fit more or less
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 px-5 py-4" style={{ borderTop: '1px solid #E4E4E7' }}>
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-colors hover:bg-gray-50"
+            style={{ borderColor: '#E4E4E7', color: '#71717A' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={apply}
+            className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+            style={{ background: '#8B0000', color: '#fff' }}
+          >
+            Apply & Upload
+          </button>
+        </div>
+        {/* Hidden canvas */}
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+      </div>
+    </div>
+  );
+}
+
+// ── Crop target presets ───────────────────────────────────────────────────────
+
+const CROP_PRESETS: Record<string, CropOptions> = {
+  logo:    { aspectRatio: 1,    label: 'Logo',        targetWidth: 400,  targetHeight: 400  },
+  cover:   { aspectRatio: 16/5, label: 'Cover Photo', targetWidth: 1920, targetHeight: 600  },
+  gallery: { aspectRatio: 4/3,  label: 'Gallery',     targetWidth: 800,  targetHeight: 600  },
+};
+
+// ── Main ClubForm ─────────────────────────────────────────────────────────────
+
 export default function ClubForm({ initial, mode }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+
+  // Crop state
+  const [cropSrc, setCropSrc]       = useState<string | null>(null);
+  const [cropKey, setCropKey]       = useState<string>('gallery');
+  const [cropFile, setCropFile]     = useState<File | null>(null);
+  const [pendingInput, setPendingInput] = useState<HTMLInputElement | null>(null);
 
   const [form, setForm] = useState({
     slug:            initial?.slug            ?? '',
@@ -48,49 +302,42 @@ export default function ClubForm({ initial, mode }: Props) {
     setForm(f => ({ ...f, domain_code: d.code, domain_slug: d.slug }));
   }
 
-  async function uploadFile(
-    e: React.ChangeEvent<HTMLInputElement>,
-    onSuccess: (url: string) => void,
-    key: string,
-  ) {
+  /** Open the crop modal for a given upload field */
+  function openCrop(e: React.ChangeEvent<HTMLInputElement>, key: string) {
     const file = e.target.files?.[0];
     if (!file) return;
+    const url = URL.createObjectURL(file);
+    setCropSrc(url);
+    setCropKey(key);
+    setCropFile(file);
+    setPendingInput(e.target);
+  }
+
+  /** After crop, upload the resulting blob */
+  async function uploadBlob(blob: Blob, key: string, originalFile: File) {
+    setCropSrc(null);
+    if (pendingInput) { pendingInput.value = ''; setPendingInput(null); }
     setUploading(key);
     try {
       const fd = new FormData();
-      fd.append('file', file);
+      const ext = originalFile.name.split('.').pop() ?? 'jpg';
+      fd.append('file', blob, `cropped.${ext}`);
       fd.append('folder', 'clubs');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const d = await res.json();
       if (!res.ok) throw new Error(d.error);
-      onSuccess(d.url);
-      toast.success('Uploaded');
+      if (key === 'gallery') {
+        setForm(f => ({ ...f, gallery: [...f.gallery, d.url] }));
+        toast.success('Photo added to gallery');
+      } else {
+        set(key === 'logo' ? 'logo_url' : 'cover_url', d.url);
+        toast.success('Uploaded');
+      }
     } catch (err: any) {
       toast.error(err.message);
     } finally {
       setUploading(null);
-      e.target.value = '';
-    }
-  }
-
-  async function addGalleryPhoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading('gallery');
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('folder', 'clubs');
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-      const d = await res.json();
-      if (!res.ok) throw new Error(d.error);
-      setForm(f => ({ ...f, gallery: [...f.gallery, d.url] }));
-      toast.success('Photo added to gallery');
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setUploading(null);
-      e.target.value = '';
+      if (cropSrc) URL.revokeObjectURL(cropSrc);
     }
   }
 
@@ -129,148 +376,171 @@ export default function ClubForm({ initial, mode }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5 max-w-2xl">
-      <Field label="Club Name *">
-        <input required value={form.name}
-               onChange={e => { set('name', e.target.value); if (!initial) set('slug', slugify(e.target.value)); }}
-               className={inp} style={sty} />
-      </Field>
+    <>
+      {/* Crop modal */}
+      {cropSrc && cropFile && (
+        <CropModal
+          src={cropSrc}
+          options={CROP_PRESETS[cropKey] ?? CROP_PRESETS.gallery}
+          onCancel={() => {
+            URL.revokeObjectURL(cropSrc);
+            setCropSrc(null);
+            if (pendingInput) { pendingInput.value = ''; setPendingInput(null); }
+          }}
+          onApply={blob => uploadBlob(blob, cropKey, cropFile)}
+        />
+      )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Slug (URL) *">
-          <input required value={form.slug}
-                 onChange={e => set('slug', slugify(e.target.value))}
-                 className={inp} style={sty} placeholder="auto-generated" />
-        </Field>
-        <Field label="Sort Order">
-          <input type="number" value={form.sort_order}
-                 onChange={e => set('sort_order', e.target.value)}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5 max-w-2xl">
+        <Field label="Club Name *">
+          <input required value={form.name}
+                 onChange={e => { set('name', e.target.value); if (!initial) set('slug', slugify(e.target.value)); }}
                  className={inp} style={sty} />
         </Field>
-      </div>
 
-      <Field label="Domain *">
-        <select value={form.domain_code} onChange={e => setDomain(e.target.value)}
-                className={inp} style={sty}>
-          {DOMAINS.map(d => <option key={d.code} value={d.code}>{d.label}</option>)}
-        </select>
-      </Field>
-
-      <Field label="Tagline">
-        <input value={form.tagline} onChange={e => set('tagline', e.target.value)}
-               className={inp} style={sty} placeholder="e.g. Where logic meets ambition." />
-      </Field>
-
-      <Field label="About (one paragraph per line)">
-        <textarea rows={5} value={form.about} onChange={e => set('about', e.target.value)}
-                  className={inp} style={sty} />
-      </Field>
-
-      <Field label="Purpose">
-        <textarea rows={3} value={form.purpose} onChange={e => set('purpose', e.target.value)}
-                  className={inp} style={sty} />
-      </Field>
-
-      <Field label="Competencies (one per line)">
-        <textarea rows={4} value={form.competencies} onChange={e => set('competencies', e.target.value)}
-                  className={inp} style={sty} placeholder="e.g.&#10;Competitive Programming&#10;Data Structures & Algorithms" />
-      </Field>
-
-      <Field label="Activities (one per line)">
-        <textarea rows={4} value={form.activities_list} onChange={e => set('activities_list', e.target.value)}
-                  className={inp} style={sty} placeholder="e.g.&#10;Weekly coding challenges&#10;National hackathon participation" />
-      </Field>
-
-      {/* Logo */}
-      <Field label="Logo">
-        <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>200 × 200 px · Square · PNG with transparent background preferred</p>
-        <div className="flex flex-col gap-2">
-          {form.logo_url && (
-            <img src={form.logo_url} alt="logo preview"
-                 className="w-16 h-16 rounded-xl object-contain border"
-                 style={{ borderColor: '#E4E4E7', background: '#F7F7F8' }} />
-          )}
-          <input value={form.logo_url} onChange={e => set('logo_url', e.target.value)}
-                 className={inp} style={sty} placeholder="Paste URL or upload below" />
-          <label className={uploadBtn}>
-            <Upload size={13} /> {uploading === 'logo' ? 'Uploading…' : 'Upload logo'}
-            <input type="file" accept="image/*" className="hidden"
-                   onChange={e => uploadFile(e, url => set('logo_url', url), 'logo')}
-                   disabled={uploading !== null} />
-          </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Slug (URL) *">
+            <input required value={form.slug}
+                   onChange={e => set('slug', slugify(e.target.value))}
+                   className={inp} style={sty} placeholder="auto-generated" />
+          </Field>
+          <Field label="Sort Order">
+            <input type="number" value={form.sort_order}
+                   onChange={e => set('sort_order', e.target.value)}
+                   className={inp} style={sty} />
+          </Field>
         </div>
-      </Field>
 
-      {/* Cover photo */}
-      <Field label="Cover Photo (banner shown on club page)">
-        <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>1920 × 600 px · 16:5 ratio · Landscape, wide banner</p>
-        <div className="flex flex-col gap-2">
-          {form.cover_url && (
-            <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '16/5' }}>
-              <img src={form.cover_url} alt="cover preview"
-                   className="w-full h-full object-cover" />
-              <button type="button" onClick={() => set('cover_url', '')}
-                      className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(0,0,0,0.6)' }}>
-                <X size={12} style={{ color: '#fff' }} />
-              </button>
-            </div>
-          )}
-          <input value={form.cover_url} onChange={e => set('cover_url', e.target.value)}
-                 className={inp} style={sty} placeholder="Paste URL or upload below" />
-          <label className={uploadBtn}>
-            <Image size={13} /> {uploading === 'cover' ? 'Uploading…' : 'Upload cover photo'}
-            <input type="file" accept="image/*" className="hidden"
-                   onChange={e => uploadFile(e, url => set('cover_url', url), 'cover')}
-                   disabled={uploading !== null} />
-          </label>
-        </div>
-      </Field>
+        <Field label="Domain *">
+          <select value={form.domain_code} onChange={e => setDomain(e.target.value)}
+                  className={inp} style={sty}>
+            {DOMAINS.map(d => <option key={d.code} value={d.code}>{d.label}</option>)}
+          </select>
+        </Field>
 
-      {/* Gallery */}
-      <Field label="Gallery Photos (shown on club page)">
-        <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>800 × 600 px · 4:3 ratio · Landscape event/activity photos</p>
-        <div className="flex flex-col gap-3">
-          {form.gallery.length > 0 && (
-            <div className="grid grid-cols-3 gap-2">
-              {form.gallery.map((url, i) => (
-                <div key={i} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '4/3' }}>
-                  <img src={url} alt={`gallery ${i + 1}`} className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeGalleryPhoto(i)}
-                    className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(0,0,0,0.7)' }}>
-                    <X size={10} style={{ color: '#fff' }} />
-                  </button>
-                  <span className="absolute bottom-1 left-1 text-[9px] font-black px-1.5 py-0.5 rounded"
-                        style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}>
-                    {i + 1}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-          <label className={uploadBtn}>
-            <Upload size={13} /> {uploading === 'gallery' ? 'Uploading…' : 'Add gallery photo'}
-            <input type="file" accept="image/*" className="hidden"
-                   onChange={addGalleryPhoto}
-                   disabled={uploading !== null} />
-          </label>
-          {form.gallery.length > 0 && (
-            <p className="text-xs" style={{ color: '#A1A1AA' }}>
-              {form.gallery.length} photo{form.gallery.length !== 1 ? 's' : ''} · First 2 display large, rest display as grid.
-            </p>
-          )}
-        </div>
-      </Field>
+        <Field label="Tagline">
+          <input value={form.tagline} onChange={e => set('tagline', e.target.value)}
+                 className={inp} style={sty} placeholder="e.g. Where logic meets ambition." />
+        </Field>
 
-      <button type="submit" disabled={saving}
-              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
-              style={{ background: '#8B0000', color: '#fff' }}>
-        <Save size={14} /> {saving ? 'Saving…' : mode === 'create' ? 'Create Club' : 'Save Changes'}
-      </button>
-    </form>
+        <Field label="About (one paragraph per line)">
+          <textarea rows={5} value={form.about} onChange={e => set('about', e.target.value)}
+                    className={inp} style={sty} />
+        </Field>
+
+        <Field label="Purpose">
+          <textarea rows={3} value={form.purpose} onChange={e => set('purpose', e.target.value)}
+                    className={inp} style={sty} />
+        </Field>
+
+        <Field label="Competencies (one per line)">
+          <textarea rows={4} value={form.competencies} onChange={e => set('competencies', e.target.value)}
+                    className={inp} style={sty} placeholder={"e.g.\nCompetitive Programming\nData Structures & Algorithms"} />
+        </Field>
+
+        <Field label="Activities (one per line)">
+          <textarea rows={4} value={form.activities_list} onChange={e => set('activities_list', e.target.value)}
+                    className={inp} style={sty} placeholder={"e.g.\nWeekly coding challenges\nNational hackathon participation"} />
+        </Field>
+
+        {/* Logo */}
+        <Field label="Logo">
+          <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>200 × 200 px · Square · PNG with transparent background preferred · Will be auto-cropped to square</p>
+          <div className="flex flex-col gap-2">
+            {form.logo_url && (
+              <div className="relative w-fit">
+                <img src={form.logo_url} alt="logo preview"
+                     className="w-16 h-16 rounded-xl object-contain border"
+                     style={{ borderColor: '#E4E4E7', background: '#F7F7F8' }} />
+                <button type="button" onClick={() => set('logo_url', '')}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
+                        style={{ background: '#8B0000' }}>
+                  <X size={10} style={{ color: '#fff' }} />
+                </button>
+              </div>
+            )}
+            <input value={form.logo_url} onChange={e => set('logo_url', e.target.value)}
+                   className={inp} style={sty} placeholder="Paste URL or upload below" />
+            <label className={uploadBtn}>
+              <Upload size={13} /> {uploading === 'logo' ? 'Uploading…' : 'Upload & Crop Logo'}
+              <input type="file" accept="image/*" className="hidden"
+                     onChange={e => openCrop(e, 'logo')}
+                     disabled={uploading !== null} />
+            </label>
+          </div>
+        </Field>
+
+        {/* Cover photo */}
+        <Field label="Cover Photo (banner shown on club page)">
+          <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>1920 × 600 px · 16:5 ratio · Will be auto-cropped</p>
+          <div className="flex flex-col gap-2">
+            {form.cover_url && (
+              <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: '16/5' }}>
+                <img src={form.cover_url} alt="cover preview"
+                     className="w-full h-full object-cover" />
+                <button type="button" onClick={() => set('cover_url', '')}
+                        className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ background: 'rgba(0,0,0,0.6)' }}>
+                  <X size={12} style={{ color: '#fff' }} />
+                </button>
+              </div>
+            )}
+            <input value={form.cover_url} onChange={e => set('cover_url', e.target.value)}
+                   className={inp} style={sty} placeholder="Paste URL or upload below" />
+            <label className={uploadBtn}>
+              <Image size={13} /> {uploading === 'cover' ? 'Uploading…' : 'Upload & Crop Cover Photo'}
+              <input type="file" accept="image/*" className="hidden"
+                     onChange={e => openCrop(e, 'cover')}
+                     disabled={uploading !== null} />
+            </label>
+          </div>
+        </Field>
+
+        {/* Gallery */}
+        <Field label="Gallery Photos (shown on club page)">
+          <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>800 × 600 px · 4:3 ratio · Each photo will be cropped before upload</p>
+          <div className="flex flex-col gap-3">
+            {form.gallery.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {form.gallery.map((url, i) => (
+                  <div key={i} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                    <img src={url} alt={`gallery ${i + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryPhoto(i)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                      style={{ background: 'rgba(0,0,0,0.7)' }}>
+                      <X size={10} style={{ color: '#fff' }} />
+                    </button>
+                    <span className="absolute bottom-1 left-1 text-[9px] font-black px-1.5 py-0.5 rounded"
+                          style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}>
+                      {i + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <label className={uploadBtn}>
+              <Upload size={13} /> {uploading === 'gallery' ? 'Uploading…' : 'Add Gallery Photo'}
+              <input type="file" accept="image/*" className="hidden"
+                     onChange={e => openCrop(e, 'gallery')}
+                     disabled={uploading !== null} />
+            </label>
+            {form.gallery.length > 0 && (
+              <p className="text-xs" style={{ color: '#A1A1AA' }}>
+                {form.gallery.length} photo{form.gallery.length !== 1 ? 's' : ''} · First 2 display large, rest display as grid.
+              </p>
+            )}
+          </div>
+        </Field>
+
+        <button type="submit" disabled={saving}
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 disabled:opacity-50 w-fit"
+                style={{ background: '#8B0000', color: '#fff' }}>
+          <Save size={14} /> {saving ? 'Saving…' : mode === 'create' ? 'Create Club' : 'Save Changes'}
+        </button>
+      </form>
+    </>
   );
 }
 
@@ -286,3 +556,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const inp = 'w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all';
 const sty = { borderColor: '#E4E4E7', background: '#F7F7F8' } as React.CSSProperties;
 const uploadBtn = 'flex items-center gap-2 cursor-pointer text-sm font-semibold px-4 py-2.5 rounded-xl border w-fit transition-colors hover:bg-gray-50';
+

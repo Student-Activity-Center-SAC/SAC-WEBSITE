@@ -14,6 +14,13 @@ function toSlug(name: string) {
   return name?.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') ?? '';
 }
 
+/** Safely parse a JSON column (string | array | null) → string[] */
+function parseJsonCol(val: any): string[] {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  try { return JSON.parse(val); } catch { return []; }
+}
+
 async function getClubBySlug(slug: string) {
   const { data: all } = await db.from('clubs').select('*').order('id', { ascending: true });
   const raw = (all ?? []).find((c: any) => toSlug(c.club_name) === slug);
@@ -26,11 +33,11 @@ async function getClubBySlug(slug: string) {
     tagline:        raw.club_description ?? '',
     logo_url:       raw.club_logo ?? '',
     about:          raw.club_about ? raw.club_about.split('\n').filter(Boolean) : [],
-    gallery:        [] as string[],
-    competencies:   [] as string[],
-    activities_list:[] as string[],
-    purpose:        null as string | null,
-    cover_url:      null as string | null,
+    gallery:        parseJsonCol(raw.gallery),
+    competencies:   parseJsonCol(raw.competencies),
+    activities_list:parseJsonCol(raw.activities_list),
+    purpose:        (raw.purpose ?? null) as string | null,
+    cover_url:      (raw.cover_url ?? null) as string | null,
   };
 }
 
