@@ -201,7 +201,7 @@ export function UpcomingActivitiesHome() {
                               <p className="text-xs font-semibold leading-snug" style={{ color: '#fff' }}>
                                 {act.title}
                               </p>
-                              <p className="text-[10px] mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                              <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>
                                 {[act.domain, act.club_name || act.category, act.venue].filter(Boolean).join(' · ')}
                               </p>
                             </div>
@@ -226,11 +226,11 @@ export function UpcomingActivitiesHome() {
               <div className="px-6 py-4 flex items-center gap-5" style={{ borderTop: '1px solid var(--hairline)' }}>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full" style={{ background: '#970003' }} />
-                  <span className="text-[10px]" style={{ color: 'rgba(25,19,19,0.4)' }}>Activity</span>
+                  <span className="text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>Activity</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full" style={{ background: 'rgba(151,0,3,0.09)', border: '1px solid rgba(151,0,3,0.25)' }} />
-                  <span className="text-[10px]" style={{ color: 'rgba(25,19,19,0.4)' }}>Today</span>
+                  <span className="text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>Today</span>
                 </div>
               </div>
             </div>
@@ -271,7 +271,7 @@ export function UpcomingActivitiesHome() {
                           {String(date.getDate()).padStart(2, '0')}
                         </div>
                         <div
-                          className="text-[10px] font-semibold tracking-widest uppercase mt-1"
+                          className="text-xs font-semibold tracking-widest uppercase mt-1"
                           style={{ color: 'rgba(25,19,19,0.32)' }}>
                           {date.toLocaleString('en-IN', { month: 'short' })}
                         </div>
@@ -285,9 +285,9 @@ export function UpcomingActivitiesHome() {
                         <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1.5" style={{ color: '#191313' }}>
                           {act.title}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs"
+                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm"
                              style={{ color: 'rgba(25,19,19,0.4)' }}>
-                          <span className="font-bold text-[10px] uppercase tracking-wider" style={{ color }}>
+                          <span className="font-bold text-xs uppercase tracking-wider" style={{ color }}>
                             {act.domain}
                           </span>
                           {meta && (
@@ -303,9 +303,9 @@ export function UpcomingActivitiesHome() {
                       <a
                         href="https://sacactivities.kluniversity.in/auth/login"
                         target="_blank" rel="noopener"
-                        className="text-xs font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
+                        className="text-sm font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
                         style={{ color: '#970003' }}>
-                        Register <ArrowUpRight size={12} />
+                        Register <ArrowUpRight size={13} />
                       </a>
                     </div>
                   );

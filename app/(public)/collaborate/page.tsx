@@ -113,7 +113,7 @@ export default function CollaboratePage() {
                   <h3 className="font-semibold text-lg mb-2.5" style={{ color: '#191313', letterSpacing: '-0.01em' }}>
                     {area.title}
                   </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
+                  <p className="text-base leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
                     {area.desc}
                   </p>
                 </div>
@@ -136,7 +136,7 @@ export default function CollaboratePage() {
                   className="flex flex-col items-center gap-2.5 p-5 rounded-2xl text-center transition-all hover:shadow-md"
                   style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
                   <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#970003' }} />
-                  <p className="text-xs font-semibold leading-snug" style={{ color: '#191313' }}>{type}</p>
+                  <p className="text-sm font-semibold leading-snug" style={{ color: '#191313' }}>{type}</p>
                 </div>
               ))}
             </div>
@@ -164,7 +164,7 @@ export default function CollaboratePage() {
                     <h3 className="font-semibold text-lg mb-2" style={{ color: '#191313', letterSpacing: '-0.01em' }}>
                       {step.title}
                     </h3>
-                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
+                    <p className="text-base leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>
                       {step.desc}
                     </p>
                   </div>
@@ -198,7 +198,7 @@ export default function CollaboratePage() {
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#fff', letterSpacing: '-0.02em' }}>
                   Ready to collaborate with KL SAC?
                 </h2>
-                <p style={{ color: 'rgba(255,255,255,0.65)' }}>
+                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '1.06rem' }}>
                   Reach out and our team will connect you to the right domain or club.
                 </p>
               </div>

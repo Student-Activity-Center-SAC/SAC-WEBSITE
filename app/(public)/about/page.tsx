@@ -97,7 +97,7 @@ export default async function AboutPage() {
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
                   Education at its core is not merely about acquiring degrees; it is about building character, nurturing innovation, and empowering minds to shape a better tomorrow.
                 </blockquote>
-                <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)', maxWidth: '72ch' }}>
+                <div className="flex flex-col gap-4 text-base leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)', maxWidth: '72ch' }}>
                   <p>
                     At KL University, we have always believed in fostering a holistic environment where students can truly discover themselves. The Student Activity Centre (SAC) embodies this very vision. It is a vibrant ecosystem designed to pull you out of your comfort zones and challenge you to explore your deepest passions.
                   </p>
@@ -148,7 +148,7 @@ export default async function AboutPage() {
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
                   Your university years are a canvas, and the Student Activity Centre provides the colors. How vibrantly you paint your journey is entirely in your hands.
                 </blockquote>
-                <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)', maxWidth: '72ch' }}>
+                <div className="flex flex-col gap-4 text-base leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)', maxWidth: '72ch' }}>
                   <p>
                     Welcome to the heart of student life at KL University! The SAC is more than just a collection of clubs; it is a thriving family of creators, thinkers, artists, and leaders. It is the place where your ideas find a voice, and your talents find a stage.
                   </p>
@@ -177,7 +177,7 @@ export default async function AboutPage() {
                 style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 The Student Activity Center.
               </h2>
-              <div className="flex flex-col gap-4 text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)' }}>
+              <div className="flex flex-col gap-4 text-base leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)' }}>
                 <p>
                   KL SAC is KL University's official co-curricular development body. It operates 20+ student clubs across{domainCount > 0 ? ` ${domainCount}` : ''} domains — Technology, Liberal Arts & Culture, Health & Wellbeing, Social Outreach, and Innovation & Entrepreneurship.
                 </p>
@@ -244,7 +244,7 @@ export default async function AboutPage() {
                     <h3 className="font-semibold text-lg sm:text-xl mb-3" style={{ color: '#191313' }}>
                       {p.heading}
                     </h3>
-                    <p className="text-[15px] leading-[1.75]" style={{ color: 'rgba(25,19,19,0.55)' }}>
+                    <p className="text-base leading-[1.75]" style={{ color: 'rgba(25,19,19,0.55)' }}>
                       {p.body}
                     </p>
                   </div>
@@ -263,7 +263,7 @@ export default async function AboutPage() {
                 style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#fff', letterSpacing: '-0.02em' }}>
               Have questions about SAC?
             </h3>
-            <p style={{ color: 'rgba(255,255,255,0.55)' }}>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '1.06rem' }}>
               Reach out to our team — we're here to help.
             </p>
           </div>

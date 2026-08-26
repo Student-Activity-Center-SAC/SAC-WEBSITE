@@ -40,7 +40,7 @@ export default function Footer() {
             </span>
           </div>
 
-          <p className="text-sm leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.38)' }}>
+          <p className="text-base leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.38)' }}>
             Student Activity Center<br />
             KL University, Vaddeswaram, Guntur<br />
             Andhra Pradesh — 522 302
@@ -89,7 +89,7 @@ export default function Footer() {
             {NAVIGATE.map(l => (
               <li key={l.href}>
                 <Link href={l.href}
-                      className="text-sm transition-colors hover:text-white"
+                      className="text-base transition-colors hover:text-white"
                       style={{ color: 'rgba(255,255,255,0.42)' }}>
                   {l.label}
                 </Link>
@@ -104,8 +104,8 @@ export default function Footer() {
               style={{ color: 'rgba(255,255,255,0.35)' }}>Domains</h4>
           <ul className="space-y-3">
             {DOMAINS.map(d => (
-              <li key={d.code} className="flex items-center gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.42)' }}>
-                <span className="font-black text-xs shrink-0" style={{ color: d.color }}>{d.code}</span>
+              <li key={d.code} className="flex items-center gap-2.5 text-base" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                <span className="font-black text-sm shrink-0" style={{ color: d.color }}>{d.code}</span>
                 <span>{d.shortName}</span>
               </li>
             ))}
@@ -120,7 +120,7 @@ export default function Footer() {
             {ENGAGE.map(l => (
               <li key={l.href}>
                 <Link href={l.href}
-                      className="text-sm transition-colors hover:text-white"
+                      className="text-base transition-colors hover:text-white"
                       style={{ color: 'rgba(255,255,255,0.42)' }}>
                   {l.label}
                 </Link>
@@ -129,14 +129,14 @@ export default function Footer() {
           </ul>
 
           <div className="pt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            <p className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
               Register for clubs and manage your student journey.
             </p>
             <Link href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all hover:scale-[1.03]"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all hover:scale-[1.03]"
                   style={{ background: '#970003', color: '#fff' }}>
               Student Dashboard
-              <ArrowUpRight size={11} />
+              <ArrowUpRight size={13} />
             </Link>
           </div>
         </div>

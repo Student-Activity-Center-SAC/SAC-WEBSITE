@@ -106,12 +106,12 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
         <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-center">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span
-              className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
+              className="text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
               style={{ background: levelStyle.bg, color: levelStyle.color }}>
               {ach.level}
             </span>
             {ach.domain_code && (
-              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: domainColor }}>
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: domainColor }}>
                 {ach.domain_code}
                 {ach.club_name ? ` · ${ach.club_name}` : ''}
               </span>
@@ -131,7 +131,7 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
             <div className="mb-5">
               <p
                 ref={descRef}
-                className="text-sm leading-relaxed"
+                className="text-base leading-relaxed"
                 style={{
                   color: 'rgba(25,19,19,0.5)',
                   display: '-webkit-box',
@@ -153,7 +153,7 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
           )}
 
           {ach.organization && (
-            <p className="text-xs font-semibold" style={{ color: 'rgba(25,19,19,0.35)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'rgba(25,19,19,0.35)' }}>
               {ach.organization}
             </p>
           )}

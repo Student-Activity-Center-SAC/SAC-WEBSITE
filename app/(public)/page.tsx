@@ -173,7 +173,7 @@ export default async function HomePage() {
                 What happens when<br className="hidden sm:block" /> you join KL SAC?
               </h2>
             </div>
-            <p className="text-sm shrink-0" style={{ color: 'rgba(25,19,19,0.4)', maxWidth: '22ch', lineHeight: 1.6 }}>
+            <p className="text-base shrink-0" style={{ color: 'rgba(25,19,19,0.4)', maxWidth: '22ch', lineHeight: 1.6 }}>
               Six stages. One transformation.
             </p>
           </FadeIn>
@@ -198,7 +198,7 @@ export default async function HomePage() {
                     <p className="font-semibold text-sm uppercase tracking-[0.08em] mb-1.5" style={{ color: '#191313' }}>
                       {step.title}
                     </p>
-                    <p className="text-xs leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
                       {step.description}
                     </p>
                   </div>
@@ -237,7 +237,7 @@ export default async function HomePage() {
                       <p className="font-semibold text-sm uppercase tracking-[0.08em] mb-1.5" style={{ color: '#191313' }}>
                         {step.title}
                       </p>
-                      <p className="text-[12.5px] leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                      <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
                         {step.description}
                       </p>
                     </div>
@@ -256,10 +256,10 @@ export default async function HomePage() {
                     style={{ background: '#fdf2f2', color: '#970003' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <p className="font-semibold text-xs uppercase tracking-[0.08em] mb-1" style={{ color: '#191313' }}>
+                  <p className="font-semibold text-sm uppercase tracking-[0.08em] mb-1" style={{ color: '#191313' }}>
                     {step.title}
                   </p>
-                  <p className="text-xs leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.48)' }}>
                     {step.description}
                   </p>
                 </div>
@@ -335,10 +335,10 @@ export default async function HomePage() {
                               {d.code}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-semibold text-[13px] leading-tight" style={{ color: '#191313' }}>
+                              <p className="font-semibold text-sm leading-tight" style={{ color: '#191313' }}>
                                 {d.name}
                               </p>
-                              <span className="text-[11px]" style={{ color: 'rgba(25,19,19,0.35)' }}>
+                              <span className="text-xs" style={{ color: 'rgba(25,19,19,0.35)' }}>
                                 {clubs.length || (clubCountByDomain[d.code] ?? 0)} clubs
                               </span>
                             </div>
@@ -348,12 +348,12 @@ export default async function HomePage() {
                           <div className="flex flex-wrap gap-1.5 flex-1">
                             {clubs.length > 0 ? clubs.map((c) => (
                               <Link key={c.slug} href={`/clubs/${c.slug}`}
-                                className="text-[11px] font-medium px-2.5 py-1 rounded-full transition-all hover:opacity-75"
+                                className="text-xs font-medium px-2.5 py-1 rounded-full transition-all hover:opacity-75"
                                 style={{ background: 'rgba(25,19,19,0.055)', color: 'rgba(25,19,19,0.6)' }}>
                                 {c.name}
                               </Link>
                             )) : (
-                              <span className="text-[11px]" style={{ color: 'rgba(25,19,19,0.25)' }}>
+                              <span className="text-xs" style={{ color: 'rgba(25,19,19,0.25)' }}>
                                 Clubs loading…
                               </span>
                             )}
@@ -518,7 +518,7 @@ export default async function HomePage() {
                 style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Where industry meets student talent.
               </h2>
-              <p className="text-[15px] sm:text-base leading-relaxed mb-8" style={{ color: 'rgba(25,19,19,0.5)' }}>
+              <p className="text-base leading-relaxed mb-8" style={{ color: 'rgba(25,19,19,0.5)' }}>
                 KL SAC creates structured pathways for industry leaders, academic institutions, government bodies, and organisations to engage with KL University's student talent.
               </p>
               <Link href="/collaborate"
@@ -537,8 +537,8 @@ export default async function HomePage() {
                   { title: 'Sponsorship & CSR',       desc: 'Fund programmes that create long-term social impact.' },
                 ].map(item => (
                   <div key={item.title} className="p-6" style={{ background: '#fffdfb' }}>
-                    <p className="font-semibold text-sm mb-2" style={{ color: '#191313' }}>{item.title}</p>
-                    <p className="text-xs leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>{item.desc}</p>
+                    <p className="font-semibold text-base mb-2" style={{ color: '#191313' }}>{item.title}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(25,19,19,0.5)' }}>{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -549,7 +549,7 @@ export default async function HomePage() {
           {partners.length > 0 && (
             <FadeIn delay={0.2} className="mt-20 -mx-5 sm:-mx-6">
               <p className="text-center mb-8 px-5 sm:px-6 font-black uppercase tracking-widest"
-                 style={{ fontSize: '13px', color: '#8B0000', letterSpacing: '0.18em' }}>
+                 style={{ fontSize: '0.88rem', color: '#8B0000', letterSpacing: '0.18em' }}>
                 Partners &amp; Collaborators
               </p>
               <PartnersMarquee partners={partners} />
@@ -658,7 +658,7 @@ export default async function HomePage() {
               style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)', color: '#fff', letterSpacing: '-0.02em', maxWidth: '22ch' }}>
               Ready to make your university years count?
             </h2>
-            <p className="text-[15px] sm:text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
+            <p className="text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
               Join one of 24 clubs, participate in activities, and build experiences that will define your career.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">

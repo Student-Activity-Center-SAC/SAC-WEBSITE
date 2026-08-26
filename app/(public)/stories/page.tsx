@@ -79,13 +79,13 @@ export default async function StoriesPage() {
                     style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                     {featured.title}
                   </h2>
-                  <p className="text-sm mb-6 leading-relaxed" style={{ color: '#71717A' }}>
+                  <p className="text-base mb-6 leading-relaxed" style={{ color: '#71717A' }}>
                     {featured.excerpt}
                   </p>
                   <div className="flex items-center gap-4">
                     <div>
                       <p className="font-bold text-sm" style={{ color: '#0D0D0D' }}>{featured.student_name}</p>
-                      <p className="text-xs" style={{ color: '#A1A1AA' }}>{featured.student_year}</p>
+                      <p className="text-sm" style={{ color: '#A1A1AA' }}>{featured.student_year}</p>
                     </div>
                     <div className="ml-auto">
                       <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" style={{ color: '#D1D1D6' }} />
@@ -136,13 +136,13 @@ export default async function StoriesPage() {
                     <h3 className="font-semibold text-base sm:text-lg leading-snug mb-2 flex-1" style={{ color: '#0D0D0D' }}>
                       {story.title}
                     </h3>
-                    <p className="text-xs mb-4 line-clamp-2" style={{ color: '#71717A' }}>
+                    <p className="text-sm mb-4 line-clamp-2" style={{ color: '#71717A' }}>
                       {story.excerpt}
                     </p>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-bold" style={{ color: '#3F3F46' }}>{story.student_name}</p>
-                        <p className="text-[10px]" style={{ color: '#A1A1AA' }}>{story.student_year}</p>
+                        <p className="text-sm font-bold" style={{ color: '#3F3F46' }}>{story.student_name}</p>
+                        <p className="text-xs" style={{ color: '#A1A1AA' }}>{story.student_year}</p>
                       </div>
                       <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" style={{ color: '#D1D1D6' }} />
                     </div>

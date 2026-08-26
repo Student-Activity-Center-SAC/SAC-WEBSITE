@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { db } from '@/lib/query-builder';
 import { FadeIn } from '../_components/FadeIn';
@@ -66,15 +66,15 @@ export default async function NewsPage() {
                     style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
                     {featured.title}
                   </h2>
-                  <p className="text-sm leading-relaxed mb-6" style={{ color: '#71717A' }}>
+                  <p className="text-base leading-relaxed mb-6" style={{ color: '#71717A' }}>
                     {featured.excerpt}
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs" style={{ color: '#A1A1AA' }}>
                       {new Date(featured.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </span>
-                    <span className="flex items-center gap-1 text-xs font-bold" style={{ color: '#8B0000' }}>
-                      Read more <ArrowRight size={12} />
+                    <span className="flex items-center gap-1 text-sm font-bold" style={{ color: '#8B0000' }}>
+                      Read more <ArrowRight size={13} />
                     </span>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export default async function NewsPage() {
                     <p className="font-black text-2xl leading-none" style={{ color: '#0D0D0D' }}>
                       {new Date(article.date).getDate()}
                     </p>
-                    <p className="text-[10px] font-bold uppercase mt-0.5" style={{ color: '#A1A1AA' }}>
+                    <p className="text-xs font-bold uppercase mt-0.5" style={{ color: '#A1A1AA' }}>
                       {new Date(article.date).toLocaleString('en-IN', { month: 'short' })}
                       {' '}{new Date(article.date).getFullYear().toString().slice(2)}
                     </p>
@@ -110,7 +110,7 @@ export default async function NewsPage() {
                     <h3 className="font-semibold text-base sm:text-lg leading-snug mb-2" style={{ color: '#0D0D0D' }}>
                       {article.title}
                     </h3>
-                    <p className="text-sm line-clamp-2" style={{ color: '#71717A' }}>
+                    <p className="text-base line-clamp-2" style={{ color: '#71717A' }}>
                       {article.excerpt}
                     </p>
                   </div>
