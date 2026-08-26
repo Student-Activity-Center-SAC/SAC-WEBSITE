@@ -2,7 +2,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Save, Upload, X, Image, Crop, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Upload, X, Image, Crop, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
 
 const DOMAINS = [
   { code: 'TEC', slug: 'technology',       label: 'TEC — Technology' },
@@ -19,6 +19,56 @@ function slugify(s: string) {
 }
 function lines(arr: string[]) { return arr.join('\n'); }
 function fromLines(s: string) { return s.split('\n').map(l => l.trim()).filter(Boolean); }
+
+// ── Auto Crop Helper (for multi-upload) ───────────────────────────────────────
+
+function autoCropAndUpload(file: File, options: CropOptions): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = options.targetWidth;
+      canvas.height = options.targetHeight;
+      const ctx = canvas.getContext('2d')!;
+
+      const naturalAr = img.naturalWidth / img.naturalHeight;
+      let srcW, srcH, srcX, srcY;
+
+      if (naturalAr > options.aspectRatio) {
+        // Image is wider
+        srcH = img.naturalHeight;
+        srcW = img.naturalHeight * options.aspectRatio;
+        srcX = (img.naturalWidth - srcW) / 2;
+        srcY = 0;
+      } else {
+        // Image is taller
+        srcW = img.naturalWidth;
+        srcH = img.naturalWidth / options.aspectRatio;
+        srcX = 0;
+        srcY = (img.naturalHeight - srcH) / 2;
+      }
+
+      ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, options.targetWidth, options.targetHeight);
+      canvas.toBlob(async blob => {
+        if (!blob) return reject(new Error('Canvas toBlob failed'));
+        const fd = new FormData();
+        const ext = file.name.split('.').pop() ?? 'jpg';
+        fd.append('file', blob, `cropped.${ext}`);
+        fd.append('folder', 'clubs');
+        try {
+          const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+          const d = await res.json();
+          if (!res.ok) throw new Error(d.error);
+          resolve(d.url);
+        } catch (e) {
+          reject(e);
+        }
+      }, 'image/jpeg', 0.9);
+    };
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+}
 
 // ── Crop Modal ────────────────────────────────────────────────────────────────
 
@@ -263,7 +313,7 @@ function CropModal({ src, options, onCancel, onApply }: CropModalProps) {
 const CROP_PRESETS: Record<string, CropOptions> = {
   logo:    { aspectRatio: 1,    label: 'Logo',        targetWidth: 400,  targetHeight: 400  },
   cover:   { aspectRatio: 16/5, label: 'Cover Photo', targetWidth: 1920, targetHeight: 600  },
-  gallery: { aspectRatio: 4/3,  label: 'Gallery',     targetWidth: 800,  targetHeight: 600  },
+  gallery: { aspectRatio: 3/2,  label: 'Gallery',     targetWidth: 900,  targetHeight: 600  },
 };
 
 // ── Main ClubForm ─────────────────────────────────────────────────────────────
@@ -302,10 +352,31 @@ export default function ClubForm({ initial, mode }: Props) {
     setForm(f => ({ ...f, domain_code: d.code, domain_slug: d.slug }));
   }
 
-  /** Open the crop modal for a given upload field */
-  function openCrop(e: React.ChangeEvent<HTMLInputElement>, key: string) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  /** Open the crop modal for a given upload field, or auto-crop if multiple files selected */
+  async function openCrop(e: React.ChangeEvent<HTMLInputElement>, key: string) {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    
+    // Auto-upload multiple gallery photos
+    if (key === 'gallery' && files.length > 1) {
+      setUploading('gallery');
+      const toastId = toast.loading(`Uploading ${files.length} photos...`);
+      try {
+        const urls = await Promise.all(
+          files.map(f => autoCropAndUpload(f, CROP_PRESETS.gallery))
+        );
+        setForm(f => ({ ...f, gallery: [...f.gallery, ...urls] }));
+        toast.success(`${urls.length} photos added to gallery`, { id: toastId });
+      } catch (err: any) {
+        toast.error(`Error uploading photos: ${err.message}`, { id: toastId });
+      } finally {
+        setUploading(null);
+        e.target.value = '';
+      }
+      return;
+    }
+
+    const file = files[0];
     const url = URL.createObjectURL(file);
     setCropSrc(url);
     setCropKey(key);
@@ -343,6 +414,17 @@ export default function ClubForm({ initial, mode }: Props) {
 
   function removeGalleryPhoto(idx: number) {
     setForm(f => ({ ...f, gallery: f.gallery.filter((_, i) => i !== idx) }));
+  }
+
+  function moveGalleryPhoto(idx: number, dir: -1 | 1) {
+    setForm(f => {
+      const arr = [...f.gallery];
+      if (idx + dir < 0 || idx + dir >= arr.length) return f;
+      const temp = arr[idx];
+      arr[idx] = arr[idx + dir];
+      arr[idx + dir] = temp;
+      return { ...f, gallery: arr };
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -498,21 +580,31 @@ export default function ClubForm({ initial, mode }: Props) {
 
         {/* Gallery */}
         <Field label="Gallery Photos (shown on club page)">
-          <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>800 × 600 px · 4:3 ratio · Each photo will be cropped before upload</p>
+          <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>900 × 600 px · 3:2 ratio · Can select multiple photos. Uploads are auto-cropped to center.</p>
           <div className="flex flex-col gap-3">
             {form.gallery.length > 0 && (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {form.gallery.map((url, i) => (
-                  <div key={i} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                  <div key={url} className="relative rounded-lg overflow-hidden group" style={{ aspectRatio: '3/2' }}>
                     <img src={url} alt={`gallery ${i + 1}`} className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => removeGalleryPhoto(i)}
-                      className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(0,0,0,0.7)' }}>
-                      <X size={10} style={{ color: '#fff' }} />
-                    </button>
-                    <span className="absolute bottom-1 left-1 text-[9px] font-black px-1.5 py-0.5 rounded"
+                    
+                    {/* Overlay controls */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                      <button type="button" onClick={() => moveGalleryPhoto(i, -1)} disabled={i === 0}
+                              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center disabled:opacity-30">
+                        <ArrowLeft size={14} className="text-white" />
+                      </button>
+                      <button type="button" onClick={() => removeGalleryPhoto(i)}
+                              className="w-7 h-7 rounded-full bg-red-600/80 hover:bg-red-600 flex items-center justify-center">
+                        <X size={14} className="text-white" />
+                      </button>
+                      <button type="button" onClick={() => moveGalleryPhoto(i, 1)} disabled={i === form.gallery.length - 1}
+                              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center disabled:opacity-30">
+                        <ArrowRight size={14} className="text-white" />
+                      </button>
+                    </div>
+
+                    <span className="absolute bottom-1 left-1 text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm"
                           style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}>
                       {i + 1}
                     </span>
@@ -521,14 +613,14 @@ export default function ClubForm({ initial, mode }: Props) {
               </div>
             )}
             <label className={uploadBtn}>
-              <Upload size={13} /> {uploading === 'gallery' ? 'Uploading…' : 'Add Gallery Photo'}
-              <input type="file" accept="image/*" className="hidden"
+              <Upload size={13} /> {uploading === 'gallery' ? 'Uploading…' : 'Add Gallery Photos'}
+              <input type="file" accept="image/*" multiple className="hidden"
                      onChange={e => openCrop(e, 'gallery')}
                      disabled={uploading !== null} />
             </label>
             {form.gallery.length > 0 && (
               <p className="text-xs" style={{ color: '#A1A1AA' }}>
-                {form.gallery.length} photo{form.gallery.length !== 1 ? 's' : ''} · First 2 display large, rest display as grid.
+                {form.gallery.length} photo{form.gallery.length !== 1 ? 's' : ''} · Drag/arrows to reorder. Grid automatically adjusts based on count.
               </p>
             )}
           </div>

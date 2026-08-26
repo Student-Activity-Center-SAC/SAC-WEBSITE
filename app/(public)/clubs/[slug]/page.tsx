@@ -251,15 +251,12 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
 
           <FadeIn>
             {galleryPhotos.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {galleryPhotos.map((src, i) => (
                   <div
                     key={i}
-                    className="relative rounded-xl overflow-hidden"
-                    style={{
-                      aspectRatio: i < 2 ? '16/9' : '4/3',
-                      gridColumn: i < 2 ? 'span 2' : 'span 1',
-                    }}>
+                    className="relative rounded-xl overflow-hidden group"
+                    style={{ aspectRatio: '3/2' }}>
                     <img
                       src={src}
                       alt={`${club.name} activity photo ${i + 1}`}
@@ -271,20 +268,19 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
-                  {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                  {[0, 1, 2, 3, 4, 5].map(i => (
                     <div
                       key={i}
                       className="relative rounded-xl overflow-hidden flex flex-col items-center justify-center gap-2"
                       style={{
-                        aspectRatio: i < 2 ? '16/9' : '4/3',
-                        gridColumn: i < 2 ? 'span 2' : 'span 1',
+                        aspectRatio: '3/2',
                         background: i % 2 === 0 ? `${domain.color}10` : `${domain.color}07`,
                         border: `1.5px dashed ${domain.color}22`,
                       }}>
-                      <Camera size={i < 2 ? 28 : 20} style={{ color: `${domain.color}38` }} />
+                      <Camera size={24} style={{ color: `${domain.color}38` }} />
                       <span className="text-[9px] font-black tracking-[0.2em] uppercase" style={{ color: `${domain.color}38` }}>
-                        {i < 2 ? 'Featured' : 'Photo'}
+                        Photo
                       </span>
                     </div>
                   ))}
