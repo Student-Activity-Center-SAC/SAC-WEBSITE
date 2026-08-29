@@ -97,9 +97,13 @@ function CropModal({ src, options, onCancel, onApply }: CropModalProps) {
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef({ mx: 0, my: 0, ox: 0, oy: 0 });
 
-  // Container preview size (fixed 560×(560/ar) capped at 320h)
-  const PREVIEW_W = 560;
-  const PREVIEW_H = Math.min(320, Math.round(PREVIEW_W / options.aspectRatio));
+  // Container preview size (capped at 560w or 320h)
+  let PREVIEW_W = 560;
+  let PREVIEW_H = Math.round(PREVIEW_W / options.aspectRatio);
+  if (PREVIEW_H > 320) {
+    PREVIEW_H = 320;
+    PREVIEW_W = Math.round(PREVIEW_H * options.aspectRatio);
+  }
 
   const onLoad = useCallback(() => {
     setImgLoaded(true);
