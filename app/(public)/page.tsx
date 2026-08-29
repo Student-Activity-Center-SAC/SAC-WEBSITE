@@ -9,6 +9,7 @@ import { PartnersMarquee } from './_components/PartnersMarquee';
 import { UpcomingActivitiesHome } from './_components/UpcomingActivitiesHome';
 import { LatestNewsCarousel } from './_components/LatestNewsCarousel';
 import { AchievementsCarousel } from './_components/AchievementsCarousel';
+import { HeroVideo } from './_components/HeroVideo';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,12 +68,7 @@ export default async function HomePage() {
         className="relative flex items-end overflow-hidden"
         style={{ minHeight: '100svh', background: '#150404' }}>
 
-        <video
-          autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          src={heroVideoUrl}
-          aria-hidden="true"
-        />
+        <HeroVideo src={heroVideoUrl} />
 
         {/* Gradient overlay — bottom-anchored like turbo-giggle */}
         <div className="absolute inset-0"
