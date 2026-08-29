@@ -83,35 +83,25 @@ function ActivityCard({ act, completed }: { act: Activity; completed: boolean })
       className="rounded-2xl border flex flex-col overflow-hidden transition-all hover:shadow-lg"
       style={{ background: '#fff', borderColor: '#E4E4E7' }}>
 
-      {/* ── Card header: poster or placeholder — always same height ── */}
-      <div className="relative h-44 overflow-hidden shrink-0">
-        {poster ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={poster} alt={act.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.55))' }} />
-          </>
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2" style={{ background: bg }}>
-            <ImageOff size={22} style={{ color: `${color}80` }} />
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: `${color}90` }}>
-              Poster unavailable
-            </span>
-          </div>
-        )}
-        <div className="absolute bottom-3 left-4 flex gap-1.5 flex-wrap">
-          <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                style={{ background: poster ? color : '#fff', color: poster ? '#fff' : color, boxShadow: poster ? 'none' : `0 0 0 1px ${color}30` }}>
-            {act.domain}
-          </span>
-          {completed && (
+      {/* ── Card header: poster only shown if available ── */}
+      {poster && (
+        <div className="relative h-44 overflow-hidden shrink-0">
+          <img src={poster} alt={act.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.55))' }} />
+          <div className="absolute bottom-3 left-4 flex gap-1.5 flex-wrap">
             <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                  style={{ background: poster ? 'rgba(0,0,0,0.45)' : '#fff', color: poster ? '#fff' : '#52525B', boxShadow: poster ? 'none' : '0 0 0 1px #E4E4E7' }}>
-              Completed
+                  style={{ background: color, color: '#fff' }}>
+              {act.domain}
             </span>
-          )}
+            {completed && (
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(0,0,0,0.45)', color: '#fff' }}>
+                Completed
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Body — identical structure for every card ── */}
       <div className="p-5 flex flex-col gap-3 flex-1">

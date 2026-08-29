@@ -89,7 +89,7 @@ export function EbookReader({ pdfUrl, title, year, type }: Props) {
     (async () => {
       try {
         const lib = await import('pdfjs-dist');
-        lib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+        lib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${lib.version}/build/pdf.worker.min.mjs`;
         const effectiveUrl = /^https?:\/\//i.test(pdfUrl)
           ? `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
           : pdfUrl;
