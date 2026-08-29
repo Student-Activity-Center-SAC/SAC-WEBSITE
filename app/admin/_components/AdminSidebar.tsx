@@ -23,9 +23,10 @@ const NAV = [
   },
   { group: 'Structure',
     links: [
-      { href: '/admin/clubs',         label: 'Clubs',         icon: Building2    },
-      { href: '/admin/domains',       label: 'Domains',       icon: Globe        },
-      { href: '/admin/leadership',    label: 'Leadership',    icon: Users        },
+      { href: '/admin/clubs',          label: 'Clubs',          icon: Building2    },
+      { href: '/admin/domains',        label: 'Domains',        icon: Globe        },
+      { href: '/admin/leadership',     label: 'Leadership',     icon: Users        },
+      { href: '/admin/advisory-board', label: 'Advisory Board', icon: Users        },
     ],
   },
   { group: 'Site',
