@@ -5,7 +5,7 @@ import { X, ZoomIn, ZoomOut, Check } from 'lucide-react';
 
 interface Props {
   imageSrc: string;
-  aspect: number;
+  aspect?: number;
   onCancel: () => void;
   onComplete: (blob: Blob) => void;
 }

@@ -32,7 +32,7 @@ export default async function HomePage() {
   const [storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes, achievementsRes] = await Promise.all([
     db.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
     db.from('site_settings').select('key, value'),
-    db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').gt('homepage_order', 0).order('homepage_order', { ascending: true }).limit(6),
+    db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').order('date', { ascending: false }).limit(6),
     db.from('domains').select('slug, code, name, tagline, color, accent_bg').order('sort_order', { ascending: true }),
     db.from('clubs').select('domain_code, slug, name'),
     db.from('sac_stats').select('key, value'),

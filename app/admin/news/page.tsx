@@ -77,13 +77,6 @@ export default function NewsAdminPage() {
     patch(slug, { homepage_order: position }).then(() => toast.success(label));
   }
 
-  function toggleFeatured(slug: string, current: boolean) {
-    const next = !current;
-    patch(slug, { featured: next }).then(() =>
-      toast.success(next ? 'Set as news page highlight' : 'Removed as news page highlight')
-    );
-  }
-
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -105,9 +98,6 @@ export default function NewsAdminPage() {
         </span>
         <span className="flex items-center gap-1.5">
           <Home size={12} /> <strong>HP dropdown</strong> — homepage position (Off / 1st / 2nd / 3rd)
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Star size={12} /> <strong>★ star</strong> — big highlighted article on /news page (only one at a time)
         </span>
       </div>
 
@@ -158,7 +148,7 @@ export default function NewsAdminPage() {
                 </div>
 
                 {/* Thumbnail */}
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                <div className="w-16 h-12 rounded-lg flex items-center justify-center shrink-0"
                      style={{ background: a.photo_url ? '#fff' : '#F7F7F8', overflow: 'hidden' }}>
                   {a.photo_url
                     ? <img src={a.photo_url} alt="" className="w-full h-full object-cover" />
@@ -169,7 +159,7 @@ export default function NewsAdminPage() {
                 <div className="flex-1 min-w-0">
                   <span className="font-bold text-sm truncate block" style={{ color: '#0D0D0D' }}>{a.title}</span>
                   <span className="text-xs" style={{ color: '#A1A1AA' }}>
-                    {a.category} · {new Date(a.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {a.category}
                   </span>
                 </div>
 
@@ -193,17 +183,6 @@ export default function NewsAdminPage() {
                     <option value={3}>3rd</option>
                   </select>
                 </div>
-
-                {/* News-page featured star — hidden on small mobile */}
-                <button
-                  onClick={() => toggleFeatured(a.slug, a.featured)}
-                  disabled={isUpdating}
-                  title={a.featured ? 'Big highlight on /news page (click to remove)' : 'Set as big highlight on /news page'}
-                  className="hidden sm:block p-1.5 rounded-lg transition-colors hover:bg-yellow-50 shrink-0">
-                  <Star size={15}
-                    fill={a.featured ? '#f59e0b' : 'none'}
-                    style={{ color: a.featured ? '#f59e0b' : '#D1D1D6' }} />
-                </button>
 
                 {/* Edit + Delete */}
                 <div className="flex items-center gap-1 shrink-0">

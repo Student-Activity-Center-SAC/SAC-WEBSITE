@@ -24,12 +24,9 @@ export default function NewsForm({ initial, mode }: Props) {
   const [form, setForm] = useState({
     slug:       initial?.slug        ?? '',
     title:      initial?.title       ?? '',
-    excerpt:    initial?.excerpt     ?? '',
     body:       initial?.body        ?? '',
     category:   initial?.category ? (isPresetCategory ? initial.category : 'Other') : 'General',
     customCategory: initial?.category && !isPresetCategory ? initial.category : '',
-    date:       initial?.date        ?? new Date().toISOString().split('T')[0],
-    featured:   initial?.featured    ?? false,
     photo_url:  initial?.photo_url   ?? '',
   });
 
@@ -103,12 +100,8 @@ export default function NewsForm({ initial, mode }: Props) {
                className={input} style={inputStyle} placeholder="auto-generated from title" />
       </Field>
 
-      {/* Date + Category + Featured */}
+      {/* Category */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Date">
-          <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
-                 className={input} style={inputStyle} />
-        </Field>
         <Field label="Category">
           <select value={form.category} onChange={e => set('category', e.target.value)}
                   className={input} style={inputStyle}>
@@ -123,19 +116,6 @@ export default function NewsForm({ initial, mode }: Props) {
         )}
       </div>
 
-      {/* Featured */}
-      <label className="flex items-center gap-2 cursor-pointer select-none">
-        <input type="checkbox" checked={form.featured} onChange={e => set('featured', e.target.checked)}
-               className="w-4 h-4 accent-red-800" />
-        <span className="text-sm font-semibold" style={{ color: '#0D0D0D' }}>Highlight on news page (big article at top)</span>
-      </label>
-
-      {/* Excerpt */}
-      <Field label="Excerpt (short summary)">
-        <textarea rows={2} value={form.excerpt} onChange={e => set('excerpt', e.target.value)}
-                  className={input} style={inputStyle} />
-      </Field>
-
       {/* Body */}
       <Field label="Full article body">
         <textarea rows={8} value={form.body} onChange={e => set('body', e.target.value)}
@@ -145,7 +125,7 @@ export default function NewsForm({ initial, mode }: Props) {
 
       {/* Photo */}
       <Field label="Cover photo">
-        <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>1200 × 630 px · 16:9 ratio · Article/event cover image</p>
+        <p className="text-xs mb-1" style={{ color: '#A1A1AA' }}>Upload article/event cover image</p>
         <div className="flex flex-col gap-2">
           {form.photo_url && (
             <div className="relative w-full max-h-48 overflow-hidden rounded-xl border" style={{ borderColor: '#E4E4E7' }}>
@@ -179,7 +159,7 @@ export default function NewsForm({ initial, mode }: Props) {
       {cropSrc && (
         <ImageCropModal
           imageSrc={cropSrc}
-          aspect={16 / 9}
+          aspect={undefined}
           onCancel={() => setCropSrc(null)}
           onComplete={async blob => {
             setCropSrc(null);

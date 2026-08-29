@@ -7,6 +7,7 @@ import {
 import { db } from '@/lib/query-builder';
 import { getDomainByCode } from '@/lib/content/domains';
 import { FadeIn } from '../../_components/FadeIn';
+import { ActivityCard, Activity } from '../../_components/ActivityCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,27 +59,29 @@ const OFFICE_ROLES = [
 export default async function ClubDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const [club, { data: allActivities }] = await Promise.all([
-    getClubBySlug(slug),
-    db
-      .from('activities')
-      .select('*')
-      .eq('club_slug', slug)
-      .order('code', { ascending: true }),
-  ]);
-
+  const club = await getClubBySlug(slug);
   if (!club) notFound();
 
   const domain = getDomainByCode(club.domain_code);
   if (!domain) notFound();
 
-  const { data: rawAchievements } = await db
-    .from('achievements')
-    .select('*')
-    .eq('club_name', club.name)
-    .order('year', { ascending: false });
+  // Fetch from public API instead of DB
+  const [achievementsRes, upcomingRes, completedRes] = await Promise.all([
+    db.from('achievements').select('*').eq('club_name', club.name).order('year', { ascending: false }),
+    fetch('https://sacactivities.kluniversity.in/api/public/activities/upcoming', { next: { revalidate: 60 } }).then(r => r.json()).catch(() => ({ activities: [] })),
+    fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { next: { revalidate: 60 } }).then(r => r.json()).catch(() => ({ activities: [] })),
+  ]);
 
-  const achievements = rawAchievements ?? [];
+  const achievements = achievementsRes.data ?? [];
+  const allUpcoming = Array.isArray(upcomingRes.activities) ? upcomingRes.activities : [];
+  const allCompleted = Array.isArray(completedRes.activities) ? completedRes.activities : [];
+
+  const isClubActivity = (act: Activity) => {
+    return toSlug(act.club_name || '') === slug || toSlug(act.category || '') === slug;
+  };
+
+  const clubUpcoming = allUpcoming.filter(isClubActivity);
+  const clubCompleted = allCompleted.filter(isClubActivity);
 
   const galleryPhotos: string[] = Array.isArray(club.gallery) ? club.gallery : [];
   const about: string[]         = Array.isArray(club.about)   ? club.about   : [];
@@ -323,75 +326,36 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
         </section>
       )}
 
-      {/* ─── Activities Programme ─────────────────────────────────────── */}
+      {/* ─── Upcoming Activities ─────────────────────────────────────── */}
       <section style={{ background: '#F7F7F8' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
                 <p className="kicker mb-3" style={{ color: domain.color }}>
-                  Activities Programme
+                  Upcoming Activities
                 </p>
                 <h2
                   className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  What we do, all year.
+                  What's happening next.
                 </h2>
               </div>
-              {(allActivities ?? []).length > 0 && (
+              {clubUpcoming.length > 0 && (
                 <span className="text-xs font-bold px-3 py-1.5 rounded-full"
                       style={{ background: domain.accentBg, color: domain.color }}>
-                  {(allActivities ?? []).length} activities · AY 2026–27
+                  {clubUpcoming.length} upcoming
                 </span>
               )}
             </div>
           </FadeIn>
 
-          {(allActivities ?? []).length > 0 ? (
+          {clubUpcoming.length > 0 ? (
             <FadeIn>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(allActivities ?? []).map(act => {
-                  const hasDate = !!act.activity_date;
-                  const dateLabel = hasDate
-                    ? new Date(act.activity_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-                    : act.month ?? null;
-                  return (
-                    <div
-                      key={act.code}
-                      className="rounded-2xl overflow-hidden flex flex-col"
-                      style={{ border: '1px solid #E4E4E7', background: '#fff' }}>
-                      <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${domain.color}, ${domain.color}66)` }} />
-                      <div className="px-5 pt-4 pb-5 flex-1 flex flex-col gap-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
-                                style={{ background: domain.accentBg, color: domain.color }}>
-                            {act.code}
-                          </span>
-                          {dateLabel && (
-                            <span className="flex items-center gap-1 text-[10px] font-semibold shrink-0" style={{ color: '#A1A1AA' }}>
-                              <Calendar size={9} />
-                              {dateLabel}
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="font-black text-sm leading-snug" style={{ color: '#0D0D0D' }}>
-                          {act.title}
-                        </h3>
-                        <p className="text-xs leading-relaxed flex-1" style={{ color: '#71717A' }}>
-                          {act.description?.length > 120
-                            ? act.description.slice(0, 120) + '…'
-                            : act.description}
-                        </p>
-                        {act.venue && (
-                          <div className="flex items-center gap-1 text-[10px]" style={{ color: '#A1A1AA' }}>
-                            <MapPin size={9} />
-                            <span className="truncate">{act.venue}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {clubUpcoming.map(act => (
+                  <ActivityCard key={act.code} act={act} completed={false} />
+                ))}
               </div>
             </FadeIn>
           ) : (
@@ -400,10 +364,10 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                    style={{ background: '#fff', border: '1.5px dashed #D1D1D6' }}>
                 <Calendar size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
                 <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
-                  No activities posted yet.
+                  No upcoming activities.
                 </p>
                 <p className="text-xs" style={{ color: '#A1A1AA' }}>
-                  Check back soon for new activities.
+                  Check back soon for new events from {club.name}.
                 </p>
               </div>
             </FadeIn>
@@ -411,35 +375,54 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
         </div>
       </section>
 
-      {/* ─── What We Do ───────────────────────────────────────────────── */}
-      {activitiesList.length > 0 && (
-        <section style={{ background: '#fff' }}>
-          <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+      {/* ─── Completed Activities ────────────────────────────────────── */}
+      <section style={{ background: '#fff' }}>
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+          <FadeIn>
+            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+              <div>
+                <p className="kicker mb-3" style={{ color: domain.color }}>
+                  Past Events
+                </p>
+                <h2
+                  className="font-display font-medium leading-tight"
+                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                  Completed Activities.
+                </h2>
+              </div>
+              {clubCompleted.length > 0 && (
+                <span className="text-xs font-bold px-3 py-1.5 rounded-full"
+                      style={{ background: domain.accentBg, color: domain.color }}>
+                  {clubCompleted.length} completed
+                </span>
+              )}
+            </div>
+          </FadeIn>
+
+          {clubCompleted.length > 0 ? (
             <FadeIn>
-              <p className="kicker mb-8" style={{ color: domain.color }}>
-                What We Do
-              </p>
-              <div className="max-w-2xl" style={{ borderTop: '1px solid #E4E4E7' }}>
-                {activitiesList.map((activity, i) => (
-                  <div
-                    key={i}
-                    className="flex gap-6 py-5"
-                    style={{ borderBottom: '1px solid #E4E4E7' }}>
-                    <span
-                      className="font-black text-2xl leading-none shrink-0 pt-0.5"
-                      style={{ color: '#E8E8EC', width: '2rem', fontVariantNumeric: 'tabular-nums' }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <p className="text-base leading-relaxed" style={{ color: '#3F3F46' }}>
-                      {activity}
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {clubCompleted.map(act => (
+                  <ActivityCard key={act.code} act={act} completed={true} />
                 ))}
               </div>
             </FadeIn>
-          </div>
-        </section>
-      )}
+          ) : (
+            <FadeIn>
+              <div className="rounded-2xl p-14 text-center"
+                   style={{ background: '#F7F7F8', border: '1.5px dashed #D1D1D6' }}>
+                <CheckCircle2 size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
+                <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
+                  No completed activities yet.
+                </p>
+                <p className="text-xs" style={{ color: '#A1A1AA' }}>
+                  Past events will appear here once they conclude.
+                </p>
+              </div>
+            </FadeIn>
+          )}
+        </div>
+      </section>
 
       {/* ─── Achievements ─────────────────────────────────────────────── */}
       <section style={{ background: '#F7F7F8' }}>

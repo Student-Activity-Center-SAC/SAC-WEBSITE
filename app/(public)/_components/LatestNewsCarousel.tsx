@@ -6,10 +6,8 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 interface Article {
   slug: string;
   title: string;
-  excerpt: string;
   photo_url: string | null;
   category: string;
-  date: string;
 }
 
 export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
@@ -22,7 +20,7 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
 
   useEffect(() => {
     if (count <= 1 || paused) return;
-    const t = setInterval(() => setActive(i => (i + 1) % count), 3000);
+    const t = setInterval(() => setActive(i => (i + 1) % count), 3500);
     return () => clearInterval(t);
   }, [count, paused]);
 
@@ -63,19 +61,13 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
         <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-center">
           <div className="flex items-center gap-2 mb-3">
             <span className="kicker" style={{ color: '#970003' }}>{article.category}</span>
-            <span className="text-xs" style={{ color: 'rgba(25,19,19,0.3)' }}>
-              {new Date(article.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </span>
           </div>
           <h3
             className="font-display font-medium leading-tight mb-3"
             style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
             {article.title}
           </h3>
-          <p className="text-base leading-relaxed mb-6 line-clamp-2" style={{ color: 'rgba(25,19,19,0.5)' }}>
-            {article.excerpt}
-          </p>
-          <p className="text-sm font-semibold flex items-center gap-1.5 group-hover:gap-2.5 transition-all"
+          <p className="text-sm font-semibold flex items-center gap-1.5 group-hover:gap-2.5 transition-all mt-4"
             style={{ color: '#970003' }}>
             Read more <ArrowRight size={13} />
           </p>
