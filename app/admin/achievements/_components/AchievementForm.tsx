@@ -57,15 +57,7 @@ export default function AchievementForm({ achievement }: Props) {
   const [uploading, setUploading] = useState(false);
   const [clubs, setClubs] = useState<any[]>([]);
 
-  useEffect(() => {
-    fetch(`/api/admin/clubs?domain=${form.domain_code}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setClubs(data.data);
-        }
-      });
-  }, [form.domain_code]);
+
 
   const [form, setForm] = useState({
     id:           achievement?.id           ?? '',
@@ -78,6 +70,16 @@ export default function AchievementForm({ achievement }: Props) {
     description:  achievement?.description  ?? '',
     photo:        achievement?.photo        ?? '',
   });
+
+  useEffect(() => {
+    fetch(`/api/admin/clubs?domain=${form.domain_code}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setClubs(data.data);
+        }
+      });
+  }, [form.domain_code]);
 
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
 
