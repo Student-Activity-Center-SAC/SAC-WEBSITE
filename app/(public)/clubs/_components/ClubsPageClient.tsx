@@ -138,8 +138,7 @@ export default function ClubsPageClient({ clubs }: Props) {
                         <img
                           src={club.logo_url}
                           alt={club.name}
-                          className="w-9 h-9 rounded-lg object-contain shrink-0"
-                          style={{ background: domain.accentBg, padding: '4px' }}
+                          className="w-12 h-12 rounded-lg object-contain shrink-0"
                         />
                       )}
                       <div className="flex-1 min-w-0">
