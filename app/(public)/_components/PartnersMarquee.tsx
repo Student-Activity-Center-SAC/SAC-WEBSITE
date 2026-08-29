@@ -76,7 +76,7 @@ export function PartnersMarquee({ partners }: { partners: any[] }) {
               className="flex items-center justify-center shrink-0 px-10 py-7"
               style={{ borderRight: '1px solid var(--hairline)' }}
             >
-              <img
+              <img loading="lazy"
                 src={p.partner_image}
                 alt={p.partner_name}
                 className="object-contain"

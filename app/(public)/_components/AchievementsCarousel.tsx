@@ -88,7 +88,7 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
              style={{ background: 'linear-gradient(135deg, #6a0002 0%, #970003 100%)' }}>
           {ach.photo ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img key={ach.photo} src={ach.photo} alt={ach.title}
+            <img loading="lazy" key={ach.photo} src={ach.photo} alt={ach.title}
                  className="w-full h-full object-cover animate-fade-in" loading="lazy" />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-8">

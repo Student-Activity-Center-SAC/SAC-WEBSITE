@@ -51,7 +51,7 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
           style={{ background: 'linear-gradient(135deg, #6a0002 0%, #970003 100%)' }}>
           {article.photo_url ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img key={article.photo_url} src={article.photo_url} alt={article.title}
+            <img loading="lazy" key={article.photo_url} src={article.photo_url} alt={article.title}
               className="w-full h-full object-cover animate-fade-in" loading="lazy" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
