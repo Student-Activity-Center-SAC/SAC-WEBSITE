@@ -311,7 +311,7 @@ function CropModal({ src, options, onCancel, onApply }: CropModalProps) {
 // ── Crop target presets ───────────────────────────────────────────────────────
 
 const CROP_PRESETS: Record<string, CropOptions> = {
-  logo:    { aspectRatio: 1,    label: 'Logo',        targetWidth: 400,  targetHeight: 400  },
+  logo:    { aspectRatio: 1,    label: 'Logo',        targetWidth: 200,  targetHeight: 200  },
   cover:   { aspectRatio: 16/5, label: 'Cover Photo', targetWidth: 1920, targetHeight: 600  },
   gallery: { aspectRatio: 3/2,  label: 'Gallery',     targetWidth: 900,  targetHeight: 600  },
 };
