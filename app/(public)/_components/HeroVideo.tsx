@@ -6,13 +6,19 @@ export function HeroVideo({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const loadVideo = () => {
       if (videoRef.current) {
         videoRef.current.src = src;
         videoRef.current.play().catch(() => {});
       }
-    }, 100);
-    return () => clearTimeout(timer);
+    };
+
+    if (document.readyState === 'complete') {
+      loadVideo();
+    } else {
+      window.addEventListener('load', loadVideo);
+      return () => window.removeEventListener('load', loadVideo);
+    }
   }, [src]);
 
   return (
