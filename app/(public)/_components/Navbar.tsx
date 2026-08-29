@@ -52,7 +52,7 @@ export default function Navbar() {
           backdropFilter: glass ? 'none' : 'blur(20px)',
           boxShadow:      glass ? 'none' : '0 1px 0 rgba(25,19,19,0.08)',
         }}>
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 flex h-full items-center justify-between gap-8">
+        <div className="w-full max-w-[2200px] mx-auto px-5 sm:px-6 2xl:px-20 flex h-full items-center justify-between gap-8">
 
           {/* ── Logo ── */}
           <Link href="/" className="shrink-0 transition-opacity hover:opacity-80" aria-label="KL SAC Home">

@@ -83,7 +83,40 @@
   --font-lexend:  var(--font-lexend);
 }
 
-/* ─── Base Reset ─────────────────────────────────────────────────────────── */
+/* ─── Fluid Section Container ────────────────────────────────────────────── */
+/*
+ * The site uses `section > div.w-full px-6 sm:px-12 xl:px-20` as its layout
+ * pattern. On very large screens (1920px+, 4K) this creates huge empty gutters.
+ * These rules progressively scale padding and cap max-width at large breakpoints.
+ */
+
+/* ≥1536px (2xl) — increase side padding for desktop monitors */
+@media (min-width: 1536px) {
+  main section > .w-full {
+    padding-left: clamp(5rem, 6vw, 8rem);
+    padding-right: clamp(5rem, 6vw, 8rem);
+  }
+}
+
+/* ≥1920px (FHD, 24"+ monitors) — scale with % for full-width fill */
+@media (min-width: 1920px) {
+  main section > .w-full {
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+}
+
+/* ≥2560px (QHD/4K/ultra-wide) — cap at reasonable width and center */
+@media (min-width: 2560px) {
+  main section > .w-full {
+    max-width: 2200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+}
+
 
 @layer base {
   *, *::before, *::after {
