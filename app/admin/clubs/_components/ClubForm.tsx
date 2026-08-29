@@ -512,20 +512,6 @@ export default function ClubForm({ initial, mode }: Props) {
                     className={inp} style={sty} />
         </Field>
 
-        <Field label="Purpose">
-          <textarea rows={3} value={form.purpose} onChange={e => set('purpose', e.target.value)}
-                    className={inp} style={sty} />
-        </Field>
-
-        <Field label="Competencies (one per line)">
-          <textarea rows={4} value={form.competencies} onChange={e => set('competencies', e.target.value)}
-                    className={inp} style={sty} placeholder={"e.g.\nCompetitive Programming\nData Structures & Algorithms"} />
-        </Field>
-
-        <Field label="Activities (one per line)">
-          <textarea rows={4} value={form.activities_list} onChange={e => set('activities_list', e.target.value)}
-                    className={inp} style={sty} placeholder={"e.g.\nWeekly coding challenges\nNational hackathon participation"} />
-        </Field>
 
         {/* Logo */}
         <Field label="Logo">

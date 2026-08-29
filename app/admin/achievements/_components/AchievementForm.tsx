@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Save, Upload } from 'lucide-react';
@@ -55,6 +55,17 @@ export default function AchievementForm({ achievement }: Props) {
   const router = useRouter();
   const [saving, setSaving]     = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [clubs, setClubs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(`/api/admin/clubs?domain=${form.domain_code}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setClubs(data.data);
+        }
+      });
+  }, [form.domain_code]);
 
   const [form, setForm] = useState({
     id:           achievement?.id           ?? '',
@@ -135,7 +146,14 @@ export default function AchievementForm({ achievement }: Props) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Club / Team Name" value={form.club_name} onChange={v => set('club_name', v)} />
+        <div>
+          <label className="block text-sm font-bold mb-1" style={{ color: '#0D0D0D' }}>Club / Team Name</label>
+          <select value={form.club_name} onChange={e => set('club_name', e.target.value)}
+            className={inputCls} style={inputStyle}>
+            <option value="">Select a Club</option>
+            {clubs.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+          </select>
+        </div>
         <Field label="Year" value={form.year} onChange={v => set('year', v)} />
       </div>
 

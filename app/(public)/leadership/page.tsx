@@ -11,9 +11,10 @@ export const metadata = {
 };
 
 export default async function LeadershipPage() {
-  const [{ data: members }, { data: dbClubs }] = await Promise.all([
+  const [{ data: members }, { data: dbClubs }, { data: advisoryBoard }] = await Promise.all([
     db.from('council_members').select('*').order('sort_order', { ascending: true }),
     db.from('clubs').select('*').order('club_name', { ascending: true }),
+    db.from('advisory_board').select('*').order('sort_order', { ascending: true }),
   ]);
 
   const clubs = (dbClubs ?? []).map((c: any) => ({
@@ -35,7 +36,7 @@ export default async function LeadershipPage() {
             Student Council of KL University
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '54ch' }}>
-            The elected and appointed student leaders who run KL SAC — {clubs?.length ?? 0} clubs, 5 domains, and the full breadth of campus life.
+            The elected and appointed student leaders who run KL SAC — 25+ clubs, 5 domains, and the full breadth of campus life.
           </p>
         </div>
       </section>
@@ -63,6 +64,40 @@ export default async function LeadershipPage() {
                 Coming soon
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── University Advisory Board ────────────────────────────────── */}
+      <section className="bg-paper border-b hairline">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
+          <p className="kicker mb-8" style={{ color: '#970003' }}>University Advisory Board</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+            {(advisoryBoard ?? []).map((m: any) => (
+              <div key={m.id} className="group flex flex-col items-center">
+                <div className="w-full aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 mb-3 border hairline relative">
+                  {m.photo_url ? (
+                    <img src={m.photo_url} alt={m.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Photo</div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <h3 className="font-bold text-center text-sm sm:text-base text-foreground leading-tight mb-1">{m.name}</h3>
+                <p className="text-xs sm:text-sm text-center text-red-700 font-semibold">{m.role}</p>
+              </div>
+            ))}
+            
+            {Array.from({ length: Math.max(0, 10 - (advisoryBoard ?? []).length) }).map((_, i) => (
+              <div key={`placeholder-${i}`} className="flex flex-col items-center opacity-50">
+                <div className="w-full aspect-[4/5] rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center mb-3">
+                  <span className="text-gray-400 text-[10px] font-semibold uppercase tracking-widest">Placeholder</span>
+                </div>
+                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-1.5" />
+                <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -72,6 +72,14 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   const domain = getDomainByCode(club.domain_code);
   if (!domain) notFound();
 
+  const { data: rawAchievements } = await db
+    .from('achievements')
+    .select('*')
+    .eq('club_name', club.name)
+    .order('year', { ascending: false });
+
+  const achievements = rawAchievements ?? [];
+
   const galleryPhotos: string[] = Array.isArray(club.gallery) ? club.gallery : [];
   const about: string[]         = Array.isArray(club.about)   ? club.about   : [];
   const competencies: string[]  = Array.isArray(club.competencies) ? club.competencies : [];
@@ -458,23 +466,46 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           </FadeIn>
 
           <FadeIn>
-            <div className="rounded-2xl p-12 text-center"
-                 style={{ background: '#fff', border: '1.5px dashed #D1D1D6' }}>
-              <Trophy size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
-              <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
-                Competition wins and honours will be listed here.
-              </p>
-              <p className="text-xs mb-6" style={{ color: '#A1A1AA' }}>
-                National, state and inter-university achievements from club activities.
-              </p>
-              <Link
-                href="/achievements"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:scale-[1.02]"
-                style={{ background: domain.color, color: '#fff' }}>
-                View Achievement Board
-                <ArrowRight size={13} />
-              </Link>
-            </div>
+            {achievements.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {achievements.map((ach: any) => (
+                  <div key={ach.id} className="rounded-2xl p-6 flex flex-col" style={{ background: '#fff', border: '1px solid #E4E4E7' }}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full" style={{ background: domain.accentBg, color: domain.color }}>
+                        {ach.level}
+                      </span>
+                      <span className="text-xs font-semibold" style={{ color: '#A1A1AA' }}>{ach.year}</span>
+                    </div>
+                    {ach.photo && (
+                      <img src={ach.photo} alt={ach.title} className="w-full h-40 object-cover rounded-xl mb-4" />
+                    )}
+                    <h3 className="font-bold text-base mb-2" style={{ color: '#0D0D0D' }}>{ach.title}</h3>
+                    {ach.organization && (
+                      <p className="text-xs font-semibold mb-2" style={{ color: domain.color }}>{ach.organization}</p>
+                    )}
+                    <p className="text-sm leading-relaxed" style={{ color: '#71717A' }}>{ach.description}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl p-12 text-center"
+                   style={{ background: '#fff', border: '1.5px dashed #D1D1D6' }}>
+                <Trophy size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
+                <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
+                  Competition wins and honours will be listed here.
+                </p>
+                <p className="text-xs mb-6" style={{ color: '#A1A1AA' }}>
+                  National, state and inter-university achievements from club activities.
+                </p>
+                <Link
+                  href="/achievements"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:scale-[1.02]"
+                  style={{ background: domain.color, color: '#fff' }}>
+                  View Achievement Board
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
+            )}
           </FadeIn>
         </div>
       </section>
