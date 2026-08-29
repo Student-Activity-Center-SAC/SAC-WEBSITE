@@ -52,8 +52,7 @@ function autoCropAndUpload(file: File, options: CropOptions): Promise<string> {
       canvas.toBlob(async blob => {
         if (!blob) return reject(new Error('Canvas toBlob failed'));
         const fd = new FormData();
-        const ext = file.name.split('.').pop() ?? 'jpg';
-        fd.append('file', blob, `cropped.${ext}`);
+        fd.append('file', blob, 'cropped.png');
         fd.append('folder', 'clubs');
         try {
           const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
@@ -63,7 +62,7 @@ function autoCropAndUpload(file: File, options: CropOptions): Promise<string> {
         } catch (e) {
           reject(e);
         }
-      }, 'image/jpeg', 0.9);
+      }, 'image/png');
     };
     img.onerror = () => reject(new Error('Failed to load image'));
     img.src = URL.createObjectURL(file);
@@ -166,7 +165,7 @@ function CropModal({ src, options, onCancel, onApply }: CropModalProps) {
     const srcH = PREVIEW_H * scaleY;
 
     ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, options.targetWidth, options.targetHeight);
-    canvas.toBlob(blob => { if (blob) onApply(blob); }, 'image/jpeg', 0.9);
+    canvas.toBlob(blob => { if (blob) onApply(blob); }, 'image/png');
   }
 
   const naturalAr = imgRef.current ? imgRef.current.naturalWidth / imgRef.current.naturalHeight : 1;
@@ -395,8 +394,7 @@ export default function ClubForm({ initial, mode }: Props) {
     setUploading(key);
     try {
       const fd = new FormData();
-      const ext = originalFile.name.split('.').pop() ?? 'jpg';
-      fd.append('file', blob, `cropped.${ext}`);
+      fd.append('file', blob, 'cropped.png');
       fd.append('folder', 'clubs');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const d = await res.json();

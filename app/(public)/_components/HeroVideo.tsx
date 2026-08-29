@@ -6,15 +6,18 @@ export function HeroVideo({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.src = src;
-    }
+    const timer = setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.src = src;
+        videoRef.current.play().catch(() => {});
+      }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [src]);
 
   return (
     <video
       ref={videoRef}
-      autoPlay
       muted
       loop
       playsInline
