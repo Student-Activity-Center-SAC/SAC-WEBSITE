@@ -97,20 +97,19 @@ export function UpcomingActivitiesHome() {
   return (
     <section style={{ background: '#faf6f1' }}>
       <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12 lg:py-16">
-        <FadeIn className="mb-8">
-          <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
-          <h2
-            className="font-display font-medium leading-[1.07]"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
-            Upcoming Activities
-          </h2>
-        </FadeIn>
-
         <FadeIn>
-          <div className="grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-10 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-12 lg:gap-16 items-start">
+            
+            {/* ── Left Column: Heading + Mini Calendar ──────────────── */}
+            <div>
+              <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
+              <h2
+                className="font-display font-medium leading-[1.07] mb-8"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                Upcoming Activities
+              </h2>
 
-            {/* ── Mini Calendar ─────────────────────────────────────── */}
-            <div className="rounded-2xl overflow-visible" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+              <div className="rounded-2xl overflow-visible" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
 
               {/* Month nav */}
               <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid var(--hairline)' }}>
@@ -234,9 +233,10 @@ export function UpcomingActivitiesHome() {
                 </div>
               </div>
             </div>
+            </div>
 
             {/* ── Activity List ──────────────────────────────────────── */}
-            <div>
+            <div className="lg:pt-[6.5rem]">
               <div style={{ borderTop: '1px solid var(--hairline)' }}>
                 {loading ? (
                   [...Array(4)].map((_, i) => (
@@ -253,25 +253,25 @@ export function UpcomingActivitiesHome() {
                     <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
                     <p className="text-sm">Check back soon or visit the activities page.</p>
                   </div>
-                ) : activities.slice(0, 8).map(act => {
+                ) : activities.slice(0, 7).map(act => {
                   const date  = new Date(act.activity_date);
                   const color = DOMAIN_COLORS[act.domain] ?? '#970003';
                   const meta  = [act.club_name || act.category, act.venue].filter(Boolean).join(' · ');
                   return (
                     <div
                       key={act.code}
-                      className="group flex items-start gap-5 sm:gap-7 py-6"
+                      className="group flex items-start gap-4 sm:gap-5 py-4"
                       style={{ borderBottom: '1px solid var(--hairline)' }}>
 
                       {/* Date stamp */}
-                      <div className="shrink-0 text-center" style={{ minWidth: '3rem' }}>
+                      <div className="shrink-0 text-center" style={{ minWidth: '2.5rem' }}>
                         <div
                           className="font-display font-medium leading-none tabular-nums"
-                          style={{ fontSize: '2rem', color: '#970003' }}>
+                          style={{ fontSize: '1.4rem', color: '#970003' }}>
                           {String(date.getDate()).padStart(2, '0')}
                         </div>
                         <div
-                          className="text-xs font-semibold tracking-widest uppercase mt-1"
+                          className="text-[10px] font-bold tracking-widest uppercase mt-0.5"
                           style={{ color: 'rgba(25,19,19,0.32)' }}>
                           {date.toLocaleString('en-IN', { month: 'short' })}
                         </div>
