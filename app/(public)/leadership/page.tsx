@@ -24,6 +24,10 @@ export default async function LeadershipPage() {
     domain_code: c.club_domain,
   }));
 
+  const deputyDirectors = (members ?? []).filter((m: any) => m.role === 'Deputy Director' || m.category === 'Deputy Director');
+  const deputy1 = deputyDirectors[0] || null;
+  const deputy2 = deputyDirectors[1] || null;
+
   return (
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
@@ -143,20 +147,22 @@ export default async function LeadershipPage() {
       {/* ─── Deputy Directors SAC ─────────────────────────────────────── */}
       <section className="bg-white border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
-          <p className="kicker mb-8 justify-center" style={{ color: '#970003' }}>Deputy Directors, SAC</p>
+          <p className="kicker mb-8" style={{ color: '#970003' }}>Deputy Directors, SAC</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center">
             {/* Deputy 1 */}
             <div className="flex flex-col items-center group">
               <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
-                <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
-                  Deputy Director 1
-                </div>
-                {/* Replace src below when photo is available */}
-                <img src="/placeholder.png" alt="Deputy Director" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" />
+                {!deputy1?.photo_url ? (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
+                    Deputy Director 1
+                  </div>
+                ) : (
+                  <img src={deputy1.photo_url} alt={deputy1.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <h3 className="font-display text-xl font-medium text-foreground text-center">Deputy Director Name</h3>
+              <h3 className="font-display text-xl font-medium text-foreground text-center">{deputy1?.name || 'Deputy Director Name'}</h3>
               <p className="text-red-700 font-semibold text-sm text-center">Deputy Director, SAC</p>
             </div>
 
@@ -170,14 +176,16 @@ export default async function LeadershipPage() {
             {/* Deputy 2 */}
             <div className="flex flex-col items-center group">
               <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
-                <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
-                  Deputy Director 2
-                </div>
-                {/* Replace src below when photo is available */}
-                <img src="/placeholder.png" alt="Deputy Director" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" />
+                {!deputy2?.photo_url ? (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
+                    Deputy Director 2
+                  </div>
+                ) : (
+                  <img src={deputy2.photo_url} alt={deputy2.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <h3 className="font-display text-xl font-medium text-foreground text-center">Deputy Director Name</h3>
+              <h3 className="font-display text-xl font-medium text-foreground text-center">{deputy2?.name || 'Deputy Director Name'}</h3>
               <p className="text-red-700 font-semibold text-sm text-center">Deputy Director, SAC</p>
             </div>
           </div>
