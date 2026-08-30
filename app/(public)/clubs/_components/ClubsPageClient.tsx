@@ -132,6 +132,7 @@ export default function ClubsPageClient({ clubs }: Props) {
                   {domainClubs.map(club => (
                     <Link
                       key={club.slug}
+                      prefetch={false}
                       href={`/clubs/${club.slug}`}
                       className="group flex items-center gap-4 py-4 px-2 transition-colors hover:bg-gray-50 rounded-lg"
                       style={{ borderBottom: '1px solid #F4F4F5' }}>

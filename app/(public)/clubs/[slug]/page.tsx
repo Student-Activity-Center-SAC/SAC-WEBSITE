@@ -79,10 +79,11 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   if (!domain) notFound();
 
   // Fetch from public API instead of DB
-  const [achievementsRes, upcomingRes, completedRes] = await Promise.all([
+  const [achievementsRes, upcomingRes, completedRes, membersRes] = await Promise.all([
     db.from('achievements').select('*').eq('club_name', club.name).order('year', { ascending: false }),
-    fetch('https://sacactivities.kluniversity.in/api/public/activities/upcoming', { next: { revalidate: 60 } }).then(r => r.json()).catch(() => ({ activities: [] })),
-    fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { next: { revalidate: 60 } }).then(r => r.json()).catch(() => ({ activities: [] })),
+    fetch('https://sacactivities.kluniversity.in/api/public/activities/upcoming', { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) }).then(r => r.json()).catch(() => ({ activities: [] })),
+    fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) }).then(r => r.json()).catch(() => ({ activities: [] })),
+    db.from('council_members').select('*').order('sort_order', { ascending: true }),
   ]);
 
   const achievements = (achievementsRes.data ?? []).map(ach => ({
@@ -103,6 +104,10 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   const about: string[]         = Array.isArray(club.about)   ? club.about   : [];
   const competencies: string[]  = Array.isArray(club.competencies) ? club.competencies : [];
   const activitiesList: string[]= Array.isArray(club.activities_list) ? club.activities_list : [];
+
+  const officeBearers = (membersRes.data ?? []).filter((m: any) => 
+    m.club_lead === club.name || parseJsonCol(m.clubs_list).includes(club.name)
+  );
 
   return (
     <>
@@ -357,7 +362,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                 <h2
                   className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  What's happening next.
+                  2026-27 ACADEMIC YEAR
                 </h2>
               </div>
               {clubUpcoming.length > 0 && (
@@ -406,7 +411,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                 <h2
                   className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  Completed Activities.
+                  2026-27 ACADEMIC YEAR
                 </h2>
               </div>
               {clubCompleted.length > 0 && (
@@ -444,31 +449,31 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
       </section>
 
       {/* ─── Achievements ─────────────────────────────────────────────── */}
-      <section style={{ background: '#F7F7F8' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <FadeIn>
-            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-              <div>
-                <p className="kicker mb-3" style={{ color: domain.color }}>
-                  Club Achievements
-                </p>
-                <h2
-                  className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  Honours & recognition.
-                </h2>
+      {achievements.length > 0 && (
+        <section style={{ background: '#F7F7F8' }}>
+          <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+            <FadeIn>
+              <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+                <div>
+                  <p className="kicker mb-3" style={{ color: domain.color }}>
+                    Club Achievements
+                  </p>
+                  <h2
+                    className="font-display font-medium leading-tight"
+                    style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                    Honours & recognition.
+                  </h2>
+                </div>
+                <Link
+                  href="/achievements"
+                  className="text-xs font-bold hover:opacity-70 transition-opacity"
+                  style={{ color: domain.color }}>
+                  All achievements →
+                </Link>
               </div>
-              <Link
-                href="/achievements"
-                className="text-xs font-bold hover:opacity-70 transition-opacity"
-                style={{ color: domain.color }}>
-                All achievements →
-              </Link>
-            </div>
-          </FadeIn>
+            </FadeIn>
 
-          <FadeIn>
-            {achievements.length > 0 ? (
+            <FadeIn>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {achievements.map((ach: any) => (
                   <div key={ach.id} className="rounded-2xl p-6 flex flex-col" style={{ background: '#fff', border: '1px solid #E4E4E7' }}>
@@ -491,81 +496,60 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="rounded-2xl p-12 text-center"
-                   style={{ background: '#fff', border: '1.5px dashed #D1D1D6' }}>
-                <Trophy size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
-                <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
-                  Competition wins and honours will be listed here.
-                </p>
-                <p className="text-xs mb-6" style={{ color: '#A1A1AA' }}>
-                  National, state and inter-university achievements from club activities.
-                </p>
-                <Link
-                  href="/achievements"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:scale-[1.02]"
-                  style={{ background: domain.color, color: '#fff' }}>
-                  View Achievement Board
-                  <ArrowRight size={13} />
-                </Link>
-              </div>
-            )}
-          </FadeIn>
-        </div>
-      </section>
+            </FadeIn>
+          </div>
+        </section>
+      )}
 
       {/* ─── Office Bearers ───────────────────────────────────────────── */}
-      <section style={{ background: '#fff' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <FadeIn>
-            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-              <div>
-                <p className="kicker mb-3" style={{ color: domain.color }}>
-                  Office Bearers
-                </p>
-                <h2
-                  className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  The team behind the club.
-                </h2>
-              </div>
-            </div>
-          </FadeIn>
-
-          <FadeIn>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {OFFICE_ROLES.map(({ role, abbr }) => (
-                <div
-                  key={role}
-                  className="rounded-2xl p-6 flex flex-col items-center text-center gap-4"
-                  style={{ background: '#F7F7F8', border: '1px solid #E4E4E7' }}>
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center font-black text-sm"
-                    style={{ background: domain.accentBg, color: domain.color }}>
-                    {abbr}
-                  </div>
-                  <div>
-                    <p className="font-black text-sm mb-0.5" style={{ color: '#0D0D0D' }}>Name TBA</p>
-                    <p className="text-xs font-semibold" style={{ color: '#A1A1AA' }}>{role}</p>
-                  </div>
+      {officeBearers.length > 0 && (
+        <section style={{ background: '#fff' }}>
+          <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+            <FadeIn>
+              <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+                <div>
+                  <p className="kicker mb-3" style={{ color: domain.color }}>
+                    Office Bearers
+                  </p>
+                  <h2
+                    className="font-display font-medium leading-tight"
+                    style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+                    The team behind the club.
+                  </h2>
                 </div>
-              ))}
-            </div>
-            <p className="text-xs text-center mt-5" style={{ color: '#A1A1AA' }}>
-              Office bearer details are updated at the start of each academic year via the{' '}
-              <Link
-                href="https://sacactivities.kluniversity.in/auth/login"
-                target="_blank"
-                rel="noopener"
-                className="font-bold hover:underline"
-                style={{ color: domain.color }}>
-                Student Dashboard
-              </Link>
-              .
-            </p>
-          </FadeIn>
-        </div>
-      </section>
+              </div>
+            </FadeIn>
+
+            <FadeIn>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {officeBearers.map((member: any) => {
+                  const roleAbbr = OFFICE_ROLES.find(r => member.role?.includes(r.role))?.abbr || member.role?.substring(0, 2).toUpperCase() || 'LDR';
+                  return (
+                    <div
+                      key={member.id}
+                      className="rounded-2xl p-6 flex flex-col items-center text-center gap-4"
+                      style={{ background: '#F7F7F8', border: '1px solid #E4E4E7' }}>
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center font-black text-sm relative overflow-hidden"
+                        style={{ background: domain.accentBg, color: domain.color }}>
+                        {member.photo ? (
+                          <Image src={safeUrl(member.photo) || ''} alt={member.name} fill className="object-cover" />
+                        ) : (
+                          roleAbbr
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-black text-sm mb-0.5" style={{ color: '#0D0D0D' }}>{member.name}</p>
+                        <p className="text-xs font-semibold" style={{ color: '#A1A1AA' }}>{member.role || 'Club Leader'}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+      )}
 
       {/* ─── Join CTA ─────────────────────────────────────────────────── */}
       <section style={{ background: '#faf6f1' }}>

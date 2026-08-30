@@ -370,6 +370,7 @@ export default async function HomePage() {
                           <div className="flex flex-wrap gap-1.5 flex-1">
                             {clubs.length > 0 ? clubs.map((c) => (
                               <Link key={c.slug} href={`/clubs/${c.slug}`}
+                                prefetch={false}
                                 className="text-xs font-medium px-2.5 py-1 rounded-full transition-all hover:opacity-75"
                                 style={{ background: 'rgba(25,19,19,0.055)', color: 'rgba(25,19,19,0.6)' }}>
                                 {c.name}
