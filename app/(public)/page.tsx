@@ -76,7 +76,7 @@ export default async function HomePage() {
           aria-hidden="true" />
 
         {/* Content */}
-        <div className="hero-content relative z-10 w-full max-w-6xl mx-auto px-5 sm:px-6 pb-16 sm:pb-24 pt-24">
+        <div className="hero-content relative z-10 w-full px-6 sm:px-12 xl:px-20 pb-16 sm:pb-24 pt-24">
 
           {/* Kicker */}
           <div className="kicker mb-8 animate-fade-in" style={{ color: 'rgba(255,255,255,0.55)' }}>
@@ -134,7 +134,7 @@ export default async function HomePage() {
 
       {/* ════════════════════════════════════════════════ AT A GLANCE ══ */}
       <section style={{ background: '#faf6f1' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-20">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
@@ -157,7 +157,7 @@ export default async function HomePage() {
 
       {/* ═══════════════════════════════════════════ WHAT HAPPENS AT SAC ══ */}
       <section style={{ background: '#fffdfb' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-14 lg:py-16">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-14 lg:py-16">
 
           {/* Header */}
           <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
@@ -268,7 +268,7 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════════════════ FIVE DOMAINS ══ */}
       <section style={{ background: '#fffdfb' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16 lg:py-20">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-16 lg:py-20">
 
           {/* Header row */}
           <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
@@ -372,7 +372,7 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════ STUDENT STORIES ══ */}
       {false && (
       <section style={{ background: '#fffdfb' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Student Stories</p>
@@ -476,7 +476,7 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════════════ ACHIEVEMENTS ══ */}
       <section style={{ background: '#faf6f1' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 pb-24 lg:pb-32 pt-8 lg:pt-12">
+        <div className="w-full px-6 sm:px-12 xl:px-20 pb-24 lg:pb-32 pt-8 lg:pt-12">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Recognition</p>
@@ -509,7 +509,7 @@ export default async function HomePage() {
 
       {/* ════════════════════════════════════ INDUSTRY & COLLABORATION ══ */}
       <section style={{ background: '#fffdfb' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <FadeIn>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Industry & Collaboration</p>
@@ -560,7 +560,7 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════ MEET OUR LEADERSHIP ══ */}
       <section style={{ background: '#faf6f1' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Governance</p>
@@ -609,7 +609,7 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════════ LATEST NEWS ══ */}
       <section style={{ background: '#fffdfb' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24 lg:py-32">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>News & Updates</p>
@@ -648,7 +648,7 @@ export default async function HomePage() {
         <div className="orb-b absolute -bottom-24 -right-24 w-96 h-96 rounded-full pointer-events-none"
           style={{ background: 'rgba(150,40,40,0.2)', filter: 'blur(80px)' }} aria-hidden="true" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 py-28 text-center">
+        <div className="relative z-10 w-full px-6 sm:px-12 xl:px-20 py-28 text-center">
           <FadeIn>
             <p className="kicker justify-center mb-6" style={{ color: 'rgba(255,255,255,0.55)' }}>
               KL SAC
