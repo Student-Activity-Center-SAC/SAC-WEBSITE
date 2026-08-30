@@ -34,7 +34,7 @@ export default async function HomePage() {
     db.from('site_settings').select('key, value'),
     db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').order('date', { ascending: false }).limit(6),
     db.from('domains').select('slug, code, name, tagline, color, accent_bg').order('sort_order', { ascending: true }),
-    db.from('clubs').select('domain_code, slug, name'),
+    db.from('clubs').select('club_domain, club_name'),
     db.from('sac_stats').select('key, value'),
     db.from('partners').select('*'),
     db.from('achievements').select('id, title, description, level, domain_code, club_name, year, photo, organization').order('sort_order', { ascending: true }).order('year', { ascending: false }).limit(20),
@@ -295,9 +295,13 @@ export default async function HomePage() {
           <FadeIn>
             {(() => {
               const dbClubs = (clubsRes.data ?? []) as any[];
-              const hasMappedClubs = dbClubs.some(c => c.domain_code && c.name);
+              const hasMappedClubs = dbClubs.some(c => c.club_domain && c.club_name);
               const allClubs = hasMappedClubs
-                ? dbClubs
+                ? dbClubs.map(c => ({
+                    domain_code: c.club_domain,
+                    slug: c.club_name ? c.club_name.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') : '',
+                    name: c.club_name
+                  }))
                 : DEMO_CLUBS.map(c => ({ domain_code: c.domain, slug: c.name.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g,'-'), name: c.name }));
               const clubsByDomain: Record<string, { name: string; slug: string }[]> = {};
               allClubs.forEach((c: any) => {
