@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ArrowLeft, ArrowRight, ArrowUpRight, CheckCircle2,
   Camera, Calendar, MapPin, Trophy, Users,
@@ -9,7 +10,7 @@ import { getDomainByCode } from '@/lib/content/domains';
 import { FadeIn } from '../../_components/FadeIn';
 import { ActivityCard, Activity } from '../../_components/ActivityCard';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 function toSlug(name: string) {
   return name?.toLowerCase().replace(/[\s/&]+/g, '-').replace(/-+/g, '-') ?? '';
@@ -22,6 +23,18 @@ function parseJsonCol(val: any): string[] {
   try { return JSON.parse(val); } catch { return []; }
 }
 
+function safeUrl(url: any): string | null {
+  if (typeof url !== 'string' || !url.trim()) return null;
+  const trimmed = url.trim();
+  if (trimmed.startsWith('/')) return trimmed;
+  try {
+    new URL(trimmed);
+    return trimmed;
+  } catch {
+    return null;
+  }
+}
+
 async function getClubBySlug(slug: string) {
   const { data: all } = await db.from('clubs').select('*').order('id', { ascending: true });
   const raw = (all ?? []).find((c: any) => toSlug(c.club_name) === slug);
@@ -32,13 +45,13 @@ async function getClubBySlug(slug: string) {
     name:           raw.club_name ?? '',
     domain_code:    raw.club_domain ?? '',
     tagline:        raw.club_description ?? '',
-    logo_url:       raw.club_logo ?? '',
+    logo_url:       safeUrl(raw.club_logo),
     about:          raw.club_about ? raw.club_about.split('\n').filter(Boolean) : [],
-    gallery:        parseJsonCol(raw.gallery),
+    gallery:        parseJsonCol(raw.gallery).map(safeUrl).filter(Boolean) as string[],
     competencies:   parseJsonCol(raw.competencies),
     activities_list:parseJsonCol(raw.activities_list),
     purpose:        (raw.purpose ?? null) as string | null,
-    cover_url:      (raw.cover_url ?? null) as string | null,
+    cover_url:      safeUrl(raw.cover_url),
   };
 }
 
@@ -72,7 +85,10 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
     fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { next: { revalidate: 60 } }).then(r => r.json()).catch(() => ({ activities: [] })),
   ]);
 
-  const achievements = achievementsRes.data ?? [];
+  const achievements = (achievementsRes.data ?? []).map(ach => ({
+    ...ach,
+    photo: safeUrl(ach.photo)
+  }));
   const allUpcoming = Array.isArray(upcomingRes.activities) ? upcomingRes.activities : [];
   const allCompleted = Array.isArray(completedRes.activities) ? completedRes.activities : [];
 
@@ -104,12 +120,12 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
         }}>
         {club.cover_url && (
           <>
-            <img
+            <Image
               src={club.cover_url}
               alt={club.name}
+              fill
+              priority
               style={{
-                position: 'absolute', inset: 0,
-                width: '100%', height: '100%',
                 objectFit: 'cover', objectPosition: 'center',
               }}
             />
@@ -133,10 +149,12 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
 
           <div className="flex items-center gap-3 mb-4">
             {club.logo_url && (
-              <img
+              <Image
                 src={club.logo_url}
                 alt={club.name}
-                className="w-12 h-12 rounded-xl object-contain"
+                width={48}
+                height={48}
+                className="rounded-xl object-contain"
                 style={{
                   background: club.cover_url ? 'rgba(255,255,255,0.15)' : domain.accentBg,
                   padding: '6px',
@@ -268,11 +286,12 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                     key={i}
                     className="relative rounded-xl overflow-hidden group"
                     style={{ aspectRatio: '3/2' }}>
-                    <img
+                    <Image
                       src={src}
                       alt={`${club.name} activity photo ${i + 1}`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                 ))}
@@ -460,7 +479,9 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
                       <span className="text-xs font-semibold" style={{ color: '#A1A1AA' }}>{ach.year}</span>
                     </div>
                     {ach.photo && (
-                      <img src={ach.photo} alt={ach.title} className="w-full h-40 object-cover rounded-xl mb-4" />
+                      <div className="relative w-full h-40 mb-4 rounded-xl overflow-hidden">
+                        <Image src={ach.photo} alt={ach.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                      </div>
                     )}
                     <h3 className="font-bold text-base mb-2" style={{ color: '#0D0D0D' }}>{ach.title}</h3>
                     {ach.organization && (

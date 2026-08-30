@@ -78,11 +78,11 @@ export default function Navbar() {
               <Link
                 key={l.href}
                 href={l.href}
-                className="relative px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
+                className="relative px-4 py-2 rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:opacity-80"
                 style={{ color: textColor(isActive(l.href)) }}>
                 {l.label}
                 {isActive(l.href) && !glass && (
-                  <span className="absolute -bottom-0.5 left-3 h-0.5 w-4 rounded-full" style={{ background: '#c67374' }} />
+                  <span className="absolute -bottom-0.5 left-4 h-0.5 w-4 rounded-full" style={{ background: '#c67374' }} />
                 )}
               </Link>
             ))}
@@ -93,11 +93,11 @@ export default function Navbar() {
                 key={l.label}
                 href={l.href}
                 {...(l.external ? { target: '_blank', rel: 'noopener' } : {})}
-                className="relative px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
+                className="relative px-4 py-2 rounded-xl text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:opacity-80"
                 style={{ color: textColor(isActive(l.href)) }}>
                 {l.label}
                 {isActive(l.href) && !glass && (
-                  <span className="absolute -bottom-0.5 left-3 h-0.5 w-4 rounded-full" style={{ background: '#c67374' }} />
+                  <span className="absolute -bottom-0.5 left-4 h-0.5 w-4 rounded-full" style={{ background: '#c67374' }} />
                 )}
               </Link>
             ))}

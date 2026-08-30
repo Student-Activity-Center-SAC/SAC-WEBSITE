@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Search } from 'lucide-react';
 import { DOMAINS } from '@/lib/content/domains';
 
@@ -135,11 +136,15 @@ export default function ClubsPageClient({ clubs }: Props) {
                       className="group flex items-center gap-4 py-4 px-2 transition-colors hover:bg-gray-50 rounded-lg"
                       style={{ borderBottom: '1px solid #F4F4F5' }}>
                       {club.logo_url && (
-                        <img
-                          src={club.logo_url}
-                          alt={club.name}
-                          className="w-12 h-12 rounded-lg object-contain shrink-0"
-                        />
+                        <div className="relative w-12 h-12 shrink-0">
+                          <Image
+                            src={club.logo_url}
+                            alt={club.name}
+                            fill
+                            className="rounded-lg object-contain"
+                            sizes="48px"
+                          />
+                        </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-base leading-tight text-gray-900 group-hover:text-gray-600 transition-colors">

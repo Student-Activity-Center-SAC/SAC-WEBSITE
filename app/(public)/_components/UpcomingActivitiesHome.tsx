@@ -96,16 +96,16 @@ export function UpcomingActivitiesHome() {
 
   return (
     <section style={{ background: '#faf6f1' }}>
-      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12 lg:py-16">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-12 lg:py-16">
         <FadeIn>
-          <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-12 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-10 lg:gap-16 items-start">
             
             {/* ── Left Column: Heading + Mini Calendar ──────────────── */}
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
               <h2
-                className="font-display font-medium leading-[1.07] mb-8"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+                className="font-display font-medium leading-[1.07] mb-8 whitespace-nowrap"
+                style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Upcoming Activities
               </h2>
 
@@ -233,13 +233,26 @@ export function UpcomingActivitiesHome() {
                 </div>
               </div>
             </div>
+
+            <div className="mt-8">
+              <Link
+                href="/activities?tab=upcoming"
+                className="inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl text-sm font-bold transition-all hover:scale-[1.02]"
+                style={{ 
+                  color: '#970003', 
+                  background: 'rgba(151,0,3,0.05)',
+                  border: '1px solid rgba(151,0,3,0.12)'
+                }}>
+                View all activities <ArrowRight size={14} />
+              </Link>
+            </div>
             </div>
 
             {/* ── Activity List ──────────────────────────────────────── */}
-            <div className="lg:pt-[6.5rem]">
-              <div style={{ borderTop: '1px solid var(--hairline)' }}>
+            <div className="lg:pt-[7.5rem]">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-10 gap-y-0" style={{ borderTop: '1px solid var(--hairline)' }}>
                 {loading ? (
-                  [...Array(4)].map((_, i) => (
+                  [...Array(6)].map((_, i) => (
                     <div key={i} className="py-5 flex gap-6" style={{ borderBottom: '1px solid var(--hairline)' }}>
                       <div className="w-10 h-12 rounded animate-pulse shrink-0" style={{ background: 'rgba(25,19,19,0.06)' }} />
                       <div className="flex-1 space-y-2">
@@ -249,7 +262,7 @@ export function UpcomingActivitiesHome() {
                     </div>
                   ))
                 ) : activities.length === 0 ? (
-                  <div className="py-16 text-center" style={{ color: 'rgba(25,19,19,0.4)' }}>
+                  <div className="py-16 text-center xl:col-span-2" style={{ color: 'rgba(25,19,19,0.4)' }}>
                     <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
                     <p className="text-sm">Check back soon or visit the activities page.</p>
                   </div>
@@ -281,44 +294,39 @@ export function UpcomingActivitiesHome() {
                       <div className="w-px self-stretch shrink-0 mt-1" style={{ background: 'rgba(151,0,3,0.15)' }} />
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0 pt-0.5">
-                        <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1.5" style={{ color: '#191313' }}>
-                          {act.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm"
-                             style={{ color: 'rgba(25,19,19,0.4)' }}>
-                          <span className="font-bold text-xs uppercase tracking-wider" style={{ color }}>
-                            {act.domain}
-                          </span>
-                          {meta && (
-                            <>
-                              <span style={{ color: 'rgba(25,19,19,0.22)' }}>·</span>
-                              <span>{meta}</span>
-                            </>
-                          )}
+                      <div className="flex-1 min-w-0 pt-0.5 flex flex-col justify-between">
+                        <div>
+                          <h3 className="font-semibold text-base sm:text-lg leading-snug mb-1.5" style={{ color: '#191313' }}>
+                            {act.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm mb-1"
+                               style={{ color: 'rgba(25,19,19,0.4)' }}>
+                            <span className="font-bold text-xs uppercase tracking-wider" style={{ color }}>
+                              {act.domain}
+                            </span>
+                            {meta && (
+                              <>
+                                <span style={{ color: 'rgba(25,19,19,0.22)' }}>·</span>
+                                <span>{meta}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Register CTA — appears below on hover */}
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <a
+                            href="https://sacactivities.kluniversity.in/auth/login"
+                            target="_blank" rel="noopener"
+                            className="text-xs font-bold inline-flex items-center gap-1"
+                            style={{ color: '#970003' }}>
+                            Register now <ArrowUpRight size={12} />
+                          </a>
                         </div>
                       </div>
-
-                      {/* Register CTA — appears on hover */}
-                      <a
-                        href="https://sacactivities.kluniversity.in/auth/login"
-                        target="_blank" rel="noopener"
-                        className="text-sm font-semibold shrink-0 mt-1 transition-all opacity-0 group-hover:opacity-100 inline-flex items-center gap-1"
-                        style={{ color: '#970003' }}>
-                        Register <ArrowUpRight size={13} />
-                      </a>
                     </div>
                   );
                 })}
-              </div>
-
-              <div className="mt-8">
-                <Link
-                  href="/activities?tab=upcoming"
-                  className="inline-flex items-center gap-2 font-semibold text-sm"
-                  style={{ color: '#970003' }}>
-                  View all activities <ArrowRight size={14} />
-                </Link>
               </div>
             </div>
           </div>

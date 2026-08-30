@@ -1,7 +1,7 @@
 import { db } from '@/lib/query-builder';
 import ClubsPageClient from './_components/ClubsPageClient';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 export const metadata = { title: 'Clubs — KL SAC' };
 
 export default async function ClubsPage() {
