@@ -472,7 +472,7 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════════════ ACHIEVEMENTS ══ */}
       <section style={{ background: '#faf6f1' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-24 lg:py-32">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 pb-24 lg:pb-32 pt-8 lg:pt-12">
           <FadeIn className="flex items-end justify-between mb-12 gap-6">
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Recognition</p>

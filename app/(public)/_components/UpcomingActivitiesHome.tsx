@@ -253,7 +253,7 @@ export function UpcomingActivitiesHome() {
                     <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
                     <p className="text-sm">Check back soon or visit the activities page.</p>
                   </div>
-                ) : activities.slice(0, 7).map(act => {
+                ) : activities.slice(0, 6).map(act => {
                   const date  = new Date(act.activity_date);
                   const color = DOMAIN_COLORS[act.domain] ?? '#970003';
                   const meta  = [act.club_name || act.category, act.venue].filter(Boolean).join(' · ');
