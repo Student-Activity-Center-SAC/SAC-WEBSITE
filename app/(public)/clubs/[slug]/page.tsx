@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import ClubActivities from '../_components/ClubActivities';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -78,27 +80,15 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   const domain = getDomainByCode(club.domain_code);
   if (!domain) notFound();
 
-  // Fetch from public API instead of DB
-  const [achievementsRes, upcomingRes, completedRes, membersRes] = await Promise.all([
+  const [achievementsRes, membersRes] = await Promise.all([
     db.from('achievements').select('*').eq('club_name', club.name).order('year', { ascending: false }),
-    fetch('https://sacactivities.kluniversity.in/api/public/activities/upcoming', { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) }).then(r => r.json()).catch(() => ({ activities: [] })),
-    fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) }).then(r => r.json()).catch(() => ({ activities: [] })),
     db.from('council_members').select('*').order('sort_order', { ascending: true }),
   ]);
 
-  const achievements = (achievementsRes.data ?? []).map(ach => ({
+  const achievements = (achievementsRes.data ?? []).map((ach: any) => ({
     ...ach,
     photo: safeUrl(ach.photo)
   }));
-  const allUpcoming = Array.isArray(upcomingRes.activities) ? upcomingRes.activities : [];
-  const allCompleted = Array.isArray(completedRes.activities) ? completedRes.activities : [];
-
-  const isClubActivity = (act: Activity) => {
-    return toSlug(act.club_name || '') === slug || toSlug(act.category || '') === slug;
-  };
-
-  const clubUpcoming = allUpcoming.filter(isClubActivity);
-  const clubCompleted = allCompleted.filter(isClubActivity);
 
   const galleryPhotos: string[] = Array.isArray(club.gallery) ? club.gallery : [];
   const about: string[]         = Array.isArray(club.about)   ? club.about   : [];
@@ -350,103 +340,15 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
         </section>
       )}
 
-      {/* ─── Upcoming Activities ─────────────────────────────────────── */}
-      <section style={{ background: '#F7F7F8' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <FadeIn>
-            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-              <div>
-                <p className="kicker mb-3" style={{ color: domain.color }}>
-                  Upcoming Activities
-                </p>
-                <h2
-                  className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  2026-27 ACADEMIC YEAR
-                </h2>
-              </div>
-              {clubUpcoming.length > 0 && (
-                <span className="text-xs font-bold px-3 py-1.5 rounded-full"
-                      style={{ background: domain.accentBg, color: domain.color }}>
-                  {clubUpcoming.length} upcoming
-                </span>
-              )}
-            </div>
-          </FadeIn>
-
-          {clubUpcoming.length > 0 ? (
-            <FadeIn>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {clubUpcoming.map(act => (
-                  <ActivityCard key={act.code} act={act} completed={false} />
-                ))}
-              </div>
-            </FadeIn>
-          ) : (
-            <FadeIn>
-              <div className="rounded-2xl p-14 text-center"
-                   style={{ background: '#fff', border: '1.5px dashed #D1D1D6' }}>
-                <Calendar size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
-                <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
-                  No upcoming activities.
-                </p>
-                <p className="text-xs" style={{ color: '#A1A1AA' }}>
-                  Check back soon for new events from {club.name}.
-                </p>
-              </div>
-            </FadeIn>
-          )}
-        </div>
-      </section>
-
-      {/* ─── Completed Activities ────────────────────────────────────── */}
-      <section style={{ background: '#fff' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <FadeIn>
-            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-              <div>
-                <p className="kicker mb-3" style={{ color: domain.color }}>
-                  Past Events
-                </p>
-                <h2
-                  className="font-display font-medium leading-tight"
-                  style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  2026-27 ACADEMIC YEAR
-                </h2>
-              </div>
-              {clubCompleted.length > 0 && (
-                <span className="text-xs font-bold px-3 py-1.5 rounded-full"
-                      style={{ background: domain.accentBg, color: domain.color }}>
-                  {clubCompleted.length} completed
-                </span>
-              )}
-            </div>
-          </FadeIn>
-
-          {clubCompleted.length > 0 ? (
-            <FadeIn>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {clubCompleted.map(act => (
-                  <ActivityCard key={act.code} act={act} completed={true} />
-                ))}
-              </div>
-            </FadeIn>
-          ) : (
-            <FadeIn>
-              <div className="rounded-2xl p-14 text-center"
-                   style={{ background: '#F7F7F8', border: '1.5px dashed #D1D1D6' }}>
-                <CheckCircle2 size={32} className="mx-auto mb-4" style={{ color: '#D1D1D6' }} />
-                <p className="font-bold text-sm mb-1" style={{ color: '#71717A' }}>
-                  No completed activities yet.
-                </p>
-                <p className="text-xs" style={{ color: '#A1A1AA' }}>
-                  Past events will appear here once they conclude.
-                </p>
-              </div>
-            </FadeIn>
-          )}
-        </div>
-      </section>
+      <Suspense fallback={
+        <section style={{ background: '#F7F7F8' }}>
+          <div className="w-full px-6 sm:px-12 xl:px-20 py-20 text-center">
+            <p className="text-sm font-semibold" style={{ color: '#A1A1AA' }}>Loading activities...</p>
+          </div>
+        </section>
+      }>
+        <ClubActivities slug={slug} clubName={club.name} domainColor={domain.color} domainAccentBg={domain.accentBg} />
+      </Suspense>
 
       {/* ─── Achievements ─────────────────────────────────────────────── */}
       {achievements.length > 0 && (
