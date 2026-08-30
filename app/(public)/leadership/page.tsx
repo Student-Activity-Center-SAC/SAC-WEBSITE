@@ -36,7 +36,8 @@ export default async function LeadershipPage() {
             Student Council of KL University
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '54ch' }}>
-            The elected and appointed student leaders who run KL SAC — 25+ clubs, 5 domains, and the full breadth of campus life.
+            The elected and appointed student leaders who run KL SAC<br/>
+            25+ clubs, 5 domains, and the full breadth of campus life
           </p>
         </div>
       </section>
@@ -139,8 +140,67 @@ export default async function LeadershipPage() {
         </div>
       </section>
 
-      {/* ─── Interactive Council Grid ─────────────────────────────────── */}
-      <CouncilGrid members={members ?? []} clubs={clubs ?? []} />
+      {/* ─── Deputy Directors SAC ─────────────────────────────────────── */}
+      <section className="bg-white border-b hairline">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
+          <p className="kicker mb-8 justify-center" style={{ color: '#970003' }}>Deputy Directors, SAC</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center">
+            {/* Deputy 1 */}
+            <div className="flex flex-col items-center group">
+              <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
+                <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
+                  Deputy Director 1
+                </div>
+                {/* Replace src below when photo is available */}
+                <img src="/placeholder.png" alt="Deputy Director" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <h3 className="font-display text-xl font-medium text-foreground text-center">Deputy Director Name</h3>
+              <p className="text-red-700 font-semibold text-sm text-center">Deputy Director, SAC</p>
+            </div>
+
+            {/* Message */}
+            <div className="text-center px-2 py-8 md:py-0">
+              <p className="text-lg leading-relaxed text-foreground/70 italic font-display" style={{ letterSpacing: '-0.01em' }}>
+                "Our Deputy Directors play a pivotal role in bridging the gap between student aspirations and institutional resources. They are the driving force behind our vibrant campus life, ensuring that every club, domain, and student initiative receives the guidance and support needed to thrive and create lasting impact."
+              </p>
+            </div>
+
+            {/* Deputy 2 */}
+            <div className="flex flex-col items-center group">
+              <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
+                <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
+                  Deputy Director 2
+                </div>
+                {/* Replace src below when photo is available */}
+                <img src="/placeholder.png" alt="Deputy Director" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <h3 className="font-display text-xl font-medium text-foreground text-center">Deputy Director Name</h3>
+              <p className="text-red-700 font-semibold text-sm text-center">Deputy Director, SAC</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Interactive Council Grid (HIDDEN PENDING 2026-27 RELEASE) ── */}
+      <section className="bg-white border-b hairline">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-32 flex flex-col items-center justify-center text-center">
+          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-6">
+            <svg className="w-8 h-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 className="font-display text-3xl md:text-4xl font-medium text-foreground mb-4">
+            The SAC Student Council 2026-27
+          </h2>
+          <p className="text-xl text-red-700 font-medium tracking-wide">
+            Releasing soon......
+          </p>
+        </div>
+      </section>
+      {/* <CouncilGrid members={members ?? []} clubs={clubs ?? []} /> */}
 
       {/* ─── Governance Framework ─────────────────────────────────────── */}
       <section style={{ background: '#faf6f1' }}>

@@ -20,12 +20,12 @@ export const metadata = {
 };
 
 const JOURNEY_STEPS = [
-  { title: 'Discover',    description: 'Explore your interests across five domains and twenty-five clubs. Find the community that matches who you are — or who you want to become.' },
-  { title: 'Participate', description: 'Join activities, competitions, workshops, and programmes that go beyond the curriculum. Every participation builds real-world experience.' },
-  { title: 'Develop',     description: 'Build competencies that employers and institutions recognise — technical, creative, leadership, and interpersonal skills that define the complete professional.' },
-  { title: 'Lead',        description: 'Take responsibility within your club — as a coordinator, team leader, or domain representative. Leadership at SAC is earned through performance, not appointment.' },
-  { title: 'Create',      description: 'Build something that matters: a product, a performance, a project, a venture. SAC gives you the platform, the mentors, and the collaborators you need.' },
-  { title: 'Impact',      description: 'Carry your experience beyond campus — in your career, your community, and your commitment to the values KL SAC instilled in you.' },
+  { title: 'Explorer',     description: 'Explore your interests across five domains and twenty-five clubs. Find the community that matches who you are — or who you want to become.' },
+  { title: 'Foundation',   description: 'Join activities, competitions, workshops, and programmes that go beyond the curriculum. Every participation builds real-world experience.' },
+  { title: 'Practitioner', description: 'Build competencies that employers and institutions recognise — technical, creative, leadership, and interpersonal skills that define the complete professional.' },
+  { title: 'Leader',       description: 'Take responsibility within your club — as a coordinator, team leader, or domain representative. Leadership at SAC is earned through performance, not appointment.' },
+  { title: 'Innovator',    description: 'Build something that matters: a product, a performance, a project, a venture. SAC gives you the platform, the mentors, and the collaborators you need.' },
+  { title: 'Fellow',       description: 'Carry your experience beyond campus — in your career, your community, and your commitment to the values KL SAC instilled in you.' },
 ];
 
 export default async function HomePage() {
@@ -140,8 +140,8 @@ export default async function HomePage() {
             {[
               { value: '20+', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
               { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  borderCls: 'hairline border-b lg:border-b-0 lg:border-r' },
-              { value: statStudents   > 0 ? `${statStudents}+`       : '5000+', label: 'Students Annually', borderCls: 'hairline border-r' },
-              { value: statActivities > 0 ? `${statActivities}+`     : '300+', label: 'Annual Activities', borderCls: '' },
+              { value: statStudents   > 0 ? `${statStudents}+`       : '5500+', label: 'Students Annually', borderCls: 'hairline border-r' },
+              { value: statActivities > 0 ? `${statActivities}+`     : '350+', label: 'Annual Activities', borderCls: '' },
             ].map((s) => (
               <StatCounter
                 key={s.label}
@@ -175,15 +175,37 @@ export default async function HomePage() {
           </FadeIn>
 
           {/* ── Snake grid (desktop) ── */}
+          <style>{`
+            @keyframes journey-card-glow {
+              0%, 100% { border-color: var(--hairline); box-shadow: 0 2px 16px -6px rgba(25,19,19,0.07); transform: translateY(0); }
+              2% { border-color: #970003; box-shadow: 0 8px 30px -4px rgba(151,0,3,0.25); transform: translateY(-4px); }
+              15% { border-color: #970003; box-shadow: 0 8px 30px -4px rgba(151,0,3,0.25); transform: translateY(-4px); }
+              17%, 99% { border-color: var(--hairline); box-shadow: 0 2px 16px -6px rgba(25,19,19,0.07); transform: translateY(0); }
+            }
+            @keyframes journey-pill-glow {
+              0%, 100% { background: #fdf2f2; color: #970003; }
+              2% { background: #970003; color: #fff; }
+              15% { background: #970003; color: #fff; }
+              17%, 99% { background: #fdf2f2; color: #970003; }
+            }
+            .journey-card { animation: journey-card-glow 9s infinite; }
+            .journey-pill { animation: journey-pill-glow 9s infinite; }
+            .journey-delay-0 { animation-delay: 0s; }
+            .journey-delay-1 { animation-delay: 1.5s; }
+            .journey-delay-2 { animation-delay: 3.0s; }
+            .journey-delay-3 { animation-delay: 4.5s; }
+            .journey-delay-4 { animation-delay: 6.0s; }
+            .journey-delay-5 { animation-delay: 7.5s; }
+          `}</style>
           <div className="hidden md:block">
             {/* Row 1: steps 1–3 left→right */}
             <div className="grid grid-cols-3 gap-3">
               {JOURNEY_STEPS.slice(0, 3).map((step, i) => (
                 <FadeIn key={step.title} delay={i * 0.08}>
-                  <div className="relative rounded-2xl p-5 h-full hover-card"
+                  <div className={`relative rounded-2xl p-5 h-full hover-card journey-card journey-delay-${i}`}
                     style={{ background: '#fff', border: '1px solid var(--hairline)', boxShadow: '0 2px 16px -6px rgba(25,19,19,0.07)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="font-display tabular-nums text-xs font-semibold px-2.5 py-1 rounded-full"
+                      <span className={`font-display tabular-nums text-xs font-semibold px-2.5 py-1 rounded-full journey-pill journey-delay-${i}`}
                         style={{ background: '#fdf2f2', color: '#970003' }}>
                         {String(i + 1).padStart(2, '0')}
                       </span>
@@ -219,13 +241,13 @@ export default async function HomePage() {
                 const realIdx = 5 - i;
                 return (
                   <FadeIn key={step.title} delay={realIdx * 0.08}>
-                    <div className="relative rounded-2xl p-5 h-full hover-card"
+                    <div className={`relative rounded-2xl p-5 h-full hover-card journey-card journey-delay-${realIdx}`}
                       style={{ background: '#fff', border: '1px solid var(--hairline)', boxShadow: '0 2px 16px -6px rgba(25,19,19,0.07)' }}>
                       <div className="flex items-center justify-between mb-3">
                         {i > 0 && (
                           <span className="text-xs font-bold" style={{ color: 'rgba(151,0,3,0.25)' }}>←</span>
                         )}
-                        <span className="font-display tabular-nums text-xs font-semibold px-2.5 py-1 rounded-full ml-auto"
+                        <span className={`font-display tabular-nums text-xs font-semibold px-2.5 py-1 rounded-full ml-auto journey-pill journey-delay-${realIdx}`}
                           style={{ background: '#fdf2f2', color: '#970003' }}>
                           {String(realIdx + 1).padStart(2, '0')}
                         </span>
@@ -247,8 +269,8 @@ export default async function HomePage() {
           <div className="md:hidden grid grid-cols-2 gap-3">
             {JOURNEY_STEPS.map((step, i) => (
               <FadeIn key={step.title} delay={i * 0.06}>
-                <div className="rounded-2xl p-4" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
-                  <span className="font-display tabular-nums text-[11px] font-semibold px-2 py-0.5 rounded-full inline-block mb-2.5"
+                <div className={`rounded-2xl p-4 journey-card journey-delay-${i}`} style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
+                  <span className={`font-display tabular-nums text-[11px] font-semibold px-2 py-0.5 rounded-full inline-block mb-2.5 journey-pill journey-delay-${i}`}
                     style={{ background: '#fdf2f2', color: '#970003' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>

@@ -69,6 +69,14 @@ export default function ImageCropModal({ imageSrc, aspect, onCancel, onComplete 
         </div>
 
         <div className="relative w-full" style={{ height: '360px', background: '#111' }}>
+          <style>{`
+            .reactEasyCrop_Container img {
+              max-width: 100% !important;
+              max-height: 100% !important;
+              width: auto !important;
+              height: auto !important;
+            }
+          `}</style>
           <Cropper
             image={imageSrc}
             crop={crop}
