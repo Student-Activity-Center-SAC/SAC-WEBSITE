@@ -139,13 +139,13 @@ export default function ClubsPageClient({ clubs }: Props) {
                       className="group flex items-center gap-4 py-4 px-2 transition-colors hover:bg-gray-50 rounded-lg"
                       style={{ borderBottom: '1px solid #F4F4F5' }}>
                       {club.logo_url && (
-                        <div className="relative w-12 h-12 shrink-0">
+                        <div className="relative w-16 h-16 shrink-0">
                           <Image
                             src={club.logo_url}
                             alt={club.name}
                             fill
                             className="rounded-lg object-contain"
-                            sizes="48px"
+                            sizes="64px"
                           />
                         </div>
                       )}

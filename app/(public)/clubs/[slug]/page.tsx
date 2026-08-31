@@ -153,13 +153,9 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
               <Image
                 src={club.logo_url}
                 alt={club.name}
-                width={48}
-                height={48}
-                className="rounded-xl object-contain"
-                style={{
-                  background: club.cover_url ? 'rgba(255,255,255,0.15)' : domain.accentBg,
-                  padding: '6px',
-                }}
+                width={80}
+                height={80}
+                className="rounded-xl object-contain bg-white/5"
               />
             )}
             <span
