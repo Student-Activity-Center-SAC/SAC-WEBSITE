@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import ClubActivities from '../_components/ClubActivities';
 import Link from 'next/link';
@@ -77,6 +77,10 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
 
   const club = await getClubBySlug(slug);
   if (!club) notFound();
+  
+  if (club.slug === 'acic-tif') {
+    redirect('https://www.acickl.in/');
+  }
 
   const domain = getDomainByCode(club.domain_code);
   if (!domain) notFound();
