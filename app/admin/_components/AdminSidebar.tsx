@@ -17,23 +17,15 @@ const NAV = [
       { href: '/admin/news',          label: 'News',          icon: Newspaper    },
       { href: '/admin/stories',       label: 'Stories',       icon: BookMarked   },
       { href: '/admin/achievements',  label: 'Achievements',  icon: Trophy       },
-      { href: '/admin/activities',    label: 'Activities',    icon: Zap          },
       { href: '/admin/publications',  label: 'Publications',  icon: BookOpen     },
     ],
   },
   { group: 'Structure',
     links: [
       { href: '/admin/clubs',          label: 'Clubs',          icon: Building2    },
-      { href: '/admin/domains',        label: 'Domains',        icon: Globe        },
       { href: '/admin/leadership',     label: 'Leadership',     icon: Users        },
       { href: '/admin/advisory-board', label: 'Advisory Board', icon: Users        },
       { href: '/admin/activity-mapper',label: 'Activity Mapper',icon: Network      },
-    ],
-  },
-  { group: 'Site',
-    links: [
-      { href: '/admin/stats',         label: 'Stats',         icon: BarChart2    },
-      { href: '/admin/settings',      label: 'Settings',      icon: Settings     },
     ],
   },
 ];

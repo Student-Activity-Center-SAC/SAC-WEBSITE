@@ -30,16 +30,12 @@ export default async function AdminDashboard() {
   const { statMap, news, activities, pubs, clubs, council, stories, partners } = await getStats();
 
   const sections = [
-    { href: '/admin/stats',        label: 'Homepage Stats',  icon: BarChart2,   value: `${statMap.students ?? 0} students · ${statMap.activities ?? 0} activities`,   desc: 'Edit the numbers shown on the homepage' },
     { href: '/admin/news',         label: 'News Articles',   icon: Newspaper,   value: `${news} articles`,         desc: 'Add, edit, or remove news and updates' },
     { href: '/admin/stories',      label: 'Stories',         icon: BookMarked,  value: stories ? `${stories} stories` : 'Not seeded yet', desc: 'Manage student success stories' },
-    { href: '/admin/activities',   label: 'Activities',      icon: Zap,         value: `${activities} in database`, desc: 'Create and manage club activities' },
     { href: '/admin/clubs',        label: 'Clubs',           icon: Building2,   value: clubs ? `${clubs} clubs` : 'Not seeded yet', desc: 'Edit club names, descriptions, and competencies' },
-    { href: '/admin/domains',      label: 'Domains',         icon: Globe,       value: '5 domains',                desc: 'Edit domain taglines, philosophy, competencies, and gallery' },
     { href: '/admin/leadership',   label: 'Leadership',      icon: Users,       value: council ? `${council} members` : 'Not seeded yet', desc: 'Manage Student Council members and roles' },
     { href: '/admin/publications', label: 'Publications',    icon: BookOpen,    value: `${pubs} publications`,      desc: 'Upload magazines, reports, and PDFs' },
     { href: '/admin/partners',      label: 'Partners',        icon: Handshake,   value: partners > 0 ? `${partners} partners` : 'None added yet', desc: 'Manage partner logos shown in the homepage marquee' },
-    { href: '/admin/settings',     label: 'Site Settings',   icon: Settings,    value: 'Hero video · Page text',    desc: 'Change the homepage video, titles, and site-wide text' },
   ];
 
   return (
@@ -76,15 +72,11 @@ export default async function AdminDashboard() {
       <div className="mt-8 rounded-2xl border p-6" style={{ background: '#fff', borderColor: '#E4E4E7' }}>
         <h2 className="font-black text-base mb-3" style={{ color: '#0D0D0D' }}>Quick guide</h2>
         <ol className="list-decimal list-inside space-y-2 text-sm" style={{ color: '#71717A' }}>
-          <li>Use <strong>Homepage Stats</strong> to update the student count, club count, and activity totals shown on the public homepage.</li>
           <li>Use <strong>News</strong> to publish articles with photos — they appear on the public news page instantly.</li>
           <li>Use <strong>Stories</strong> to manage student success stories featured on the website.</li>
-          <li>Use <strong>Activities</strong> to add or edit club activities — they show on the Activities page and individual club pages.</li>
           <li>Use <strong>Clubs</strong> to edit club names, descriptions, and listed competencies.</li>
-          <li>Use <strong>Domains</strong> to edit domain taglines, philosophy, competencies, and gallery images.</li>
           <li>Use <strong>Leadership</strong> to manage Student Council members, photos, and roles.</li>
           <li>Use <strong>Publications</strong> to upload and manage PDFs (magazines, annual reports).</li>
-          <li>Use <strong>Site Settings</strong> to change the homepage hero video, page titles, and other site-wide text.</li>
         </ol>
       </div>
     </div>
