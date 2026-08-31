@@ -148,35 +148,40 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
             {domain.shortName}
           </Link>
 
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 mb-6">
             {club.logo_url && (
               <Image
                 src={club.logo_url}
                 alt={club.name}
-                width={80}
-                height={80}
-                className="rounded-xl object-contain bg-white/5"
+                width={96}
+                height={96}
+                className="rounded-2xl object-contain shrink-0"
+                style={{
+                  background: club.cover_url ? 'rgba(255,255,255,0.1)' : '#ffffff',
+                  boxShadow: club.cover_url ? 'none' : '0 4px 20px rgba(0,0,0,0.06)',
+                }}
               />
             )}
-            <span
-              className="text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full"
-              style={{
-                background: club.cover_url ? 'rgba(255,255,255,0.2)' : domain.accentBg,
-                color:      club.cover_url ? '#fff' : domain.color,
-              }}>
-              {domain.code}
-            </span>
+            <div className="flex flex-col items-start">
+              <span
+                className="text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full mb-3"
+                style={{
+                  background: club.cover_url ? 'rgba(255,255,255,0.2)' : domain.accentBg,
+                  color:      club.cover_url ? '#fff' : domain.color,
+                }}>
+                {domain.name}
+              </span>
+              <h1
+                className="font-display font-medium leading-tight"
+                style={{
+                  fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+                  color: club.cover_url ? '#fff' : '#0D0D0D',
+                  letterSpacing: '-0.025em',
+                }}>
+                {club.name}
+              </h1>
+            </div>
           </div>
-
-          <h1
-            className="font-display font-medium leading-tight mb-3"
-            style={{
-              fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
-              color: club.cover_url ? '#fff' : '#0D0D0D',
-              letterSpacing: '-0.025em',
-            }}>
-            {club.name}
-          </h1>
 
           <p className="text-lg sm:text-xl font-medium mb-6 italic"
              style={{ color: club.cover_url ? 'rgba(255,255,255,0.85)' : domain.color }}>
