@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, BarChart2, Newspaper, Zap,
   BookOpen, LogOut, ExternalLink,
-  Users, Building2, BookMarked, Settings, Globe, Trophy,
+  Users, Building2, BookMarked, Settings, Globe, Trophy, Network,
   Menu, X, Terminal,
 } from 'lucide-react';
 
@@ -27,6 +27,7 @@ const NAV = [
       { href: '/admin/domains',        label: 'Domains',        icon: Globe        },
       { href: '/admin/leadership',     label: 'Leadership',     icon: Users        },
       { href: '/admin/advisory-board', label: 'Advisory Board', icon: Users        },
+      { href: '/admin/activity-mapper',label: 'Activity Mapper',icon: Network      },
     ],
   },
   { group: 'Site',

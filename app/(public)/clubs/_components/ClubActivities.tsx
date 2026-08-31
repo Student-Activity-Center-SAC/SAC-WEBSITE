@@ -11,9 +11,10 @@ interface Props {
   clubName: string;
   domainColor: string;
   domainAccentBg: string;
+  apiCategories: string[];
 }
 
-export default async function ClubActivities({ slug, clubName, domainColor, domainAccentBg }: Props) {
+export default async function ClubActivities({ slug, clubName, domainColor, domainAccentBg, apiCategories }: Props) {
   // Fetch from public API
   const [upcomingRes, completedRes] = await Promise.all([
     fetch('https://sacactivities.kluniversity.in/api/public/activities/upcoming', { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) }).then(r => r.json()).catch(() => ({ activities: [] })),
@@ -24,7 +25,7 @@ export default async function ClubActivities({ slug, clubName, domainColor, doma
   const allCompleted = Array.isArray(completedRes.activities) ? completedRes.activities : [];
 
   const isClubActivity = (act: Activity) => {
-    return toSlug(act.club_name || '') === slug || toSlug(act.category || '') === slug;
+    return toSlug(act.club_name || '') === slug || toSlug(act.category || '') === slug || apiCategories.includes(act.category);
   };
 
   const clubUpcoming = allUpcoming.filter(isClubActivity);

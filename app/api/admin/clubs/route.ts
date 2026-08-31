@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
     purpose:         c.purpose ?? '',
     competencies:    parseJsonCol(c.competencies),
     activities_list: parseJsonCol(c.activities_list),
+    api_categories:  parseJsonCol(c.api_categories),
     sort_order:      index + 1,
   }));
 
@@ -131,6 +132,7 @@ export async function PUT(req: NextRequest) {
     gallery:         'gallery',
     competencies:    'competencies',
     activities_list: 'activities_list',
+    api_categories:  'api_categories',
   };
   for (const [formKey, dbCol] of Object.entries(jsonArrayFields)) {
     if (formKey in rest) {

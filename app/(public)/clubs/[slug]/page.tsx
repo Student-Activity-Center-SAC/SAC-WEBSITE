@@ -52,6 +52,7 @@ async function getClubBySlug(slug: string) {
     gallery:        parseJsonCol(raw.gallery).map(safeUrl).filter(Boolean) as string[],
     competencies:   parseJsonCol(raw.competencies),
     activities_list:parseJsonCol(raw.activities_list),
+    api_categories: parseJsonCol(raw.api_categories),
     purpose:        (raw.purpose ?? null) as string | null,
     cover_url:      safeUrl(raw.cover_url),
   };
@@ -94,6 +95,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   const about: string[]         = Array.isArray(club.about)   ? club.about   : [];
   const competencies: string[]  = Array.isArray(club.competencies) ? club.competencies : [];
   const activitiesList: string[]= Array.isArray(club.activities_list) ? club.activities_list : [];
+  const apiCategories: string[] = Array.isArray(club.api_categories) ? club.api_categories : [];
 
   const officeBearers = (membersRes.data ?? []).filter((m: any) => 
     m.club_lead === club.name || parseJsonCol(m.clubs_list).includes(club.name)
@@ -347,7 +349,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
           </div>
         </section>
       }>
-        <ClubActivities slug={slug} clubName={club.name} domainColor={domain.color} domainAccentBg={domain.accentBg} />
+        <ClubActivities slug={slug} clubName={club.name} domainColor={domain.color} domainAccentBg={domain.accentBg} apiCategories={apiCategories} />
       </Suspense>
 
       {/* ─── Achievements ─────────────────────────────────────────────── */}
