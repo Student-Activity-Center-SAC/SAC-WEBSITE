@@ -47,7 +47,7 @@ export default function ClubsPageClient({ clubs }: Props) {
       <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
           <p className="kicker mb-4" style={{ color: '#970003' }}>
-            20+ Clubs · {totalDomains} Domains
+            25+ Clubs · {totalDomains} Domains
           </p>
           <h1
             className="font-display font-medium leading-[1.05] mb-5"
@@ -55,7 +55,7 @@ export default function ClubsPageClient({ clubs }: Props) {
             Find Your Community.
           </h1>
           <p className="text-lg mb-10" style={{ color: '#71717A', maxWidth: '56ch' }}>
-            20+ clubs across {totalDomains} domains. Every passion, every ambition — there's a club for you at KL SAC.
+            25+ clubs across {totalDomains} domains. Every passion, every ambition — there's a club for you at KL SAC.
           </p>
 
           {/* Search */}

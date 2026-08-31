@@ -97,7 +97,7 @@ export default async function HomePage() {
           {/* Body */}
           <p className="text-lg leading-relaxed mb-10 animate-fade-up delay-100"
             style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '48ch' }}>
-            KL SAC is where 20+ clubs, {domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
+            KL SAC is where 25+ clubs, {domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
           </p>
 
           {/* CTAs */}
@@ -138,7 +138,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: '20+', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
+              { value: '25+', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
               { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  borderCls: 'hairline border-b lg:border-b-0 lg:border-r' },
               { value: statStudents   > 0 ? `${statStudents}+`       : '5500+', label: 'Students Annually', borderCls: 'hairline border-r' },
               { value: statActivities > 0 ? `${statActivities}+`     : '350+', label: 'Annual Activities', borderCls: '' },
@@ -296,7 +296,7 @@ export default async function HomePage() {
           <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
             <div>
               <p className="kicker mb-3" style={{ color: '#970003' }}>
-                {domains.length || 5} Domains · 20+ Clubs
+                {domains.length || 5} Domains · 25+ Clubs
               </p>
               <h2
                 className="font-display font-medium leading-[1.07]"
