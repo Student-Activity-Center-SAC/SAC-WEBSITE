@@ -133,9 +133,9 @@ export default function ClubsPageClient({ clubs }: Props) {
                     <Link
                       key={club.slug}
                       prefetch={false}
-                      href={club.slug === 'acic-tif' ? 'https://www.acickl.in/' : `/clubs/${club.slug}`}
-                      target={club.slug === 'acic-tif' ? '_blank' : undefined}
-                      rel={club.slug === 'acic-tif' ? 'noopener noreferrer' : undefined}
+                      href={(club.slug === 'acic-tif' || club.slug === 'acic-tbi') ? 'https://www.acickl.in/' : `/clubs/${club.slug}`}
+                      target={(club.slug === 'acic-tif' || club.slug === 'acic-tbi') ? '_blank' : undefined}
+                      rel={(club.slug === 'acic-tif' || club.slug === 'acic-tbi') ? 'noopener noreferrer' : undefined}
                       className="group flex items-center gap-4 py-4 px-2 transition-colors hover:bg-gray-50 rounded-lg"
                       style={{ borderBottom: '1px solid #F4F4F5' }}>
                       {club.logo_url && (

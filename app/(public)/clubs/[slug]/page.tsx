@@ -78,7 +78,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
   const club = await getClubBySlug(slug);
   if (!club) notFound();
   
-  if (club.slug === 'acic-tif') {
+  if (club.slug === 'acic-tif' || club.slug === 'acic-tbi') {
     redirect('https://www.acickl.in/');
   }
 

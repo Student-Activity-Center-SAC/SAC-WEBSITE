@@ -369,9 +369,9 @@ export default async function HomePage() {
                           {/* Club pills */}
                           <div className="flex flex-wrap gap-1.5 flex-1">
                             {clubs.length > 0 ? clubs.map((c) => (
-                              <Link key={c.slug} href={c.slug === 'acic-tif' ? 'https://www.acickl.in/' : `/clubs/${c.slug}`}
-                                target={c.slug === 'acic-tif' ? '_blank' : undefined}
-                                rel={c.slug === 'acic-tif' ? 'noopener noreferrer' : undefined}
+                              <Link key={c.slug} href={(c.slug === 'acic-tif' || c.slug === 'acic-tbi') ? 'https://www.acickl.in/' : `/clubs/${c.slug}`}
+                                target={(c.slug === 'acic-tif' || c.slug === 'acic-tbi') ? '_blank' : undefined}
+                                rel={(c.slug === 'acic-tif' || c.slug === 'acic-tbi') ? 'noopener noreferrer' : undefined}
                                 prefetch={false}
                                 className="text-xs font-medium px-2.5 py-1 rounded-full transition-all hover:opacity-75"
                                 style={{ background: 'rgba(25,19,19,0.055)', color: 'rgba(25,19,19,0.6)' }}>
