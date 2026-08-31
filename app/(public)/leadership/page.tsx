@@ -152,7 +152,7 @@ export default async function LeadershipPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center">
             {/* Deputy 1 */}
             <div className="flex flex-col items-center group">
-              <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
+              <div className="w-56 md:w-64 aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative shadow-sm">
                 {!deputy1?.photo ? (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
                     Deputy Director 1
@@ -175,7 +175,7 @@ export default async function LeadershipPage() {
 
             {/* Deputy 2 */}
             <div className="flex flex-col items-center group">
-              <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
+              <div className="w-56 md:w-64 aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative shadow-sm">
                 {!deputy2?.photo ? (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
                     Deputy Director 2
