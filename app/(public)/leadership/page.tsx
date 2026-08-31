@@ -153,12 +153,12 @@ export default async function LeadershipPage() {
             {/* Deputy 1 */}
             <div className="flex flex-col items-center group">
               <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
-                {!deputy1?.photo_url ? (
+                {!deputy1?.photo ? (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
                     Deputy Director 1
                   </div>
                 ) : (
-                  <img src={deputy1.photo_url} alt={deputy1.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
+                  <img src={deputy1.photo} alt={deputy1.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
@@ -176,12 +176,12 @@ export default async function LeadershipPage() {
             {/* Deputy 2 */}
             <div className="flex flex-col items-center group">
               <div className="w-full aspect-[4/5] max-w-sm rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative">
-                {!deputy2?.photo_url ? (
+                {!deputy2?.photo ? (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
                     Deputy Director 2
                   </div>
                 ) : (
-                  <img src={deputy2.photo_url} alt={deputy2.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
+                  <img src={deputy2.photo} alt={deputy2.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
