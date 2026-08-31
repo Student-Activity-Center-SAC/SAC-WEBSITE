@@ -24,9 +24,6 @@ export default function NewsForm({ initial, mode }: Props) {
   const [form, setForm] = useState({
     slug:       initial?.slug        ?? '',
     title:      initial?.title       ?? '',
-    body:       initial?.body        ?? '',
-    category:   initial?.category ? (isPresetCategory ? initial.category : 'Other') : 'General',
-    customCategory: initial?.category && !isPresetCategory ? initial.category : '',
     photo_url:  initial?.photo_url   ?? '',
   });
 
@@ -65,9 +62,7 @@ export default function NewsForm({ initial, mode }: Props) {
     e.preventDefault();
     setSaving(true);
     try {
-      const category = form.category === 'Other' ? (form.customCategory.trim() || 'Other') : form.category;
-      const { customCategory, ...rest } = form;
-      const payload = { ...rest, category, slug: form.slug || slugify(form.title) };
+      const payload = { ...form, category: 'General', slug: form.slug || slugify(form.title.split(' ').slice(0,5).join(' ')) };
       const res = await fetch('/api/admin/news', {
         method: mode === 'create' ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -87,11 +82,11 @@ export default function NewsForm({ initial, mode }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 max-w-2xl">
-      {/* Title */}
-      <Field label="Title *">
-        <input required value={form.title}
-               onChange={e => { set('title', e.target.value); if (!initial) set('slug', slugify(e.target.value)); }}
-               className={input} style={inputStyle} />
+      {/* Description */}
+      <Field label="Description *">
+        <textarea required rows={4} value={form.title}
+               onChange={e => { set('title', e.target.value); if (!initial) set('slug', slugify(e.target.value.split(' ').slice(0,5).join(' '))); }}
+               className={input} style={inputStyle} placeholder="Enter a brief description or announcement..." />
       </Field>
 
       {/* Slug */}
@@ -100,28 +95,7 @@ export default function NewsForm({ initial, mode }: Props) {
                className={input} style={inputStyle} placeholder="auto-generated from title" />
       </Field>
 
-      {/* Category */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Category">
-          <select value={form.category} onChange={e => set('category', e.target.value)}
-                  className={input} style={inputStyle}>
-            {CATEGORY_PRESETS.map(c => <option key={c}>{c}</option>)}
-          </select>
-        </Field>
-        {form.category === 'Other' && (
-          <Field label="Specify category *">
-            <input required value={form.customCategory} onChange={e => set('customCategory', e.target.value)}
-                   className={input} style={inputStyle} placeholder="e.g. Alumni, Partnership…" />
-          </Field>
-        )}
-      </div>
 
-      {/* Body */}
-      <Field label="Full article body">
-        <textarea rows={8} value={form.body} onChange={e => set('body', e.target.value)}
-                  className={input} style={inputStyle}
-                  placeholder="Use blank lines to separate paragraphs." />
-      </Field>
 
       {/* Photo */}
       <Field label="Cover photo">

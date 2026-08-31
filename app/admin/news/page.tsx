@@ -157,10 +157,7 @@ export default function NewsAdminPage() {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <span className="font-bold text-sm truncate block" style={{ color: '#0D0D0D' }}>{a.title}</span>
-                  <span className="text-xs" style={{ color: '#A1A1AA' }}>
-                    {a.category}
-                  </span>
+                  <span className="font-bold text-sm block" style={{ color: '#0D0D0D' }}>{a.title}</span>
                 </div>
 
                 {/* Homepage position dropdown — hidden on small mobile */}

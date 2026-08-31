@@ -59,17 +59,10 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
         </div>
 
         <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-center">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="kicker" style={{ color: '#970003' }}>{article.category}</span>
-          </div>
-          <h3
-            className="font-display font-medium leading-tight mb-3"
-            style={{ fontSize: 'clamp(1.25rem, 2.4vw, 1.9rem)', color: '#191313', letterSpacing: '-0.01em' }}>
+          <p
+            className="text-base sm:text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap"
+            style={{ color: '#191313' }}>
             {article.title}
-          </h3>
-          <p className="text-sm font-semibold flex items-center gap-1.5 group-hover:gap-2.5 transition-all mt-4"
-            style={{ color: '#970003' }}>
-            Read more <ArrowRight size={13} />
           </p>
         </div>
       </Link>

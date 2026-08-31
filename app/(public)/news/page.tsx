@@ -58,16 +58,9 @@ export default async function NewsPage() {
                   </div>
                   
                   <div className="p-6 flex flex-col flex-1">
-                    <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full mb-3 w-fit" style={{ background: '#FFF0F0', color: '#8B0000' }}>
-                      {article.category}
-                    </span>
-                    <h3 className="font-semibold text-lg leading-snug mb-4" style={{ color: '#0D0D0D' }}>
+                    <p className="text-base leading-relaxed text-foreground/90 whitespace-pre-wrap" style={{ color: '#0D0D0D' }}>
                       {article.title}
-                    </h3>
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="text-xs font-bold" style={{ color: '#8B0000' }}>Read full story</span>
-                      <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" style={{ color: '#8B0000' }} />
-                    </div>
+                    </p>
                   </div>
 
                 </Link>
