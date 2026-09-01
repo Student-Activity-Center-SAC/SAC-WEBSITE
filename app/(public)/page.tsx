@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'KL SAC — Student Activity Center, KL University',
   description:
-    'KL SAC is KL University\'s Student Activity Center — 24 clubs, 5 domains, one mission: to develop the complete student.',
+    'KL SAC is KL University\'s Student Activity Center — 25+ clubs, 5 domains, one mission: to develop the complete student.',
 };
 
 const JOURNEY_STEPS = [
@@ -684,7 +684,7 @@ export default async function HomePage() {
               Ready to make your university years count?
             </h2>
             <p className="text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
-              Join one of 24 clubs, participate in activities, and build experiences that will define your career.
+              Join one of 25+ clubs, participate in activities, and build experiences that will define your career.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link href="/clubs"

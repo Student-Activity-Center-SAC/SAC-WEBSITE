@@ -72,7 +72,7 @@ export const DEMO_ANNOUNCEMENTS = [
     id: 5,
     type: 'general' as const,
     title: 'Welcome to KL SAC — Academic Year 2026-27',
-    content: 'The Student Activity Center welcomes all students to the new academic year. Explore our 24 clubs across 5 domains, enroll in activities, and make your university years count. Together we grow!',
+    content: 'The Student Activity Center welcomes all students to the new academic year. Explore our 25+ clubs across 5 domains, enroll in activities, and make your university years count. Together we grow!',
     created_at: '2026-07-25T09:00:00',
     expires_at: null,
   },

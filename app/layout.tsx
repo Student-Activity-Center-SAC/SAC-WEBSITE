@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: '%s — KL SAC',
   },
   description:
-    'KL SAC is KL University\'s Student Activity Center — 24 clubs across 5 domains developing student leaders through culture, technology, wellness, service, and entrepreneurship.',
+    'KL SAC is KL University\'s Student Activity Center — 25+ clubs across 5 domains developing student leaders through culture, technology, wellness, service, and entrepreneurship.',
   keywords: [
     'KL SAC',
     'KL University',
@@ -56,12 +56,12 @@ export const metadata: Metadata = {
     siteName: 'KL SAC',
     title: 'KL SAC — Student Activity Center, KL University',
     description:
-      '24 clubs. 5 domains. One mission: to develop the complete student. KL SAC is where KL University students discover their passion, develop their potential, and lead with purpose.',
+      '25+ clubs. 5 domains. One mission: to develop the complete student. KL SAC is where KL University students discover their passion, develop their potential, and lead with purpose.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'KL SAC — Student Activity Center',
-    description: '24 clubs. 5 domains. One mission.',
+    description: '25+ clubs. 5 domains. One mission.',
   },
   robots: { index: true, follow: true },
 };
