@@ -138,10 +138,10 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: '25+', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
-              { value: domains.length > 0 ? String(domains.length)   : '5',   label: 'Learning Domains',  borderCls: 'hairline border-b lg:border-b-0 lg:border-r' },
-              { value: statStudents   > 0 ? `${statStudents}+`       : '5500+', label: 'Students Annually', borderCls: 'hairline border-r' },
-              { value: statActivities > 0 ? `${statActivities}+`     : '350+', label: 'Annual Activities', borderCls: '' },
+              { value: '25', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
+              { value: '5',   label: 'Learning Domains',  borderCls: 'hairline border-b lg:border-b-0 lg:border-r' },
+              { value: statStudents   > 0 ? String(statStudents)       : '5868', label: 'Students Annually', borderCls: 'hairline border-r' },
+              { value: statActivities > 0 ? String(statActivities)     : '437', label: 'Annual Activities', borderCls: '' },
             ].map((s) => (
               <StatCounter
                 key={s.label}

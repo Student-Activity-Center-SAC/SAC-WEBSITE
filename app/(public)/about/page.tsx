@@ -194,10 +194,10 @@ export default async function AboutPage() {
             <FadeIn delay={0.1}>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: 25,  suffix: '+', label: 'Active Clubs'      },
-                  { value: domainCount > 0 ? domainCount : 5,   suffix: '',  label: 'Learning Domains'  },
-                  { value: statsMap.students   || 5500, suffix: '+', label: 'Students Annually'  },
-                  { value: statsMap.activities || 350,  suffix: '+', label: 'Annual Activities' },
+                  { value: 25,  suffix: '', label: 'Active Clubs'      },
+                  { value: 5,   suffix: '',  label: 'Learning Domains'  },
+                  { value: statsMap.students   || 5868, suffix: '', label: 'Students Annually'  },
+                  { value: statsMap.activities || 437,  suffix: '', label: 'Annual Activities' },
                 ].map(s => (
                   <div
                     key={s.label}

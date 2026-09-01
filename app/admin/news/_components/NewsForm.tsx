@@ -36,8 +36,15 @@ export default function NewsForm({ initial, mode }: Props) {
       fd.append('file', blob, 'cover.jpg');
       fd.append('folder', 'news');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-      const d   = await res.json();
-      if (!res.ok) throw new Error(d.error);
+      const text = await res.text();
+      let d;
+      try {
+        d = JSON.parse(text);
+      } catch (e) {
+        if (res.status === 413) throw new Error('File is too large to upload (exceeds server limit).');
+        throw new Error(`Upload failed (${res.status}): Server returned an invalid response.`);
+      }
+      if (!res.ok) throw new Error(d?.error || 'Upload failed');
       set('photo_url', d.url);
       toast.success('Photo uploaded');
     } catch (err: any) {

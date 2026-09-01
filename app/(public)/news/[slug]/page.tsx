@@ -35,38 +35,42 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
 
   return (
     <>
-      <section style={{ background: '#fff', paddingTop: '92px', paddingBottom: '72px' }}>
-        <div className="max-w-4xl mx-auto px-5 sm:px-10">
-          <Link href="/news" className="inline-flex items-center gap-2 text-xs font-bold mb-8 transition-opacity hover:opacity-70" style={{ color: '#A1A1AA' }}>
-            <ArrowLeft size={12} /> All News
+      <section className="bg-white pt-24 pb-8">
+        <div className="max-w-3xl mx-auto px-5 sm:px-10">
+          <Link href="/news" className="inline-flex items-center gap-2 text-sm font-medium mb-10 text-gray-500 hover:text-gray-800 transition-colors">
+            <ArrowLeft size={16} /> All News
           </Link>
 
+          <div className="mb-8">
+            {article.category && article.category.toLowerCase() !== 'general' && (
+              <span className="inline-block px-3 py-1 mb-5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold tracking-wider uppercase">
+                {article.category}
+              </span>
+            )}
+            <h1 className="text-3xl md:text-4xl font-medium text-gray-900 leading-snug tracking-tight">
+              {article.title}
+            </h1>
+          </div>
+
           {article.photo_url && (
-            <div className="w-full rounded-2xl overflow-hidden mb-8 bg-gray-100 flex items-center justify-center">
-              <img src={article.photo_url} alt={article.title} className="w-full h-auto" />
+            <div className="w-full rounded-2xl overflow-hidden mb-8 bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm">
+              <img src={article.photo_url} alt={article.title} className="w-full max-h-[500px] object-cover" />
             </div>
           )}
-
-          <span className="kicker mb-4" style={{ color: '#8B0000' }}>
-            {article.category}
-          </span>
-          <h1
-            className="font-display font-medium leading-tight mb-5"
-            style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
-            {article.title}
-          </h1>
         </div>
       </section>
 
-      <section style={{ background: '#fff' }}>
-        <div className="max-w-4xl mx-auto px-5 sm:px-10 py-16">
+      <section className="bg-white">
+        <div className="max-w-3xl mx-auto px-5 sm:px-10 pb-16">
           <FadeIn>
-            <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: '#3F3F46' }}>
-              {article.excerpt}
-            </p>
-            <div className="flex flex-col gap-5">
+            {article.excerpt && (
+              <p className="text-lg md:text-xl font-normal leading-relaxed mb-8 text-gray-600 border-l-4 border-gray-200 pl-4">
+                {article.excerpt}
+              </p>
+            )}
+            <div className="flex flex-col gap-6 text-gray-700 text-base md:text-lg leading-relaxed">
               {(article.body ?? '').split('\n\n').map((para: string, i: number) => (
-                <p key={i} className="text-base sm:text-lg leading-relaxed" style={{ color: '#3F3F46' }}>
+                <p key={i}>
                   {para}
                 </p>
               ))}
@@ -76,25 +80,26 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
       </section>
 
       {next && next.slug !== slug && (
-        <section style={{ background: '#fff' }}>
-          <div className="max-w-4xl mx-auto px-5 sm:px-10 py-16">
+        <section className="bg-white border-t border-gray-100">
+          <div className="max-w-3xl mx-auto px-5 sm:px-10 py-16">
             <FadeIn>
-              <p className="kicker mb-5" style={{ color: '#A1A1AA' }}>
+              <p className="text-sm font-semibold tracking-wider text-gray-400 uppercase mb-5">
                 Continue Reading
               </p>
               <Link
                 href={`/news/${next.slug}`}
-                className="group flex items-center gap-5 py-6 transition-colors"
-                style={{ borderTop: '1px solid #E4E4E7', borderBottom: '1px solid #E4E4E7' }}>
+                className="group flex items-center gap-5 py-6 transition-colors border-y border-gray-100 hover:bg-gray-50 -mx-5 px-5 sm:mx-0 sm:px-5 rounded-xl">
                 <div className="flex-1">
-                  <span className="kicker mb-1" style={{ color: '#8B0000' }}>
-                    {next.category}
-                  </span>
-                  <h3 className="font-semibold text-base sm:text-lg leading-tight" style={{ color: '#0D0D0D' }}>
+                  {next.category && next.category.toLowerCase() !== 'general' && (
+                    <span className="inline-block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      {next.category}
+                    </span>
+                  )}
+                  <h3 className="font-medium text-lg md:text-xl text-gray-900 leading-tight">
                     {next.title}
                   </h3>
                 </div>
-                <ArrowRight size={20} className="shrink-0 transition-transform group-hover:translate-x-1" style={{ color: '#D1D1D6' }} />
+                <ArrowRight size={20} className="shrink-0 text-gray-300 transition-transform group-hover:translate-x-1 group-hover:text-gray-500" />
               </Link>
             </FadeIn>
           </div>
