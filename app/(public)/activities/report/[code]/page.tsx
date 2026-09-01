@@ -1,11 +1,10 @@
-'use client';
-import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, Download, Calendar, Clock, MapPin, Star,
   BookOpen, Target, ListChecks, Lightbulb, GraduationCap, Flag,
   Image as ImageIcon, FileCheck2, ImageOff,
 } from 'lucide-react';
+import { notFound } from 'next/navigation';
 
 const CDN = 'https://sacactivities.kluniversity.in';
 const asset = (p: string | null | undefined) =>
@@ -71,30 +70,20 @@ function Section({ icon: Icon, label, color, text }: { icon: any; label: string;
   );
 }
 
-export default function ReportPage({ params }: { params: Promise<{ code: string }> }) {
-  const { code } = use(params);
-  const [act, setAct]         = useState<Activity | null | undefined>(undefined);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 12000);
-    fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { signal: ctrl.signal })
-      .then(r => r.json())
-      .then(d => {
-        const found = (d.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code));
-        setAct(found ?? null);
-      })
-      .catch(() => setAct(null))
-      .finally(() => clearTimeout(t));
-    return () => clearTimeout(t);
-  }, [code]);
-
-  if (act === undefined) {
-    return (
-      <div className="flex items-center justify-center" style={{ minHeight: '70vh', paddingTop: '92px' }}>
-        <p className="text-sm font-semibold" style={{ color: '#A1A1AA' }}>Loading report…</p>
-      </div>
-    );
+export default async function ReportPage({ params }: { params: Promise<{ code: string }> }) {
+  const { code } = await params;
+  
+  let act: Activity | null = null;
+  try {
+    const res = await fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { 
+      next: { revalidate: 60 } 
+    });
+    if (res.ok) {
+      const d = await res.json();
+      act = (d.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code)) ?? null;
+    }
+  } catch (error) {
+    console.error('Failed to fetch report:', error);
   }
 
   if (!act || !act.report) {
@@ -129,12 +118,6 @@ export default function ReportPage({ params }: { params: Promise<{ code: string 
           <Link href="/activities" className="flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-60" style={{ color: '#8B0000' }}>
             <ArrowLeft size={15} /> Back to Activities
           </Link>
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90"
-            style={{ background: '#8B0000', color: '#fff' }}>
-            <Download size={14} /> Download PDF
-          </button>
         </div>
       </div>
 

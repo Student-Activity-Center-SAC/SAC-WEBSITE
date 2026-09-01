@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import ClubActivities from '../_components/ClubActivities';
+import ClubGalleryMarquee from '../_components/ClubGalleryMarquee';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -282,26 +283,11 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ slu
 
           <FadeIn>
             {galleryPhotos.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {galleryPhotos.map((src, i) => (
-                  <div
-                    key={i}
-                    className="relative rounded-xl overflow-hidden group"
-                    style={{ aspectRatio: '3/2' }}>
-                    <Image
-                      src={src}
-                      alt={`${club.name} activity photo ${i + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                ))}
-              </div>
+              <ClubGalleryMarquee photos={galleryPhotos} clubName={club.name} />
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                  {[0, 1, 2, 3, 4, 5].map(i => (
+                  {[0, 1, 2].map(i => (
                     <div
                       key={i}
                       className="relative rounded-xl overflow-hidden flex flex-col items-center justify-center gap-2"

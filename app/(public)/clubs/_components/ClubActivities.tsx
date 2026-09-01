@@ -56,13 +56,10 @@ export default function ClubActivities({ slug, clubName, domainColor, domainAcce
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
-                <p className="kicker mb-3" style={{ color: domainColor }}>
-                  Upcoming Activities
-                </p>
                 <h2
                   className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  2026-27 ACADEMIC YEAR
+                  Upcoming Activities
                 </h2>
               </div>
               {clubUpcoming.length > 0 && (
@@ -113,13 +110,10 @@ export default function ClubActivities({ slug, clubName, domainColor, domainAcce
           <FadeIn>
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
               <div>
-                <p className="kicker mb-3" style={{ color: domainColor }}>
-                  Past Events
-                </p>
                 <h2
                   className="font-display font-medium leading-tight"
                   style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#0D0D0D', letterSpacing: '-0.02em' }}>
-                  2026-27 ACADEMIC YEAR
+                  Completed Activities
                 </h2>
               </div>
               {clubCompleted.length > 0 && (
