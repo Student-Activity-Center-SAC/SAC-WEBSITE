@@ -40,6 +40,13 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
           <Link href="/news" className="inline-flex items-center gap-2 text-xs font-bold mb-8 transition-opacity hover:opacity-70" style={{ color: '#A1A1AA' }}>
             <ArrowLeft size={12} /> All News
           </Link>
+
+          {article.photo_url && (
+            <div className="w-full rounded-2xl overflow-hidden mb-8 bg-gray-100 flex items-center justify-center">
+              <img src={article.photo_url} alt={article.title} className="w-full h-auto" />
+            </div>
+          )}
+
           <span className="kicker mb-4" style={{ color: '#8B0000' }}>
             {article.category}
           </span>
@@ -48,28 +55,13 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
             style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', color: '#0D0D0D', letterSpacing: '-0.025em' }}>
             {article.title}
           </h1>
-          <div className="flex items-center gap-4 text-sm" style={{ color: '#A1A1AA' }}>
-            <time dateTime={article.date}>
-              {new Date(article.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </time>
-          </div>
         </div>
       </section>
-
-      {article.photo_url && (
-        <section style={{ background: '#F7F7F8' }}>
-          <div className="max-w-4xl mx-auto px-5 sm:px-10">
-            <div className="w-full rounded-2xl overflow-hidden" style={{ aspectRatio: '16/7' }}>
-              <img src={article.photo_url} alt={article.title} className="w-full h-full object-cover" />
-            </div>
-          </div>
-        </section>
-      )}
 
       <section style={{ background: '#fff' }}>
         <div className="max-w-4xl mx-auto px-5 sm:px-10 py-16">
           <FadeIn>
-            <p className="text-lg sm:text-xl font-semibold leading-relaxed mb-10" style={{ color: '#0D0D0D' }}>
+            <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: '#3F3F46' }}>
               {article.excerpt}
             </p>
             <div className="flex flex-col gap-5">

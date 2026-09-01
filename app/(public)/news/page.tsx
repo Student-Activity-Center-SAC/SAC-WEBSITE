@@ -47,9 +47,9 @@ export default async function NewsPage() {
                   className="group rounded-2xl overflow-hidden flex flex-col bg-white transition-shadow hover:shadow-lg"
                   style={{ border: '1px solid #E4E4E7' }}>
                   
-                  <div className="h-48 relative overflow-hidden" style={{ background: 'rgba(139,0,0,0.05)' }}>
+                  <div className="relative overflow-hidden w-full flex items-center justify-center bg-gray-100">
                     {article.photo_url ? (
-                      <img src={article.photo_url} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                      <img src={article.photo_url} alt={article.title} className="w-full h-auto transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="font-black text-4xl" style={{ color: '#E4E4E7' }}>KL</span>

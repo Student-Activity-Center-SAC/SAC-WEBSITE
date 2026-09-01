@@ -99,8 +99,8 @@
     -webkit-font-smoothing: antialiased;
     /* Prevent rubber-band overscroll on Android/Firefox; JS handles iOS Safari */
     overscroll-behavior: none;
-    /* ↑ Raise base font-size: all rem values scale proportionally across site */
-    font-size: 17px;
+    /* ↑ Set base font-size to 15px to scale down all rem values across site by ~12% */
+    font-size: 15px;
   }
 
   body {
@@ -166,28 +166,6 @@
   background: currentColor;
   opacity: 0.5;
 }
-
-/* ─── Content Typography Scale Upgrade ───────────────────────────────────── */
-/*
- * Override Tailwind's default text-* utilities to use a larger, more
- * readable scale. Headings (clamp-based) are unchanged — only body/
- * content text is affected.
- */
-
-/* text-xs: was 12px → now 13.5px */
-.text-xs { font-size: 0.8rem; }
-
-/* text-sm: was 14px → now 15.5px */
-.text-sm { font-size: 0.91rem; }
-
-/* text-base: was 16px → now 17px (inherits from html font-size) */
-.text-base { font-size: 1rem; }
-
-/* text-lg: was 18px → now 19px */
-.text-lg { font-size: 1.12rem; }
-
-/* text-xl: was 20px → now 21px */
-.text-xl { font-size: 1.24rem; }
 
 /* Utility: replaces inline text-[13px] / text-[15px] hardcoded values */
 .text-content-sm  { font-size: 0.88rem;  line-height: 1.7; }
