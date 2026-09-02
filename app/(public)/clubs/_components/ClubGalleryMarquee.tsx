@@ -33,16 +33,21 @@ export default function ClubGalleryMarquee({ photos, clubName }: { photos: strin
     if (baseItems.length === 0) return;
     
     let currentX = x.get();
+    const singleSetWidth = baseItems.length * (itemWidth + gap);
     
     if (!isHovered && !isDragging) {
       currentX -= speed;
-    }
-    
-    const singleSetWidth = baseItems.length * (itemWidth + gap);
-    
-    if (singleSetWidth > 0) {
-      const newX = wrap(-singleSetWidth, 0, currentX);
-      x.set(newX);
+      if (singleSetWidth > 0) {
+        x.set(wrap(-singleSetWidth, 0, currentX));
+      }
+    } else {
+      // During hover or drag, only snap back if out of bounds
+      if (singleSetWidth > 0) {
+        const wrapped = wrap(-singleSetWidth, 0, currentX);
+        if (wrapped !== currentX) {
+          x.set(wrapped);
+        }
+      }
     }
   });
 
