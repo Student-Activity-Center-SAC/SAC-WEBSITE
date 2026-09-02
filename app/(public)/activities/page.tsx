@@ -5,7 +5,7 @@ import { Calendar, MapPin, Clock, Star, ExternalLink, FileText, ImageOff } from 
 
 import { Activity, ActivityCard, DOMAIN_COLORS, DOMAIN_LABEL } from '../_components/ActivityCard';
 
-const UPSTREAM = 'https://sacactivities.kluniversity.in/api/public/activities';
+const UPSTREAM = '/api/public/activities';
 
 function fetchWithTimeout(url: string, ms = 12000): Promise<Response> {
   const ctrl = new AbortController();

@@ -75,8 +75,9 @@ export default async function ReportPage({ params }: { params: Promise<{ code: s
   
   let act: Activity | null = null;
   try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const res = await fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { 
-      next: { revalidate: 60 } 
+      cache: 'no-store' 
     });
     if (res.ok) {
       const d = await res.json();
