@@ -70,23 +70,18 @@ function Section({ icon: Icon, label, color, text }: { icon: any; label: string;
   );
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function ReportPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   
   let act: Activity | null = null;
   try {
-    const dataStr = await new Promise<string>((resolve, reject) => {
-      const https = require('https');
-      https.get('https://sacactivities.kluniversity.in/api/public/activities/completed', { rejectUnauthorized: false }, (res: any) => {
-        const chunks: Buffer[] = [];
-        res.on('data', (chunk: Buffer) => chunks.push(chunk));
-        res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-      }).on('error', reject);
-    });
-    const d = JSON.parse(dataStr);
-    act = (d.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code)) ?? null;
+    const { db } = await import('@/lib/query-builder');
+    const { data } = await db.from('activities').select('*').eq('code', decodeURIComponent(code)).single();
+    if (data) act = data as Activity;
   } catch (error) {
-    console.error('Failed to fetch report:', error);
+    console.error('Failed to fetch report from DB:', error);
   }
 
   if (!act || !act.report) {
