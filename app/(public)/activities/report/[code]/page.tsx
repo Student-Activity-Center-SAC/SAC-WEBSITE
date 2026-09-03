@@ -77,11 +77,11 @@ export default async function ReportPage({ params }: { params: Promise<{ code: s
   
   let act: Activity | null = null;
   try {
-    const { db } = await import('@/lib/query-builder');
-    const { data } = await db.from('activities').select('*').eq('code', decodeURIComponent(code)).single();
-    if (data) act = data as Activity;
+    const { fetchSamamActivities } = await import('@/lib/samam-api');
+    const data = await fetchSamamActivities('/api/public/activities/completed');
+    act = (data.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code)) ?? null;
   } catch (error) {
-    console.error('Failed to fetch report from DB:', error);
+    console.error('Failed to fetch report from SAMAM:', error);
   }
 
   if (!act || !act.report) {
