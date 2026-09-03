@@ -47,7 +47,7 @@ export default async function HomePage() {
   const achievements  = (achievementsRes.data ?? []) as any[];
   const settingsMap: Record<string, string> = {};
   (settingsRes.data ?? []).forEach((s: any) => { if (s.value) settingsMap[s.key] = s.value; });
-  const heroVideoUrl = settingsMap['hero_video_url'] || 'https://pub-2172d3960f064d32b43c4d6ba9a3135d.r2.dev/hero.mp4';
+  const heroVideoUrl = settingsMap['hero_video_url'] || 'https://pub-2172d3960f064d32b43c4d6ba9a3135d.r2.dev/final%20export.mp4';
   const featuredStory = stories.find(s => s.homepage_order === 1) ?? null;
   const sideStories   = stories.filter(s => (s.homepage_order ?? 0) > 1).slice(0, 2);
 
