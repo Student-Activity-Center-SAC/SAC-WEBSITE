@@ -75,14 +75,16 @@ export default async function ReportPage({ params }: { params: Promise<{ code: s
   
   let act: Activity | null = null;
   try {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    const res = await fetch('https://sacactivities.kluniversity.in/api/public/activities/completed', { 
-      cache: 'no-store' 
+    const dataStr = await new Promise<string>((resolve, reject) => {
+      const https = require('https');
+      https.get('https://sacactivities.kluniversity.in/api/public/activities/completed', { rejectUnauthorized: false }, (res: any) => {
+        let body = '';
+        res.on('data', (chunk: string) => { body += chunk; });
+        res.on('end', () => resolve(body));
+      }).on('error', reject);
     });
-    if (res.ok) {
-      const d = await res.json();
-      act = (d.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code)) ?? null;
-    }
+    const d = JSON.parse(dataStr);
+    act = (d.activities ?? []).find((a: Activity) => a.code === decodeURIComponent(code)) ?? null;
   } catch (error) {
     console.error('Failed to fetch report:', error);
   }
