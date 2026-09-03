@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { FadeIn } from './FadeIn';
 
-const UPSTREAM = 'https://sacactivities.kluniversity.in/api/public/activities/upcoming';
+const UPSTREAM_UPCOMING = 'https://sacactivities.kluniversity.in/api/public/activities/upcoming';
+const UPSTREAM_COMPLETED = 'https://sacactivities.kluniversity.in/api/public/activities/completed';
 
 const DOMAIN_COLORS: Record<string, string> = {
   TEC: '#3B82F6', LCH: '#8B5CF6', HWB: '#10B981', ESO: '#F59E0B', IIE: '#EF4444',
@@ -23,6 +24,7 @@ interface Activity {
   club_name?: string;
   venue: string;
   activity_date: string;
+  status?: 'upcoming' | 'completed';
 }
 
 function fetchWithTimeout(url: string, ms = 12000): Promise<Response> {
@@ -55,20 +57,26 @@ export function UpcomingActivitiesHome() {
   const [calMonth, setCalMonth] = useState(today.getMonth());
 
   useEffect(() => {
-    fetchWithTimeout(UPSTREAM)
-      .then(r => r.json())
-      .then(d => {
-        const acts: Activity[] = Array.isArray(d.activities) ? d.activities : [];
-        setActivities(acts);
-        if (acts.length > 0) {
-          const first = new Date(acts[0].activity_date);
+    Promise.all([
+      fetchWithTimeout(UPSTREAM_UPCOMING).then(r => r.json()).catch(() => ({ activities: [] })),
+      fetchWithTimeout(UPSTREAM_COMPLETED).then(r => r.json()).catch(() => ({ activities: [] }))
+    ])
+      .then(([upcomingData, completedData]) => {
+        const upacts: Activity[] = Array.isArray(upcomingData.activities) ? upcomingData.activities : [];
+        const comacts: Activity[] = Array.isArray(completedData.activities) ? completedData.activities : [];
+        
+        const up = upacts.map(a => ({ ...a, status: 'upcoming' as const }));
+        const com = comacts.map(a => ({ ...a, status: 'completed' as const }));
+        
+        setActivities([...up, ...com]);
+        if (up.length > 0) {
+          const first = new Date(up[0].activity_date);
           if (!isNaN(first.getTime())) {
             setCalYear(first.getFullYear());
             setCalMonth(first.getMonth());
           }
         }
       })
-      .catch(() => setActivities([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -147,7 +155,10 @@ export function UpcomingActivitiesHome() {
                 {calDays.map((day, i) => {
                   if (!day) return <div key={`e-${i}`} className="h-11" />;
                   const dateKey = toDateKey(calYear, calMonth, day);
-                  const hasAct  = !!actsByDate[dateKey];
+                  const dayActs = actsByDate[dateKey] || [];
+                  const hasAct  = dayActs.length > 0;
+                  const hasUpcoming = dayActs.some(a => a.status === 'upcoming');
+                  const hasCompleted = dayActs.some(a => a.status === 'completed');
                   const isToday = dateKey === todayKey;
                   const isPast  = dateKey < todayKey;
 
@@ -163,12 +174,14 @@ export function UpcomingActivitiesHome() {
                       <div
                         className="w-11 h-11 rounded-full flex items-center justify-center text-sm transition-all select-none"
                         style={{
-                          background: hasAct
+                          background: hasUpcoming
                             ? '#970003'
-                            : isToday
-                              ? 'rgba(151,0,3,0.09)'
-                              : 'transparent',
-                          color: hasAct
+                            : hasCompleted
+                              ? '#10B981'
+                              : isToday
+                                ? 'rgba(151,0,3,0.09)'
+                                : 'transparent',
+                          color: (hasUpcoming || hasCompleted)
                             ? '#fff'
                             : isPast && !isToday
                               ? 'rgba(25,19,19,0.18)'
@@ -178,7 +191,14 @@ export function UpcomingActivitiesHome() {
                           fontWeight: hasAct || isToday ? 600 : 400,
                           cursor: hasAct ? 'default' : 'default',
                         }}>
-                        {day}
+                        {hasCompleted && !hasUpcoming ? (
+                          <div className="flex items-center justify-center gap-0.5">
+                            <span>{day}</span>
+                            <Check size={10} strokeWidth={4} />
+                          </div>
+                        ) : (
+                          day
+                        )}
                       </div>
 
                       {/* Hover tooltip */}
@@ -222,10 +242,16 @@ export function UpcomingActivitiesHome() {
               </div>
 
               {/* Legend */}
-              <div className="px-6 py-4 flex items-center gap-5" style={{ borderTop: '1px solid var(--hairline)' }}>
+              <div className="px-6 py-4 flex flex-wrap items-center gap-5" style={{ borderTop: '1px solid var(--hairline)' }}>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full" style={{ background: '#970003' }} />
-                  <span className="text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>Activity</span>
+                  <span className="text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>Upcoming</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full flex items-center justify-center" style={{ background: '#10B981', color: '#fff' }}>
+                     <Check size={8} strokeWidth={4} />
+                  </div>
+                  <span className="text-xs" style={{ color: 'rgba(25,19,19,0.4)' }}>Completed</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full" style={{ background: 'rgba(151,0,3,0.09)', border: '1px solid rgba(151,0,3,0.25)' }} />
@@ -261,12 +287,12 @@ export function UpcomingActivitiesHome() {
                       </div>
                     </div>
                   ))
-                ) : activities.length === 0 ? (
+                ) : activities.filter(a => a.status === 'upcoming').length === 0 ? (
                   <div className="py-16 text-center xl:col-span-2" style={{ color: 'rgba(25,19,19,0.4)' }}>
                     <p className="font-display font-medium text-xl mb-1">No upcoming activities</p>
                     <p className="text-sm">Check back soon or visit the activities page.</p>
                   </div>
-                ) : activities.slice(0, 6).map(act => {
+                ) : activities.filter(a => a.status === 'upcoming').slice(0, 6).map(act => {
                   const date  = new Date(act.activity_date);
                   const color = DOMAIN_COLORS[act.domain] ?? '#970003';
                   const meta  = [act.club_name || act.category, act.venue].filter(Boolean).join(' · ');
