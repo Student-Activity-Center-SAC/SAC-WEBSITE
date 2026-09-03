@@ -78,9 +78,9 @@ export default async function ReportPage({ params }: { params: Promise<{ code: s
     const dataStr = await new Promise<string>((resolve, reject) => {
       const https = require('https');
       https.get('https://sacactivities.kluniversity.in/api/public/activities/completed', { rejectUnauthorized: false }, (res: any) => {
-        let body = '';
-        res.on('data', (chunk: string) => { body += chunk; });
-        res.on('end', () => resolve(body));
+        const chunks: Buffer[] = [];
+        res.on('data', (chunk: Buffer) => chunks.push(chunk));
+        res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
       }).on('error', reject);
     });
     const d = JSON.parse(dataStr);
