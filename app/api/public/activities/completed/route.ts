@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import https from 'https';
 
-export async function GET() {
-  return new Promise((resolve) => {
+export async function GET(): Promise<Response> {
+  return new Promise<Response>((resolve) => {
     https.get('https://sacactivities.kluniversity.in/api/public/activities/completed', { rejectUnauthorized: false }, (res) => {
       let data = '';
       res.on('data', chunk => { data += chunk; });
