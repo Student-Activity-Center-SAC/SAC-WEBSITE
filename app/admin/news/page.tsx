@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Pencil, Image as ImageIcon, ArrowUp, ArrowDown, AlertCircle, Star, Home } from 'lucide-react';
+import { Plus, Trash2, Pencil, Image as ImageIcon, ArrowUp, ArrowDown, AlertCircle, Star } from 'lucide-react';
 
 export default function NewsAdminPage() {
   const [articles, setArticles]         = useState<any[]>([]);
@@ -162,7 +162,6 @@ export default function NewsAdminPage() {
 
                 {/* Homepage position dropdown — hidden on small mobile */}
                 <div className="hidden sm:flex items-center gap-1 shrink-0">
-                  <Home size={11} style={{ color: hp > 0 ? '#8B0000' : '#A1A1AA' }} />
                   <select
                     value={hp}
                     onChange={e => setHomepagePos(a.slug, parseInt(e.target.value))}
