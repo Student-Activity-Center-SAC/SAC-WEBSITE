@@ -35,71 +35,132 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
 
   return (
     <>
-      <section className="bg-white pt-24 pb-8">
-        <div className="max-w-3xl mx-auto px-5 sm:px-10">
-          <Link href="/news" className="inline-flex items-center gap-2 text-sm font-medium mb-10 text-gray-500 hover:text-gray-800 transition-colors">
-            <ArrowLeft size={16} /> All News
-          </Link>
-
-          <div className="mb-8">
-            {article.category && article.category.toLowerCase() !== 'general' && (
-              <span className="inline-block px-3 py-1 mb-5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold tracking-wider uppercase">
-                {article.category}
-              </span>
-            )}
-            <h1 className="text-3xl md:text-4xl font-medium text-gray-900 leading-snug tracking-tight">
-              {article.title}
-            </h1>
+      {/* ── Hero Image (full-width, top) ── */}
+      {article.photo_url && (
+        <div className="w-full" style={{ paddingTop: '72px', background: '#f5f0eb' }}>
+          <div className="max-w-2xl mx-auto px-5 sm:px-10 pt-8 pb-0">
+            <div className="w-full rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(25,19,19,0.08)' }}>
+              <img
+                src={article.photo_url}
+                alt={article.title}
+                className="w-full object-cover"
+                style={{ maxHeight: '400px', objectPosition: 'center' }}
+              />
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* ── Header ── */}
+      <section style={{ background: article.photo_url ? '#f5f0eb' : '#f5f0eb', paddingTop: article.photo_url ? '24px' : '100px', paddingBottom: '28px' }}>
+        <div className="max-w-2xl mx-auto px-5 sm:px-10">
+
+          {!article.photo_url && (
+            <Link
+              href="/news"
+              className="inline-flex items-center gap-1.5 mb-8 font-semibold transition-opacity hover:opacity-70"
+              style={{ color: '#970003', fontSize: '0.75rem' }}>
+              <ArrowLeft size={12} /> All News
+            </Link>
+          )}
 
           {article.photo_url && (
-            <div className="w-full rounded-2xl overflow-hidden mb-8 bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm">
-              <img src={article.photo_url} alt={article.title} className="w-full max-h-[500px] object-cover" />
-            </div>
+            <Link
+              href="/news"
+              className="inline-flex items-center gap-1.5 mb-5 font-semibold transition-opacity hover:opacity-70"
+              style={{ color: '#970003', fontSize: '0.75rem' }}>
+              <ArrowLeft size={12} /> All News
+            </Link>
+          )}
+
+          {/* Category */}
+          {article.category && article.category.toLowerCase() !== 'general' && (
+            <span
+              className="inline-block px-2.5 py-0.5 mb-3 rounded-full font-bold tracking-[0.12em] uppercase"
+              style={{ background: '#97000312', color: '#970003', fontSize: '0.65rem' }}>
+              {article.category}
+            </span>
+          )}
+
+          {/* Title — much smaller */}
+          <h1
+            className="font-display font-medium leading-snug mb-2"
+            style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.65rem)', color: '#191313', letterSpacing: '-0.018em' }}>
+            {article.title}
+          </h1>
+
+          {/* Date */}
+          {article.date && (
+            <p style={{ fontSize: '0.72rem', color: 'rgba(25,19,19,0.38)', fontWeight: 500 }}>
+              {new Date(article.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
           )}
         </div>
       </section>
 
+      {/* ── Body ── */}
       <section className="bg-white">
-        <div className="max-w-3xl mx-auto px-5 sm:px-10 pb-16">
+        <div className="max-w-2xl mx-auto px-5 sm:px-10 py-8">
           <FadeIn>
+            {/* Excerpt / lead */}
             {article.excerpt && (
-              <p className="text-lg md:text-xl font-normal leading-relaxed mb-8 text-gray-600 border-l-4 border-gray-200 pl-4">
+              <p
+                className="leading-relaxed mb-5 font-medium"
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'rgba(25,19,19,0.7)',
+                  borderLeft: '3px solid #97000340',
+                  paddingLeft: '12px',
+                }}>
                 {article.excerpt}
               </p>
             )}
-            <div className="flex flex-col gap-6 text-gray-700 text-base md:text-lg leading-relaxed">
-              {(article.body ?? '').split('\n\n').map((para: string, i: number) => (
-                <p key={i}>
-                  {para}
-                </p>
+
+            {/* Body paragraphs */}
+            <div
+              className="flex flex-col gap-4"
+              style={{ color: 'rgba(25,19,19,0.6)', fontSize: '0.8rem', lineHeight: '1.8' }}>
+              {(article.body ?? '').split('\n\n').filter(Boolean).map((para: string, i: number) => (
+                <p key={i}>{para}</p>
               ))}
             </div>
           </FadeIn>
         </div>
       </section>
 
+      {/* ── Next Article ── */}
       {next && next.slug !== slug && (
-        <section className="bg-white border-t border-gray-100">
-          <div className="max-w-3xl mx-auto px-5 sm:px-10 py-16">
+        <section style={{ background: '#f5f0eb', borderTop: '1px solid rgba(25,19,19,0.08)' }}>
+          <div className="max-w-2xl mx-auto px-5 sm:px-10 py-8">
             <FadeIn>
-              <p className="text-sm font-semibold tracking-wider text-gray-400 uppercase mb-5">
+              <p
+                className="font-bold tracking-[0.16em] uppercase mb-3"
+                style={{ fontSize: '0.65rem', color: 'rgba(25,19,19,0.3)' }}>
                 Continue Reading
               </p>
               <Link
                 href={`/news/${next.slug}`}
-                className="group flex items-center gap-5 py-6 transition-colors border-y border-gray-100 hover:bg-gray-50 -mx-5 px-5 sm:mx-0 sm:px-5 rounded-xl">
-                <div className="flex-1">
+                className="group flex items-center gap-4 p-4 rounded-xl transition-all hover:shadow-md"
+                style={{ background: '#fff', border: '1px solid rgba(25,19,19,0.08)' }}>
+                <div className="flex-1 min-w-0">
                   {next.category && next.category.toLowerCase() !== 'general' && (
-                    <span className="inline-block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    <span
+                      className="font-bold uppercase tracking-widest mb-1 block"
+                      style={{ fontSize: '0.6rem', color: '#970003' }}>
                       {next.category}
                     </span>
                   )}
-                  <h3 className="font-medium text-lg md:text-xl text-gray-900 leading-tight">
+                  <h3
+                    className="font-medium leading-snug"
+                    style={{ fontSize: '0.85rem', color: '#191313' }}>
                     {next.title}
                   </h3>
                 </div>
-                <ArrowRight size={20} className="shrink-0 text-gray-300 transition-transform group-hover:translate-x-1 group-hover:text-gray-500" />
+                <ArrowRight
+                  size={15}
+                  className="shrink-0 transition-transform group-hover:translate-x-1"
+                  style={{ color: '#97000350' }}
+                />
               </Link>
             </FadeIn>
           </div>
