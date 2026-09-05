@@ -46,34 +46,6 @@ export default async function LeadershipPage() {
         </div>
       </section>
 
-      {/* ─── Group Photo (Hidden) ─────────────────────────────────────── */}
-      {/* 
-      <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-10">
-          <p className="kicker mb-5" style={{ color: '#970003' }}>
-            Student Council Group Photo
-          </p>
-
-          <div
-            className="w-full rounded-3xl overflow-hidden flex flex-col items-center justify-center gap-4"
-            style={{
-              aspectRatio: '16/6',
-              background: 'linear-gradient(135deg, #8B000010 0%, #8B000005 100%)',
-              border: '2px dashed #8B000025',
-            }}>
-            <Camera size={40} style={{ color: '#8B000035' }} />
-            <div className="text-center">
-              <p className="font-black text-sm tracking-wider uppercase" style={{ color: '#8B000040' }}>
-                Complete Student Council — Group Photo
-              </p>
-              <p className="text-xs mt-1" style={{ color: '#A1A1AA' }}>
-                Coming soon
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      */}
 
       {/* ─── University Advisory Board ────────────────────────────────── */}
       <section className="bg-paper border-b hairline">

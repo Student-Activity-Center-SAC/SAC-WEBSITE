@@ -188,9 +188,9 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
     : null;
 
   const [category,    setCategory]    = useState<Category | null>(initCat);
-  const [facultyRole, setFacultyRole] = useState<string>(initial?.role && FACULTY_ROLES.includes(initial.role) ? initial.role : 'Faculty Mentor');
-  const [secRole,     setSecRole]     = useState<string>(initial?.role && (initial.role.includes('Joint') ? 'Joint Secretary' : 'Secretary') || 'Secretary');
-  const [clubRole,    setClubRole]    = useState<string>(initial?.role && CLUB_ROLES.includes(initial.role) ? initial.role : 'Club Lead');
+  const [facultyRole, setFacultyRole] = useState<string>((initial?.role && FACULTY_ROLES.includes(initial.role)) ? initial.role : 'Faculty Mentor');
+  const [secRole,     setSecRole]     = useState<string>((initial?.role && typeof initial.role === 'string' && initial.role.includes('Joint')) ? 'Joint Secretary' : 'Secretary');
+  const [clubRole,    setClubRole]    = useState<string>((initial?.role && CLUB_ROLES.includes(initial.role)) ? initial.role : 'Club Lead');
   const [clubName,    setClubName]    = useState<string>(initial?.club_lead ?? '');
   const [name,        setName]        = useState(initial?.name     ?? '');
   const [subtitle,    setSubtitle]    = useState(initial?.subtitle ?? '');
