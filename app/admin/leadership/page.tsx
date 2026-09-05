@@ -5,8 +5,12 @@ import toast from 'react-hot-toast';
 import { Plus, Trash2, Pencil, User, GripVertical } from 'lucide-react';
 
 const ROLE_ORDER = [
-  'Deputy Director', 'President', 'Vice President', 'Secretary',
-  'Joint Secretary', 'Club Lead', 'Faculty Mentor', 'Faculty In-Charge',
+  'Deputy Director', 'President', 'Vice President',
+  'Domain Secretary', 'Domain Joint Secretary',
+  'Division Secretary', 'Division Joint Secretary',
+  'Faculty Mentor', 'Faculty In-Charge',
+  'Club Lead', 'Club Co-Lead',
+  'Secretary', 'Joint Secretary' // legacy fallback
 ];
 
 export default function LeadershipAdminPage() {

@@ -39,54 +39,59 @@ function MemberCard({
     : '?';
 
   return (
-    <div className={`group rounded-lg overflow-hidden border hairline bg-paper flex flex-col ${isPlaceholder ? 'opacity-40' : ''}`}>
-
+    <div className={`group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${isPlaceholder ? 'opacity-50 grayscale' : ''}`}>
       {/* Portrait photo — aspect-[4/5] */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/5' }}>
+      <div className="relative w-full overflow-hidden bg-gray-50" style={{ aspectRatio: '4/5' }}>
         {member?.photo ? (
           <img
             src={member.photo}
             alt={member.name}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-top transition-[filter] duration-500 sm:grayscale sm:group-hover:grayscale-0"
+            className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
           <div
-            className="absolute inset-0 flex items-center justify-center font-black text-2xl"
+            className="absolute inset-0 flex items-center justify-center font-black text-3xl"
             style={{
               background: isPlaceholder
-                ? 'var(--surface)'
-                : 'linear-gradient(135deg,#8B000012 0%,#8B000005 100%)',
-              color: '#8B0000',
+                ? '#F4F4F5'
+                : 'linear-gradient(135deg,#8B000010 0%,#8B000002 100%)',
+              color: isPlaceholder ? '#D4D4D8' : '#8B0000',
             }}>
             {isPlaceholder ? '' : initials}
           </div>
         )}
+        {/* Subtle gradient overlay for premium feel */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       </div>
 
       {/* Info */}
-      <div className="px-4 py-4 flex flex-col items-center text-center gap-0.5">
-        <p className="font-semibold text-sm leading-snug text-foreground">
+      <div className="px-5 py-5 flex flex-col gap-1 flex-1 relative bg-white">
+        <p className="font-display font-semibold text-base sm:text-lg leading-tight text-foreground">
           {member?.name ?? nameFallback ?? 'Name TBA'}
         </p>
-        <p className="kicker text-red-700" style={{ fontSize: '9px' }}>
+        <p className="text-xs sm:text-sm font-semibold tracking-wide" style={{ color: '#970003' }}>
           {member?.role ?? roleFallback ?? '—'}
         </p>
-        {member?.subtitle && (
-          <p className="text-[10px] mt-0.5 leading-snug text-foreground/50">
-            {member.subtitle}
+        {(member?.subtitle || member?.club_lead || member?.designation) && (
+          <p className="text-xs mt-1 leading-relaxed text-foreground/60 line-clamp-2">
+            {member.subtitle || member.club_lead || member.designation}
           </p>
         )}
+        
+        {/* Spacer to push LinkedIn button to bottom if needed */}
+        <div className="flex-1" />
+
         {member?.linkedin && (
           <Link
             href={member.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 w-6 h-6 rounded-full flex items-center justify-center transition-opacity hover:opacity-70"
-            style={{ background: '#0A66C2', color: '#fff' }}
-            aria-label="LinkedIn">
-            <Linkedin size={11} />
+            className="mt-4 inline-flex items-center gap-1.5 w-fit px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all hover:opacity-80"
+            style={{ background: '#0A66C215', color: '#0A66C2' }}
+            aria-label={`LinkedIn profile for ${member.name}`}>
+            <Linkedin size={12} fill="currentColor" /> LinkedIn
           </Link>
         )}
       </div>
@@ -97,10 +102,10 @@ function MemberCard({
 // ─── Section label ────────────────────────────────────────────────────────────
 function SectionLabel({ label, sub }: { label: string; sub?: string }) {
   return (
-    <div className="mb-10">
+    <div className="mb-12">
       <p className="kicker mb-3" style={{ color: '#970003' }}>{label}</p>
       {sub && (
-        <h2 className="font-display font-medium leading-tight text-foreground"
+        <h2 className="font-display font-medium leading-tight text-foreground max-w-2xl"
             style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', letterSpacing: '-0.02em' }}>
           {sub}
         </h2>
@@ -110,111 +115,124 @@ function SectionLabel({ label, sub }: { label: string; sub?: string }) {
 }
 
 // ─── Shared grid wrapper ──────────────────────────────────────────────────────
-const GRID = 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10';
+const GRID = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8';
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function CouncilGrid({ members, clubs }: { members: Member[]; clubs: ClubRow[] }) {
   const byRole = (role: string) => members.filter(m => m.role === role);
+  
+  // Custom grouping for Domains/Divisions/Clubs
+  const domainLeaders = members.filter(m => m.role === 'Domain Secretary' || m.role === 'Domain Joint Secretary');
+  const divisionLeaders = members.filter(m => m.role === 'Division Secretary' || m.role === 'Division Joint Secretary');
+  const clubLeads = members.filter(m => m.role === 'Club Lead' || m.role === 'Club Co-Lead');
 
   const presidents = byRole('President');
   const vps        = byRole('Vice President');
-  const secs       = byRole('Secretary');
-  const jsecs      = byRole('Joint Secretary');
   const mentors    = byRole('Faculty Mentor');
   const incharges  = byRole('Faculty In-Charge');
-  const deputyDirs = byRole('Deputy Director');
 
   return (
     <>
-      {/* ── Deputy Directors ─────────────────────────────────────────── */}
+      {/* ── Executive Leadership (Presidents) ──────────────────────── */}
       <section className="bg-paper border-b hairline">
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <SectionLabel label="Deputy Directors" sub="Deputy Directors of SAC." />
-          <div className={GRID}>
-            {deputyDirs.length > 0
-              ? deputyDirs.map(m => <MemberCard key={m.id} member={m} />)
-              : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Deputy Director" />)}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Faculty Mentors & In-Charges ─────────────────────────────── */}
-      <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <SectionLabel label="Faculty" sub="Mentors & In-Charges." />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div>
-              <p className="kicker mb-6" style={{ color: '#A1A1AA' }}>Faculty Mentors</p>
-              <div className={GRID}>
-                {mentors.length > 0
-                  ? mentors.map(m => <MemberCard key={m.id} member={m} />)
-                  : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" />)}
-              </div>
-            </div>
-            <div>
-              <p className="kicker mb-6" style={{ color: '#A1A1AA' }}>Faculty In-Charges</p>
-              <div className={GRID}>
-                {incharges.length > 0
-                  ? incharges.map(m => <MemberCard key={m.id} member={m} />)
-                  : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" />)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Presidents ──────────────────────────────────────────────── */}
-      <section className="bg-paper border-b hairline">
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-          <SectionLabel label="Student Council Leadership" sub="Presidents of KL SAC." />
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+          <SectionLabel label="Executive Leadership" sub="Presidents of KL SAC." />
           <div className={GRID}>
             {presidents.length > 0
               ? presidents.map(m => <MemberCard key={m.id} member={m} />)
-              : Array.from({ length: 3 }).map((_, i) => <MemberCard key={i} roleFallback="President" />)}
+              : Array.from({ length: 4 }).map((_, i) => <MemberCard key={i} roleFallback="President" />)}
           </div>
         </div>
       </section>
 
       {/* ── Vice Presidents ─────────────────────────────────────────── */}
       <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
           <SectionLabel label="Vice Presidents" sub="Domain & division leadership." />
           <div className={GRID}>
             {vps.length > 0
               ? vps.map(m => <MemberCard key={m.id} member={m} />)
-              : Array.from({ length: 7 }).map((_, i) => <MemberCard key={i} roleFallback="Vice President" />)}
+              : Array.from({ length: 12 }).map((_, i) => <MemberCard key={i} roleFallback="Vice President" />)}
           </div>
         </div>
       </section>
 
-      {/* ── Secretaries ─────────────────────────────────────────────── */}
-      {(secs.length > 0 || jsecs.length > 0) && (
+      {/* ── Domain Wise Leadership ──────────────────────────────────── */}
+      {(domainLeaders.length > 0) && (
         <section className="bg-paper border-b hairline">
-          <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-            <SectionLabel label="Secretaries" sub="Division heads & coordinators." />
+          <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+            <SectionLabel label="Domain Leadership" sub="Secretaries and Joint Secretaries across 5 domains." />
             <div className={GRID}>
-              {[...secs, ...jsecs].map(m => <MemberCard key={m.id} member={m} />)}
+              {domainLeaders.map(m => <MemberCard key={m.id} member={m} />)}
             </div>
           </div>
         </section>
       )}
 
-      {/* ── Club Leads ──────────────────────────────────────────────── */}
+      {/* ── Division Wise Leadership ────────────────────────────────── */}
+      {(divisionLeaders.length > 0) && (
+        <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
+          <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+            <SectionLabel label="Division Leadership" sub="Operations, management, and technical divisions." />
+            <div className={GRID}>
+              {divisionLeaders.map(m => <MemberCard key={m.id} member={m} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Faculty Mentors & In-Charges ─────────────────────────────── */}
+      <section className="bg-paper border-b hairline">
+        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+          <SectionLabel label="Club Mentors & In-Charges" sub="Faculty guiding our student clubs." />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div>
+              <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty Mentors</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                {mentors.length > 0
+                  ? mentors.map(m => <MemberCard key={m.id} member={m} />)
+                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" />)}
+              </div>
+            </div>
+            <div>
+              <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty In-Charges</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                {incharges.length > 0
+                  ? incharges.map(m => <MemberCard key={m.id} member={m} />)
+                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" />)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Club Leadership ─────────────────────────────────────────── */}
       {clubs.length > 0 && (
         <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
-          <div className="w-full px-6 sm:px-12 xl:px-20 py-20">
-            <SectionLabel label="Club Leads" sub={`Leads of all ${clubs.length} clubs.`} />
+          <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
+            <SectionLabel label="Club Leadership" sub={`Leads and Co-Leads of all ${clubs.length} clubs.`} />
             <div className={GRID}>
               {clubs.map(club => {
-                const lead = members.find(m => m.role === 'Club Lead' && m.club_lead === club.name);
-                return (
+                // Find all leaders for this club
+                const leaders = clubLeads.filter(m => m.club_lead === club.name);
+                
+                if (leaders.length === 0) {
+                  return (
+                    <MemberCard
+                      key={`${club.slug}-empty`}
+                      roleFallback="Club Lead"
+                      nameFallback={`${club.name} Lead`}
+                    />
+                  );
+                }
+                
+                return leaders.map(lead => (
                   <MemberCard
-                    key={club.slug}
+                    key={lead.id}
                     member={lead}
-                    roleFallback="Club Lead"
-                    nameFallback={`${club.name} Lead`}
+                    roleFallback={lead.role}
                   />
-                );
+                ));
               })}
             </div>
           </div>

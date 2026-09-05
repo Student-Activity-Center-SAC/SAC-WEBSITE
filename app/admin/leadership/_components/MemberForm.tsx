@@ -6,16 +6,20 @@ import { Save, Upload, X, Move } from 'lucide-react';
 
 interface Club { id: string; name: string; }
 interface Props { initial?: any; mode: 'create' | 'edit'; clubs?: Club[]; }
-type Category = 'Deputy Director' | 'Faculty' | 'President' | 'Vice President' | 'Club Lead';
+type Category = 'Deputy Director' | 'Faculty' | 'President' | 'Vice President' | 'Club Lead' | 'Domain Leadership' | 'Division Leadership';
 
 const CATEGORIES: { label: string; sub?: string; cat: Category }[] = [
+  { label: 'Executive Leadership', sub: 'Presidents of KL SAC', cat: 'President' },
+  { label: 'Vice Presidents',      sub: 'Domain & division leadership', cat: 'Vice President' },
+  { label: 'Domain Leadership',    sub: 'Domain Secretaries', cat: 'Domain Leadership' },
+  { label: 'Division Leadership',  sub: 'Division Secretaries', cat: 'Division Leadership' },
+  { label: 'Club Mentors & In-Charges', sub: 'Faculty Mentors / In-Charges', cat: 'Faculty' },
+  { label: 'Club Leadership',      sub: 'Leads and Co-Leads', cat: 'Club Lead' },
   { label: 'Deputy Directors of SAC', cat: 'Deputy Director' },
-  { label: 'Mentors & In-Charges',    cat: 'Faculty' },
-  { label: 'Presidents of KL SAC',    cat: 'President' },
-  { label: 'Vice Presidents', sub: 'Domain & division leadership', cat: 'Vice President' },
-  { label: 'Club Leads',      sub: 'Coordinators of clubs',        cat: 'Club Lead' },
 ];
 const FACULTY_ROLES = ['Faculty Mentor', 'Faculty In-Charge'];
+const SECRETARY_ROLES = ['Secretary', 'Joint Secretary'];
+const CLUB_ROLES = ['Club Lead', 'Club Co-Lead'];
 
 function autoId(role: string) {
   return role.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now().toString(36);
@@ -177,12 +181,16 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
     : initial.role === 'Faculty Mentor' || initial.role === 'Faculty In-Charge' ? 'Faculty'
     : initial.role === 'President'        ? 'President'
     : initial.role === 'Vice President'   ? 'Vice President'
-    : initial.role === 'Club Lead'        ? 'Club Lead'
+    : initial.role === 'Domain Secretary' || initial.role === 'Domain Joint Secretary' ? 'Domain Leadership'
+    : initial.role === 'Division Secretary' || initial.role === 'Division Joint Secretary' ? 'Division Leadership'
+    : initial.role === 'Club Lead' || initial.role === 'Club Co-Lead' ? 'Club Lead'
     : null
     : null;
 
   const [category,    setCategory]    = useState<Category | null>(initCat);
-  const [facultyRole, setFacultyRole] = useState<string>(initial?.role ?? 'Faculty Mentor');
+  const [facultyRole, setFacultyRole] = useState<string>(initial?.role && FACULTY_ROLES.includes(initial.role) ? initial.role : 'Faculty Mentor');
+  const [secRole,     setSecRole]     = useState<string>(initial?.role && (initial.role.includes('Joint') ? 'Joint Secretary' : 'Secretary') || 'Secretary');
+  const [clubRole,    setClubRole]    = useState<string>(initial?.role && CLUB_ROLES.includes(initial.role) ? initial.role : 'Club Lead');
   const [clubName,    setClubName]    = useState<string>(initial?.club_lead ?? '');
   const [name,        setName]        = useState(initial?.name     ?? '');
   const [subtitle,    setSubtitle]    = useState(initial?.subtitle ?? '');
@@ -238,12 +246,16 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
     if (!name.trim()) return toast.error('Name is required');
     if (category === 'Club Lead' && !clubName) return toast.error('Select a club');
 
-    const role = category === 'Faculty' ? facultyRole : category;
+    let role: string = category as string;
+    if (category === 'Faculty') role = facultyRole;
+    if (category === 'Club Lead') role = clubRole;
+    if (category === 'Domain Leadership') role = `Domain ${secRole}`;
+    if (category === 'Division Leadership') role = `Division ${secRole}`;
 
     const payload = {
-      id:           initial?.id ?? autoId(role),
+      id:           initial?.id ?? autoId(role as string),
       name:         name.trim(),
-      role,
+      role:         role as string,
       subtitle:     subtitle.trim() || null,
       linkedin:     linkedin.trim() || null,
       photo:        photo || null,
@@ -313,7 +325,7 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
         {/* Faculty sub-type */}
         {category === 'Faculty' && (
           <div>
-            <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Faculty Type</p>
+            <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Faculty Role</p>
             <div className="flex gap-3">
               {FACULTY_ROLES.map(r => (
                 <button key={r} type="button" onClick={() => setFacultyRole(r)}
@@ -330,27 +342,66 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
           </div>
         )}
 
-        {/* Club picker */}
-        {category === 'Club Lead' && (
+        {/* Secretary sub-type */}
+        {(category === 'Domain Leadership' || category === 'Division Leadership') && (
           <div>
-            <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Select Club</p>
-            {clubs.length === 0
-              ? <p className="text-sm" style={{ color: '#A1A1AA' }}>No clubs found in database.</p>
-              : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
-                  {clubs.map(c => (
-                    <button key={c.id} type="button" onClick={() => setClubName(c.name)}
-                            className="text-left px-3 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all"
-                            style={{
-                              borderColor: clubName === c.name ? '#8B0000' : '#E4E4E7',
-                              background:  clubName === c.name ? '#8B000010' : '#F7F7F8',
-                              color:       clubName === c.name ? '#8B0000'   : '#3F3F46',
-                            }}>
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Role Title</p>
+            <div className="flex gap-3">
+              {SECRETARY_ROLES.map(r => (
+                <button key={r} type="button" onClick={() => setSecRole(r)}
+                        className="px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
+                        style={{
+                          borderColor: secRole === r ? '#8B0000' : '#E4E4E7',
+                          background:  secRole === r ? '#8B000010' : '#F7F7F8',
+                          color:       secRole === r ? '#8B0000'   : '#71717A',
+                        }}>
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Club picker & sub-type */}
+        {category === 'Club Lead' && (
+          <div className="flex flex-col gap-6">
+            <div>
+              <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Role Title</p>
+              <div className="flex gap-3">
+                {CLUB_ROLES.map(r => (
+                  <button key={r} type="button" onClick={() => setClubRole(r)}
+                          className="px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
+                          style={{
+                            borderColor: clubRole === r ? '#8B0000' : '#E4E4E7',
+                            background:  clubRole === r ? '#8B000010' : '#F7F7F8',
+                            color:       clubRole === r ? '#8B0000'   : '#71717A',
+                          }}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <p className="text-xs font-black tracking-[0.2em] uppercase mb-3" style={{ color: '#8B0000' }}>Select Club</p>
+              {clubs.length === 0
+                ? <p className="text-sm" style={{ color: '#A1A1AA' }}>No clubs found in database.</p>
+                : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                    {clubs.map(c => (
+                      <button key={c.id} type="button" onClick={() => setClubName(c.name)}
+                              className="text-left px-3 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all"
+                              style={{
+                                borderColor: clubName === c.name ? '#8B0000' : '#E4E4E7',
+                                background:  clubName === c.name ? '#8B000010' : '#F7F7F8',
+                                color:       clubName === c.name ? '#8B0000'   : '#3F3F46',
+                              }}>
+                        {c.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+            </div>
           </div>
         )}
 

@@ -46,7 +46,8 @@ export default async function LeadershipPage() {
         </div>
       </section>
 
-      {/* ─── Group Photo ──────────────────────────────────────────────── */}
+      {/* ─── Group Photo (Hidden) ─────────────────────────────────────── */}
+      {/* 
       <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20 py-10">
           <p className="kicker mb-5" style={{ color: '#970003' }}>
@@ -72,6 +73,7 @@ export default async function LeadershipPage() {
           </div>
         </div>
       </section>
+      */}
 
       {/* ─── University Advisory Board ────────────────────────────────── */}
       <section className="bg-paper border-b hairline">
@@ -192,23 +194,8 @@ export default async function LeadershipPage() {
         </div>
       </section>
 
-      {/* ─── Interactive Council Grid (HIDDEN PENDING 2026-27 RELEASE) ── */}
-      <section className="bg-white border-b hairline">
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-32 flex flex-col items-center justify-center text-center">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-6">
-            <svg className="w-8 h-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h2 className="font-display text-3xl md:text-4xl font-medium text-foreground mb-4">
-            The SAC Student Council 2026-27
-          </h2>
-          <p className="text-xl text-red-700 font-medium tracking-wide">
-            Releasing soon......
-          </p>
-        </div>
-      </section>
-      {/* <CouncilGrid members={members ?? []} clubs={clubs ?? []} /> */}
+      {/* ─── Interactive Council Grid ─────────────────────────────────── */}
+      <CouncilGrid members={members ?? []} clubs={clubs ?? []} />
 
       {/* ─── Governance Framework ─────────────────────────────────────── */}
       <section style={{ background: '#faf6f1' }}>
