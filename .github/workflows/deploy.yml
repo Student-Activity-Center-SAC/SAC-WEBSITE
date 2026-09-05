@@ -44,11 +44,19 @@ jobs:
           (ss -ltnp 2>/dev/null || netstat -ltnp 2>/dev/null) | grep ':3003' || echo "nothing listening on 3003"
           echo "── nginx upstreams referencing 3003/3000 ──"
           grep -rE 'proxy_pass' /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null || true
+          echo "── killing stale listeners on :3003 ──"
+          ss -ltnp 2>/dev/null | grep ':3003' | grep -oP 'pid=\K[0-9]+' | sort -u | xargs -r kill
+          sleep 2
+          ss -ltnp 2>/dev/null | grep ':3003' || echo "port 3003 is now free"
           pm2 delete sac-website 2>/dev/null || true
           pm2 start ecosystem.config.js
           pm2 save
           sleep 3
           echo "── pm2 list (after) ──"
           pm2 list
+          echo "── who holds :3003 now ──"
+          ss -ltnp 2>/dev/null | grep ':3003' || echo "nothing listening on 3003"
           echo "── local health check ──"
           curl -s -o /dev/null -w "http://localhost:3003/ -> HTTP %{http_code}\n" http://localhost:3003/ || true
+          echo "── stale-content check (expect 0) ──"
+          curl -s http://localhost:3003/leadership | grep -c 'Student Council Group Photo' || true
