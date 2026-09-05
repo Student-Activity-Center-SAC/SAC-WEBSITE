@@ -97,7 +97,7 @@ export default function NewsAdminPage() {
           <ArrowUp size={12} /><ArrowDown size={12} /> <strong>↑↓ arrows</strong> — order on the /news page
         </span>
         <span className="flex items-center gap-1.5">
-          <Home size={12} /> <strong>HP dropdown</strong> — homepage position (Off / 1st / 2nd / 3rd)
+          <strong>HP dropdown</strong> — homepage position (Off / 1st / 2nd / 3rd)
         </span>
       </div>
 
