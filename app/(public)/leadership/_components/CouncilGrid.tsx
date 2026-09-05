@@ -133,22 +133,23 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
 
   return (
     <>
-      {/* ── Executive Leadership (Presidents) ──────────────────────── */}
+      {/* ── Executive Leadership: Presidents + Vice Presidents ─────── */}
       <section className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-          <SectionLabel label="Executive Leadership" sub="Presidents of KL SAC." />
-          <div className={GRID}>
-            {presidents.length > 0
-              ? presidents.map(m => <MemberCard key={m.id} member={m} />)
-              : Array.from({ length: 4 }).map((_, i) => <MemberCard key={i} roleFallback="President" />)}
-          </div>
-        </div>
-      </section>
+          <SectionLabel label="Executive Leadership" sub="Presidents & Vice Presidents of KL SAC." />
 
-      {/* ── Vice Presidents ─────────────────────────────────────────── */}
-      <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-          <SectionLabel label="Vice Presidents" sub="Domain & division leadership." />
+          {/* Presidents */}
+          {presidents.length > 0 && (
+            <>
+              <p className="kicker mb-6" style={{ color: '#A1A1AA' }}>Presidents</p>
+              <div className={GRID + ' mb-12'}>
+                {presidents.map(m => <MemberCard key={m.id} member={m} />)}
+              </div>
+            </>
+          )}
+
+          {/* Vice Presidents */}
+          <p className="kicker mb-6" style={{ color: '#A1A1AA' }}>Vice Presidents</p>
           <div className={GRID}>
             {vps.length > 0
               ? vps.map(m => <MemberCard key={m.id} member={m} />)
