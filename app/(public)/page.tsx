@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, ChevronDown, Camera } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { DOMAINS } from '@/lib/content/domains';
 import { DEMO_CLUBS } from '@/lib/demo-data';
 import { FadeIn } from './_components/FadeIn';
@@ -609,8 +609,8 @@ export default async function HomePage() {
             </Link>
           </FadeIn>
 
-          <FadeIn>
-            {topMembers.length > 0 ? (
+          {topMembers.length > 0 && (
+            <FadeIn>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {topMembers.map(member => {
                   const initials = member.name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
@@ -649,26 +649,8 @@ export default async function HomePage() {
                   );
                 })}
               </div>
-            ) : (
-              <div
-                className="w-full rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-4 px-6 text-center"
-                style={{
-                  aspectRatio: '16/7',
-                  background: 'linear-gradient(135deg, #97000310 0%, #97000305 100%)',
-                  border: '2px dashed #97000325',
-                }}>
-                <Camera size={40} style={{ color: '#97000335' }} />
-                <div>
-                  <p className="font-display font-medium" style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', color: 'rgba(25,19,19,0.45)', letterSpacing: '-0.02em' }}>
-                    SAC Council 2026&ndash;27
-                  </p>
-                  <p className="text-sm mt-2" style={{ color: 'rgba(25,19,19,0.35)' }}>
-                    Announcing soon
-                  </p>
-                </div>
-              </div>
-            )}
-          </FadeIn>
+            </FadeIn>
+          )}
 
           <div className="mt-8 sm:hidden">
             <Link href="/leadership"
