@@ -26,7 +26,8 @@ function autoId(role: string) {
 }
 
 // ── Crop Modal ─────────────────────────────────────────────────────────────────
-const CROP_SIZE = 300;
+const CROP_W = 280;
+const CROP_H = 350; // 4:5 aspect ratio (same as CouncilGrid MemberCard)
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
 function CropModal({ src, onConfirm, onCancel }: {
@@ -45,7 +46,9 @@ function CropModal({ src, onConfirm, onCancel }: {
   // Called once the <img> finishes loading — compute scale to fill the box
   function onImgLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     const img = e.currentTarget;
-    const s = CROP_SIZE / Math.min(img.naturalWidth, img.naturalHeight);
+    const scaleW = CROP_W / img.naturalWidth;
+    const scaleH = CROP_H / img.naturalHeight;
+    const s = Math.max(scaleW, scaleH); // cover the crop box
     setNatW(img.naturalWidth);
     setNatH(img.naturalHeight);
     setScale(s);
@@ -54,8 +57,8 @@ function CropModal({ src, onConfirm, onCancel }: {
 
   const rW   = natW * scale;           // rendered width
   const rH   = natH * scale;           // rendered height
-  const minX = Math.min(CROP_SIZE - rW, 0);
-  const minY = Math.min(CROP_SIZE - rH, 0);
+  const minX = Math.min(CROP_W - rW, 0);
+  const minY = Math.min(CROP_H - rH, 0);
 
   const onPointerDown = (e: React.PointerEvent) => {
     dragging.current = true;
@@ -75,12 +78,14 @@ function CropModal({ src, onConfirm, onCancel }: {
     const img = imgEl.current;
     if (!img) return;
     const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 400;
+    canvas.width = 400;
+    canvas.height = 500; // 4:5 ratio for output
     const ctx = canvas.getContext('2d')!;
     const srcX    = (-offset.x) / scale;
     const srcY    = (-offset.y) / scale;
-    const srcSize = CROP_SIZE   / scale;
-    ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 400, 400);
+    const srcW    = CROP_W / scale;
+    const srcH    = CROP_H / scale;
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 400, 500);
     canvas.toBlob(b => b && onConfirm(b), 'image/jpeg', 0.92);
   }
 
@@ -92,7 +97,7 @@ function CropModal({ src, onConfirm, onCancel }: {
              style={{ borderBottom: '1px solid #F0F0F0' }}>
           <div>
             <p className="font-black text-base" style={{ color: '#0D0D0D' }}>Crop Photo</p>
-            <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>Drag to reposition · Square crop</p>
+            <p className="text-xs mt-0.5" style={{ color: '#A1A1AA' }}>Drag to reposition · 4:5 Portrait crop</p>
           </div>
           <button onClick={onCancel} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100">
             <X size={15} style={{ color: '#71717A' }} />
@@ -104,7 +109,7 @@ function CropModal({ src, onConfirm, onCancel }: {
           <div
             className="relative overflow-hidden rounded-2xl select-none"
             style={{
-              width: CROP_SIZE, height: CROP_SIZE,
+              width: CROP_W, height: CROP_H,
               background: '#F4F4F5',
               border: '2px solid #8B0000',
               cursor: natW > 0 ? 'grab' : 'default',
@@ -430,13 +435,13 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
 
             <Field label="Photo (optional)">
               <p className="text-xs mb-2" style={{ color: '#A1A1AA' }}>
-                400 × 400 px recommended · Will be cropped to square
+                4:5 Portrait ratio (e.g. 400×500 px) recommended · Crop tool will enforce ratio
               </p>
               <div className="flex items-center gap-4 flex-wrap">
                 {previewUrl && (
                   <div className="relative">
                     <img src={previewUrl} alt="preview"
-                         className="w-20 h-20 rounded-xl object-cover border"
+                         className="w-20 h-24 rounded-xl object-cover border"
                          style={{ borderColor: '#E4E4E7' }} />
                     {uploading && (
                       <div className="absolute inset-0 rounded-xl flex items-center justify-center"
