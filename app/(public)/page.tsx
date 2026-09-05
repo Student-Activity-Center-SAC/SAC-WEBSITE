@@ -29,7 +29,7 @@ const JOURNEY_STEPS = [
 ];
 
 export default async function HomePage() {
-  const [storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes, achievementsRes] = await Promise.all([
+  const [storiesRes, settingsRes, newsRes, domainsRes, clubsRes, statsRes, partnersRes, achievementsRes, membersRes] = await Promise.all([
     db.from('stories').select('slug, title, student_name, student_year, club_name, domain_code, excerpt, photo, homepage_order').gt('homepage_order', 0).order('homepage_order', { ascending: true }),
     db.from('site_settings').select('key, value'),
     db.from('news_articles').select('slug, title, excerpt, photo_url, category, date').order('date', { ascending: false }).limit(6),
@@ -38,6 +38,7 @@ export default async function HomePage() {
     db.from('sac_stats').select('key, value'),
     db.from('partners').select('*'),
     db.from('achievements').select('id, title, description, level, domain_code, club_name, year, photo, organization').order('sort_order', { ascending: true }).order('year', { ascending: false }).limit(20),
+    db.from('council_members').select('*').order('sort_order', { ascending: true }),
   ]);
 
   const stories       = storiesRes.data ?? [];
@@ -45,6 +46,8 @@ export default async function HomePage() {
   const domains       = domainsRes.data ?? [];
   const partners      = partnersRes.data ?? [];
   const achievements  = (achievementsRes.data ?? []) as any[];
+  const councilMembers = membersRes.data ?? [];
+
   const settingsMap: Record<string, string> = {};
   (settingsRes.data ?? []).forEach((s: any) => { if (s.value) settingsMap[s.key] = s.value; });
   const heroVideoUrl = settingsMap['hero_video_url'] || 'https://pub-2172d3960f064d32b43c4d6ba9a3135d.r2.dev/final%20export.mp4';
@@ -60,6 +63,10 @@ export default async function HomePage() {
   (statsRes.data ?? []).forEach((s: any) => { sacStatsMap[s.key] = s.value; });
   const statStudents   = sacStatsMap['students']   ?? 0;
   const statActivities = sacStatsMap['activities'] ?? 0;
+
+  const presidents = councilMembers.filter((m: any) => m.role === 'President');
+  const vps = councilMembers.filter((m: any) => m.role === 'Vice President');
+  const topMembers = [...presidents, ...vps].slice(0, 4);
 
   return (
     <>
@@ -603,23 +610,64 @@ export default async function HomePage() {
           </FadeIn>
 
           <FadeIn>
-            <div
-              className="w-full rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-4 px-6 text-center"
-              style={{
-                aspectRatio: '16/7',
-                background: 'linear-gradient(135deg, #97000310 0%, #97000305 100%)',
-                border: '2px dashed #97000325',
-              }}>
-              <Camera size={40} style={{ color: '#97000335' }} />
-              <div>
-                <p className="font-display font-medium" style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', color: 'rgba(25,19,19,0.45)', letterSpacing: '-0.02em' }}>
-                  SAC Council 2026&ndash;27
-                </p>
-                <p className="text-sm mt-2" style={{ color: 'rgba(25,19,19,0.35)' }}>
-                  Announcing soon
-                </p>
+            {topMembers.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {topMembers.map(member => {
+                  const initials = member.name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
+                  return (
+                    <div key={member.id} className="group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                      <div className="relative w-full overflow-hidden bg-gray-50" style={{ aspectRatio: '4/5' }}>
+                        {member.photo ? (
+                          <img
+                            src={member.photo}
+                            alt={member.name}
+                            className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div
+                            className="absolute inset-0 flex items-center justify-center font-black text-3xl"
+                            style={{ background: 'linear-gradient(135deg,#8B000010 0%,#8B000002 100%)', color: '#8B0000' }}>
+                            {initials}
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      </div>
+                      <div className="px-5 py-5 flex flex-col gap-1 flex-1 bg-white text-left">
+                        <p className="font-display font-semibold text-base sm:text-lg leading-tight text-foreground">
+                          {member.name}
+                        </p>
+                        <p className="text-xs sm:text-sm font-semibold tracking-wide" style={{ color: '#970003' }}>
+                          {member.role}
+                        </p>
+                        {member.subtitle && (
+                          <p className="text-xs mt-1 leading-relaxed text-foreground/60 line-clamp-2">
+                            {member.subtitle}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            ) : (
+              <div
+                className="w-full rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-4 px-6 text-center"
+                style={{
+                  aspectRatio: '16/7',
+                  background: 'linear-gradient(135deg, #97000310 0%, #97000305 100%)',
+                  border: '2px dashed #97000325',
+                }}>
+                <Camera size={40} style={{ color: '#97000335' }} />
+                <div>
+                  <p className="font-display font-medium" style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', color: 'rgba(25,19,19,0.45)', letterSpacing: '-0.02em' }}>
+                    SAC Council 2026&ndash;27
+                  </p>
+                  <p className="text-sm mt-2" style={{ color: 'rgba(25,19,19,0.35)' }}>
+                    Announcing soon
+                  </p>
+                </div>
+              </div>
+            )}
           </FadeIn>
 
           <div className="mt-8 sm:hidden">

@@ -7,18 +7,20 @@ import MemberForm from '../_components/MemberForm';
 
 export const metadata = { title: 'Edit Member — KL SAC Admin' };
 
-export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const isNew = id === 'new';
   const { error } = await requireAdmin();
   if (error) redirect('/admin/login');
 
-  const [{ data }, { data: clubRows }] = await Promise.all([
-    db.from('council_members').select('*').eq('id', id).single(),
+  const [memberRes, clubRes] = await Promise.all([
+    isNew ? Promise.resolve({ data: null }) : db.from('council_members').select('*').eq('id', id).single(),
     db.from('clubs').select('*').order('club_name', { ascending: true }),
   ]);
-  if (!data) notFound();
+  
+  if (!isNew && !memberRes.data) notFound();
 
-  const clubs = (clubRows ?? []).map((c: any) => ({ id: c.id, name: c.club_name }));
+  const clubs = (clubRes.data ?? []).map((c: any) => ({ id: c.id, name: c.club_name }));
 
   return (
     <div>
@@ -27,10 +29,14 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
             style={{ color: '#71717A' }}>
         <ArrowLeft size={14} /> Back to Leadership
       </Link>
-      <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>Edit Member</h1>
-      <p className="text-sm mb-8" style={{ color: '#71717A' }}>{data.name}</p>
+      <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>
+        {isNew ? 'Add Council Member' : 'Edit Member'}
+      </h1>
+      <p className="text-sm mb-8" style={{ color: '#71717A' }}>
+        {isNew ? 'Select a category, then fill in the details.' : memberRes.data?.name}
+      </p>
       <div className="rounded-2xl border p-6" style={{ background: '#fff', borderColor: '#E4E4E7' }}>
-        <MemberForm mode="edit" initial={data} clubs={clubs} />
+        <MemberForm mode={isNew ? 'create' : 'edit'} initial={memberRes.data} clubs={clubs} />
       </div>
     </div>
   );
