@@ -137,7 +137,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
       <section className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
 
-          {/* Presidents */}
+          {/* Presidents — with the red kicker */}
           <SectionLabel label="Executive Leadership" sub="Presidents of KL SAC." />
           <div className={GRID + ' mb-20'}>
             {presidents.length > 0
@@ -145,8 +145,12 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
               : Array.from({ length: 4 }).map((_, i) => <MemberCard key={i} roleFallback="President" />)}
           </div>
 
-          {/* Vice Presidents */}
-          <SectionLabel label="Vice Presidents" sub="Vice Presidents of KL SAC." />
+          {/* Vice Presidents — plain sub-heading, no red kicker */}
+          <h2
+            className="font-display font-medium leading-tight mb-12"
+            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+            Vice Presidents of KL SAC.
+          </h2>
           <div className={GRID}>
             {vps.length > 0
               ? vps.map(m => <MemberCard key={m.id} member={m} />)
