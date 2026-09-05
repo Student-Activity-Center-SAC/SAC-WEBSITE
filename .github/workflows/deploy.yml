@@ -38,6 +38,17 @@ jobs:
       - name: Restart PM2
         run: |
           cd /var/www/SAC-WEBSITE
-          pm2 restart sac-website 2>/dev/null || true
-          pm2 startOrReload ecosystem.config.js
+          echo "── pm2 list (before) ──"
+          pm2 list || true
+          echo "── who is listening on :3003 ──"
+          (ss -ltnp 2>/dev/null || netstat -ltnp 2>/dev/null) | grep ':3003' || echo "nothing listening on 3003"
+          echo "── nginx upstreams referencing 3003/3000 ──"
+          grep -rE 'proxy_pass' /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null || true
+          pm2 delete sac-website 2>/dev/null || true
+          pm2 start ecosystem.config.js
           pm2 save
+          sleep 3
+          echo "── pm2 list (after) ──"
+          pm2 list
+          echo "── local health check ──"
+          curl -s -o /dev/null -w "http://localhost:3003/ -> HTTP %{http_code}\n" http://localhost:3003/ || true
