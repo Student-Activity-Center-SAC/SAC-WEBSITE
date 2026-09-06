@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const domain = req.nextUrl.searchParams.get('domain');
-  let query = db.from('clubs').select('*').order('id', { ascending: true });
+  let query = db.from('clubs').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
   if (domain && domain !== 'all') query = query.eq('club_domain', domain);
 
   const { data: dbClubs } = await query;
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     competencies:    parseJsonCol(c.competencies),
     activities_list: parseJsonCol(c.activities_list),
     api_categories:  parseJsonCol(c.api_categories),
-    sort_order:      index + 1,
+    sort_order:      c.sort_order ?? 0,
   }));
 
   return NextResponse.json({ success: true, data: clubs });
@@ -63,16 +63,28 @@ export async function POST(req: NextRequest) {
   const coverUrl  = body.cover_url || null;
   const gallery   = body.gallery ? JSON.stringify(body.gallery) : null;
   const purpose   = body.purpose || null;
-  const competencies   = body.competencies ? JSON.stringify(body.competencies) : null;
-  const activitiesList = body.activities_list ? JSON.stringify(body.activities_list) : null;
 
   if (!clubName) return NextResponse.json({ error: 'Club name is required' }, { status: 400 });
 
   try {
+    const clubCover = body.cover_url || null;
+    const sortOrder = body.sort_order ?? 0;
+
     const [result]: any = await pool.query(
-      `INSERT INTO \`clubs\` (club_name, club_domain, club_description, club_logo, club_about, cover_url, gallery, purpose, competencies, activities_list, active)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-      [clubName, clubDomain, clubDesc, clubLogo, clubAbout, coverUrl, gallery, purpose, competencies, activitiesList]
+      `INSERT INTO \`clubs\` (
+        \`club_name\`, \`club_domain\`, \`club_description\`,
+        \`club_about\`, \`club_logo\`, \`cover_url\`,
+        \`purpose\`, \`gallery\`, \`competencies\`, \`activities_list\`, \`sort_order\`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        clubName, clubDomain, clubDesc,
+        clubAbout, clubLogo, clubCover,
+        body.purpose || null,
+        JSON.stringify(body.gallery || []),
+        JSON.stringify(body.competencies || []),
+        JSON.stringify(body.activities_list || []),
+        sortOrder
+      ]
     );
     revalidatePath('/clubs');
     revalidatePath('/');
@@ -111,6 +123,7 @@ export async function PUT(req: NextRequest) {
     club_logo:        'club_logo',
     cover_url:        'cover_url',
     purpose:          'purpose',
+    sort_order:       'sort_order',
   };
 
   for (const [formKey, dbCol] of Object.entries(scalarMap)) {
@@ -183,3 +196,26 @@ export async function DELETE(req: NextRequest) {
 
 
 
+
+export async function PATCH(req: NextRequest) {
+  const { error } = await requireAdmin();
+  if (error) return NextResponse.json({ error }, { status: 401 });
+
+  try {
+    const { order } = await req.json(); // Array of { slug: string, sort_order: number }
+    if (!Array.isArray(order)) throw new Error('Invalid payload');
+
+    for (const item of order) {
+      if (!item.slug || typeof item.sort_order !== 'number') continue;
+      const found = await findClubBySlug(item.slug);
+      if (found?.id) {
+        await pool.query('UPDATE `clubs` SET sort_order = ? WHERE id = ?', [item.sort_order, found.id]);
+      }
+    }
+    revalidatePath('/clubs');
+    revalidatePath('/');
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 400 });
+  }
+}

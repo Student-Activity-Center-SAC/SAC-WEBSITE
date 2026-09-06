@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Pencil, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, Pencil, GripVertical } from 'lucide-react';
 
 const DOMAIN_ORDER = ['TEC', 'LCH', 'ESO', 'HWB', 'IIE'];
 const DOMAIN_COLORS: Record<string, string> = {
@@ -41,29 +41,53 @@ export default function ClubsAdminPage() {
     else toast.error('Delete failed');
   }
 
-  async function move(domainClubs: any[], idx: number, dir: -1 | 1) {
-    const a = domainClubs[idx];
-    const b = domainClubs[idx + dir];
-    if (!a || !b) return;
-    setMoving(a.slug);
-    const aOrder = a.sort_order;
-    const bOrder = b.sort_order;
-    setClubs(prev => prev.map(c => {
-      if (c.slug === a.slug) return { ...c, sort_order: bOrder };
-      if (c.slug === b.slug) return { ...c, sort_order: aOrder };
-      return c;
-    }));
-    try {
-      await Promise.all([
-        fetch('/api/admin/clubs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: a.slug, sort_order: bOrder }) }),
-        fetch('/api/admin/clubs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: b.slug, sort_order: aOrder }) }),
-      ]);
-    } catch {
-      toast.error('Reorder failed');
-      load();
-    } finally {
-      setMoving(null);
-    }
+  /* ── drag state ── */
+  const dragItem = useRef<{ domain: string; idx: number } | null>(null);
+  const [overItem, setOverItem] = useState<{ domain: string; idx: number } | null>(null);
+
+  /* ── drag handlers ── */
+  function onDragStart(domain: string, idx: number) {
+    dragItem.current = { domain, idx };
+  }
+
+  function onDragOver(e: React.DragEvent, domain: string, idx: number) {
+    e.preventDefault();
+    const d = dragItem.current;
+    if (!d || d.domain !== domain) return; // only allow within same category
+    setOverItem({ domain, idx });
+  }
+
+  function onDrop(e: React.DragEvent, domain: string, toIdx: number) {
+    e.preventDefault();
+    const d = dragItem.current;
+    if (!d || d.domain !== domain || d.idx === toIdx) { endDrag(); return; }
+
+    const domainClubs = [...(byDomain[domain] ?? [])];
+    const [moved] = domainClubs.splice(d.idx, 1);
+    domainClubs.splice(toIdx, 0, moved);
+
+    const newFull: any[] = [];
+    DOMAIN_ORDER.forEach(code => {
+      const arr = code === domain ? domainClubs : (byDomain[code] ?? []);
+      newFull.push(...arr);
+    });
+    const reordered = newFull.map((c, i) => ({ ...c, sort_order: i }));
+    setClubs(reordered);
+    endDrag();
+
+    fetch('/api/admin/clubs', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order: reordered.map(c => ({ slug: c.slug, sort_order: c.sort_order })) }),
+    })
+      .then(r => r.json())
+      .then(d => { if (!d.success) toast.error('Failed to save order'); else toast.success('Order saved'); })
+      .catch(() => toast.error('Failed to save order'));
+  }
+
+  function endDrag() {
+    dragItem.current = null;
+    setOverItem(null);
   }
 
   const byDomain: Record<string, any[]> = {};
@@ -81,7 +105,7 @@ export default function ClubsAdminPage() {
         <div>
           <h1 className="text-2xl font-black mb-1" style={{ color: '#0D0D0D', letterSpacing: '-0.02em' }}>Clubs</h1>
           <p className="text-sm" style={{ color: '#71717A' }}>
-            {clubs.length} clubs · Use arrows to reorder within each domain
+            {clubs.length} clubs · Drag to reorder within each domain
           </p>
         </div>
         <Link href="/admin/clubs/new"
@@ -120,26 +144,27 @@ export default function ClubsAdminPage() {
                 <div className="rounded-2xl border overflow-hidden" style={{ background: '#fff', borderColor: '#E4E4E7' }}>
                   {domainClubs.map((c, i) => (
                     <div key={c.slug}
-                         className="flex items-center gap-3 px-4 py-3.5"
-                         style={{ borderBottom: i < domainClubs.length - 1 ? '1px solid #F0F0F0' : 'none',
-                                  opacity: moving === c.slug ? 0.5 : 1, transition: 'opacity 0.15s' }}>
-                      {/* Reorder arrows */}
-                      <div className="flex flex-col gap-0 shrink-0">
-                        <button
-                          onClick={() => move(domainClubs, i, -1)}
-                          disabled={i === 0 || moving !== null}
-                          className="p-1 rounded transition-colors hover:bg-gray-100 disabled:opacity-20 disabled:cursor-not-allowed"
-                          title="Move up">
-                          <ChevronUp size={13} style={{ color: '#71717A' }} />
-                        </button>
-                        <button
-                          onClick={() => move(domainClubs, i, 1)}
-                          disabled={i === domainClubs.length - 1 || moving !== null}
-                          className="p-1 rounded transition-colors hover:bg-gray-100 disabled:opacity-20 disabled:cursor-not-allowed"
-                          title="Move down">
-                          <ChevronDown size={13} style={{ color: '#71717A' }} />
-                        </button>
-                      </div>
+                         draggable
+                         onDragStart={() => onDragStart(code, i)}
+                         onDragOver={(e) => onDragOver(e, code, i)}
+                         onDrop={(e) => onDrop(e, code, i)}
+                         onDragEnd={endDrag}
+                         className="flex items-center gap-3 px-4 py-3.5 group relative"
+                         style={{
+                           borderBottom: i < domainClubs.length - 1 ? '1px solid #F0F0F0' : 'none',
+                           backgroundColor: overItem?.domain === code && overItem?.idx === i ? '#fafafa' : 'transparent',
+                           transition: 'all 0.15s'
+                         }}>
+                      
+                      {/* Drop indicator line */}
+                      {overItem?.domain === code && overItem?.idx === i && (
+                        <div className="absolute left-0 right-0 h-0.5" style={{ background: color, top: -1 }} />
+                      )}
+
+                      {/* Drag handle */}
+                      <button className="p-1 rounded cursor-grab active:cursor-grabbing hover:bg-gray-100 opacity-20 group-hover:opacity-100 transition-opacity shrink-0">
+                        <GripVertical size={14} style={{ color: '#71717A' }} />
+                      </button>
 
                       {/* Logo or domain badge */}
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-xs font-black overflow-hidden"
