@@ -5,9 +5,9 @@ import CouncilGrid from './_components/CouncilGrid';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Student Council — KL SAC',
+  title: 'Official Council — KL SAC',
   description:
-    'The Student Council of KL University — presidents, vice presidents, secretaries, council members, club leads, and faculty leadership.',
+    'The Official Council of KL SAC — a structured body of faculty leadership, executive officers, domain leads, club mentors, and student club leaders working together across 25+ clubs and 5 domains to enrich campus life.',
 };
 
 export default async function LeadershipPage() {
@@ -33,15 +33,17 @@ export default async function LeadershipPage() {
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
       <section style={{ background: '#faf6f1', paddingTop: '92px', paddingBottom: '72px' }}>
         <div className="w-full px-6 sm:px-12 xl:px-20">
-          <p className="kicker mb-5" style={{ color: '#970003' }}>Governance</p>
+          <p className="kicker mb-5" style={{ color: '#970003' }}>Official Council</p>
           <h1
             className="font-display font-medium leading-[1.05] mb-5"
             style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#191313', letterSpacing: '-0.025em', maxWidth: '22ch' }}>
-            Student Council of KL University
+            Official Council of KL SAC
           </h1>
-          <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '54ch' }}>
-            The elected and appointed student leaders who run KL SAC<br/>
-            25+ clubs, 5 domains, and the full breadth of campus life
+          <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '60ch' }}>
+            A structured body of distinguished faculty advisors, executive leadership, domain and division heads,
+            club mentors, and student club leads — collectively shaping the vision, governance, and vibrant campus
+            experience of KL University across the University Advisory Board, Director &amp; Deputy Directors SAC,
+            Executive Leadership, Domain &amp; Division Leadership, Club Mentors &amp; In-Charges, and Clubs Leadership.
           </p>
         </div>
       </section>
