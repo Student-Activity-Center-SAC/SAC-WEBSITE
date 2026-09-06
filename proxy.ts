@@ -14,7 +14,9 @@ export async function proxy(req: NextRequest) {
   }
 
   const payload = await verifyToken(token);
-  if (!payload || payload.role !== 'sac_admin') {
+  const role = payload?.role as string | undefined;
+  const validRoles = ['sac_admin', 'admin', 'club_lead'];
+  if (!payload || !role || !validRoles.includes(role)) {
     return NextResponse.redirect(new URL('/admin/login', req.url));
   }
 
