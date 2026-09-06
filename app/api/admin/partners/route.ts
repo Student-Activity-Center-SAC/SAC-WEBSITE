@@ -4,7 +4,8 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { data } = await db.from('partners').select('*').order('sort_order');
@@ -12,7 +13,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const body = await req.json();
@@ -23,7 +25,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id, ...rest } = await req.json();
@@ -34,7 +37,8 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id } = await req.json();

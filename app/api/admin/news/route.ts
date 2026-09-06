@@ -28,7 +28,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const body = await req.json();
@@ -40,7 +41,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { slug, ...rest } = await req.json();
@@ -70,7 +72,8 @@ export async function PUT(req: NextRequest) {
 
 // Reorder: receives the full ordered list of slugs, assigns sort_order 0..n
 export async function PATCH(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { orderedSlugs } = await req.json() as { orderedSlugs: string[] };
@@ -87,7 +90,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { slug } = await req.json();

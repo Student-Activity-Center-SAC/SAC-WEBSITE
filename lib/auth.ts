@@ -6,8 +6,11 @@ export async function getAdminSession() {
   const token = cookieStore.get('sac_admin')?.value;
   if (!token) return null;
   const payload = await verifyToken(token);
-  if (!payload || payload.role !== 'sac_admin') return null;
-  return payload;
+  if (!payload || (payload.role !== 'sac_admin' && payload.role !== 'admin' && payload.role !== 'club_lead')) return null;
+  return {
+    ...payload,
+    role: payload.role === 'sac_admin' ? 'admin' : payload.role,
+  };
 }
 
 export async function requireAdmin() {

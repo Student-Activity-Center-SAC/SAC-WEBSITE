@@ -32,9 +32,13 @@ const NAV = [
 
 export default function AdminSidebar({
   username,
+  role = 'admin',
+  clubName,
   showSqlConsole = false,
 }: {
   username?: string;
+  role?: string;
+  clubName?: string;
   showSqlConsole?: boolean;
 }) {
   const pathname = usePathname();
@@ -76,26 +80,77 @@ export default function AdminSidebar({
 
       {/* Groups */}
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
-        {NAV.map(group => (
-          <div key={group.group} className="mb-5">
-            <p className="text-[10px] font-black tracking-[0.18em] uppercase px-3 mb-1.5 mt-4"
-               style={{ color: '#C4C4CC' }}>
-              {group.group}
-            </p>
-            {group.links.map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all mb-0.5"
-                style={{
-                  background: active(href) ? '#8B000012' : 'transparent',
-                  color:      active(href) ? '#8B0000'   : '#52525B',
-                }}>
-                <Icon size={15} />
-                {label}
-              </Link>
-            ))}
-          </div>
-        ))}
+        {NAV.map(group => {
+          // Filter links based on role
+          const filteredLinks = group.links.filter(link => {
+            if (role === 'admin') return true;
+            if (role === 'club_lead') {
+              if (link.label === 'Achievements') return true;
+              return false;
+            }
+            return false;
+          });
+
+          // Add dynamic "My Club" link for club leads
+          if (role === 'club_lead' && group.group === 'Structure' && clubName) {
+            filteredLinks.push({
+              href: `/admin/clubs/${encodeURIComponent(clubName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))}`,
+              label: 'My Club',
+              icon: Building2,
+            });
+          }
+
+          if (filteredLinks.length === 0) return null;
+
+          return (
+            <div key={group.group} className="mb-5">
+              <p className="text-[10px] font-black tracking-[0.18em] uppercase px-3 mb-1.5 mt-4"
+                 style={{ color: '#C4C4CC' }}>
+                {group.group}
+              </p>
+              {filteredLinks.map(({ href, label, icon: Icon }) => (
+                <Link key={href} href={href} onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all mb-0.5"
+                  style={{
+                    background: active(href) ? '#8B000012' : 'transparent',
+                    color:      active(href) ? '#8B0000'   : '#52525B',
+                  }}>
+                  <Icon size={15} />
+                  {label}
+                </Link>
+              ))}
+            </div>
+          );
+        })}
       </nav>
+
+      {/* Settings & Users */}
+      <div className="px-3 mb-2">
+        <p className="text-[10px] font-black tracking-[0.18em] uppercase px-3 mb-1.5 mt-2"
+           style={{ color: '#C4C4CC' }}>
+          Account
+        </p>
+        {role === 'admin' && (
+          <Link href="/admin/users" onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all mb-0.5"
+            style={{
+              background: active('/admin/users') ? '#8B000012' : 'transparent',
+              color:      active('/admin/users') ? '#8B0000'   : '#52525B',
+            }}>
+            <Users size={15} />
+            Users
+          </Link>
+        )}
+        <Link href="/admin/settings" onClick={() => setOpen(false)}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all mb-0.5"
+          style={{
+            background: active('/admin/settings') ? '#8B000012' : 'transparent',
+            color:      active('/admin/settings') ? '#8B0000'   : '#52525B',
+          }}>
+          <Settings size={15} />
+          Settings
+        </Link>
+      </div>
 
       {/* Dev-only: SQL Executor */}
       {showSqlConsole && (

@@ -21,12 +21,15 @@ function parseJsonCol(val: any): any[] {
 }
 
 export async function GET(req: NextRequest) {
-  const { error } = await requireAdmin();
-  if (error) return NextResponse.json({ error }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error || !session) return NextResponse.json({ error }, { status: 401 });
 
   const domain = req.nextUrl.searchParams.get('domain');
   let query = db.from('clubs').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
   if (domain && domain !== 'all') query = query.eq('club_domain', domain);
+  if (session.role === 'club_lead') {
+    query = query.eq('club_name', session.club_name);
+  }
 
   const { data: dbClubs } = await query;
   const clubs = (dbClubs ?? []).map((c: any, index: number) => ({
@@ -50,8 +53,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { error } = await requireAdmin();
-  if (error) return NextResponse.json({ error }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error || !session) return NextResponse.json({ error }, { status: 401 });
+  if (session.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const body = await req.json();
   const clubName  = body.name || body.club_name;
@@ -95,18 +99,32 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const { error } = await requireAdmin();
-  if (error) return NextResponse.json({ error }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error || !session) return NextResponse.json({ error }, { status: 401 });
 
   const body = await req.json();
   const { id, slug, ...rest } = body;
 
   let clubId = id;
+  let foundClub: any = null;
   if (!clubId && slug) {
-    const found = await findClubBySlug(slug);
-    clubId = found?.id;
+    foundClub = await findClubBySlug(slug);
+    clubId = foundClub?.id;
   }
   if (!clubId) return NextResponse.json({ error: 'Club not found' }, { status: 404 });
+
+  if (session.role === 'club_lead') {
+    if (!foundClub) {
+      const { data } = await db.from('clubs').select('club_name').eq('id', clubId).single();
+      foundClub = data;
+    }
+    if (foundClub?.club_name !== session.club_name && rest.club_name !== session.club_name) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    // Prevent club lead from renaming their club
+    delete rest.name;
+    delete rest.club_name;
+  }
 
   const setClauses: string[] = [];
   const values: any[] = [];
@@ -172,8 +190,9 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { error } = await requireAdmin();
-  if (error) return NextResponse.json({ error }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error || !session) return NextResponse.json({ error }, { status: 401 });
+  if (session.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const { slug, id } = await req.json();
 
@@ -198,8 +217,9 @@ export async function DELETE(req: NextRequest) {
 
 
 export async function PATCH(req: NextRequest) {
-  const { error } = await requireAdmin();
-  if (error) return NextResponse.json({ error }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error || !session) return NextResponse.json({ error }, { status: 401 });
+  if (session.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
     const { order } = await req.json(); // Array of { slug: string, sort_order: number }

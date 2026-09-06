@@ -128,7 +128,8 @@ export async function POST(req: NextRequest) {
     const token = await signToken({
       username: admin.username,
       name: admin.name,
-      role: 'sac_admin',
+      role: admin.role || 'admin',
+      club_name: admin.club_name || null,
     });
 
     const res = NextResponse.json({ success: true, name: admin.name });

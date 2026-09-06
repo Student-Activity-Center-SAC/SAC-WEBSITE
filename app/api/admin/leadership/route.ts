@@ -4,7 +4,8 @@ import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/query-builder';
 
 export async function GET() {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { data } = await db.from('council_members').select('*').order('sort_order', { ascending: true });
@@ -12,7 +13,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const body = await req.json();
@@ -23,7 +25,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id, updated_at: _ts, ...rest } = await req.json();
@@ -35,7 +38,8 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { order } = await req.json() as { order: { id: string; sort_order: number }[] };
@@ -50,7 +54,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
+  if (session?.role === 'club_lead') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (error) return NextResponse.json({ error }, { status: 401 });
 
   const { id } = await req.json();
