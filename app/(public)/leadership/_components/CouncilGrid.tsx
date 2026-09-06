@@ -45,8 +45,7 @@ function MemberCard({
 
   return (
     <div
-      className={`group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${isPlaceholder ? 'opacity-50' : ''}`}
-      style={{ filter: colorized ? 'grayscale(0%)' : 'grayscale(100%)', transition: 'filter 0.6s ease, box-shadow 0.3s ease, transform 0.3s ease' }}
+      className={`group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${!colorized ? 'sm:grayscale' : 'sm:grayscale-0'} ${isPlaceholder ? 'opacity-50' : ''}`}
     >
       {/* Portrait photo — aspect-[4/5] */}
       <div className="relative w-full overflow-hidden bg-gray-50" style={{ aspectRatio: '4/5' }}>

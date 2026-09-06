@@ -16,14 +16,6 @@ function useRowColor() {
   return { colorized, setColorized };
 }
 
-const imgStyle = (colorized: boolean): React.CSSProperties => ({
-  filter: colorized ? 'grayscale(0%)' : 'grayscale(100%)',
-  transition: 'filter 0.6s ease',
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-  objectPosition: 'top',
-});
 
 export function DirectorSection() {
   const { colorized, setColorized } = useRowColor();
@@ -45,7 +37,7 @@ export function DirectorSection() {
               decoding="async"
               src="/sai vijay sir.png"
               alt="Er. P Sai Vijay"
-              style={imgStyle(colorized)}
+              className={`w-full h-full object-cover object-top transition-[filter] duration-700 ${!colorized ? 'sm:grayscale' : 'sm:grayscale-0'}`}
             />
           </div>
 
@@ -90,7 +82,7 @@ export function DeputyDirectorsSection({ deputy1, deputy2 }: Props) {
                   Deputy Director 1
                 </div>
               ) : (
-                <img src={deputy1.photo} alt={deputy1.name} style={imgStyle(colorized)} />
+                <img src={deputy1.photo} alt={deputy1.name} className={`w-full h-full object-cover object-top transition-[filter] duration-700 ${!colorized ? 'sm:grayscale' : 'sm:grayscale-0'}`} />
               )}
             </div>
             <h3 className="font-display text-xl font-medium text-foreground text-center">{deputy1?.name || 'Deputy Director Name'}</h3>
@@ -112,7 +104,7 @@ export function DeputyDirectorsSection({ deputy1, deputy2 }: Props) {
                   Deputy Director 2
                 </div>
               ) : (
-                <img src={deputy2.photo} alt={deputy2.name} style={imgStyle(colorized)} />
+                <img src={deputy2.photo} alt={deputy2.name} className={`w-full h-full object-cover object-top transition-[filter] duration-700 ${!colorized ? 'sm:grayscale' : 'sm:grayscale-0'}`} />
               )}
             </div>
             <h3 className="font-display text-xl font-medium text-foreground text-center">{deputy2?.name || 'Deputy Director Name'}</h3>
