@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Save, Upload } from 'lucide-react';
-import { compressImageIfTooLarge } from '../_utils/upload-helper';
+import { compressImageIfTooLarge } from '../../_utils/upload-helper';
 
 const DOMAINS = [
   { code: 'TEC', label: 'TEC — Technology' },
