@@ -123,11 +123,11 @@ function SectionLabel({ label, sub }: { label: string; sub?: string }) {
 }
 
 // ─── Row Section with hover + scroll-reveal colorization ──────────────────────
-function ColorRow({ children, className = '', style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
+function ColorRow({ children, className = '', style, as: Component = 'div' }: { children: React.ReactNode; className?: string; style?: React.CSSProperties; as?: React.ElementType }) {
   const [colorized, setColorized] = useState(false);
 
   return (
-    <section
+    <Component
       className={className}
       style={style}
       onMouseEnter={() => setColorized(true)}
@@ -137,7 +137,7 @@ function ColorRow({ children, className = '', style }: { children: React.ReactNo
       <ColorContext.Provider value={colorized}>
         {children}
       </ColorContext.Provider>
-    </section>
+    </Component>
   );
 }
 
@@ -171,115 +171,125 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
 
   return (
     <>
-      {/* ── Executive Leadership: Presidents ──────────────────────────── */}
-      <ColorRow className="bg-paper border-b hairline">
+      {/* ── Executive Leadership: Presidents & VPs ──────────────────────── */}
+      <section className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
 
-          {/* Presidents — with the red kicker */}
-          <SectionLabel label="Executive Leadership" sub="Presidents of KL SAC." />
-          <div className={GRID + ' mb-20'}>
-            {presidents.length > 0
-              ? presidents.map(m => <ContextMemberCard key={m.id} member={m} />)
-              : Array.from({ length: 4 }).map((_, i) => <ContextMemberCard key={i} roleFallback="President" />)}
-          </div>
+          {/* Presidents */}
+          <ColorRow>
+            <SectionLabel label="Executive Leadership" sub="Presidents of KL SAC." />
+            <div className={GRID + ' mb-20'}>
+              {presidents.length > 0
+                ? presidents.map(m => <ContextMemberCard key={m.id} member={m} />)
+                : Array.from({ length: 4 }).map((_, i) => <ContextMemberCard key={i} roleFallback="President" />)}
+            </div>
+          </ColorRow>
 
-          {/* Vice Presidents — plain sub-heading, no red kicker */}
-          <h2
-            className="font-display font-medium leading-tight mb-12"
-            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
-            Vice Presidents of KL SAC.
-          </h2>
-          <div className={GRID_COMPACT}>
-            {vps.length > 0
-              ? vps.map(m => <ContextMemberCard key={m.id} member={m} compact />)
-              : Array.from({ length: 12 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Vice President" compact />)}
-          </div>
+          {/* Vice Presidents */}
+          <ColorRow>
+            <h2
+              className="font-display font-medium leading-tight mb-12"
+              style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
+              Vice Presidents of KL SAC.
+            </h2>
+            <div className={GRID_COMPACT}>
+              {vps.length > 0
+                ? vps.map(m => <ContextMemberCard key={m.id} member={m} compact />)
+                : Array.from({ length: 12 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Vice President" compact />)}
+            </div>
+          </ColorRow>
 
         </div>
-      </ColorRow>
+      </section>
 
       {/* ── Domain Wise Leadership ──────────────────────────────────── */}
       {(domainLeaders.length > 0) && (
-        <ColorRow className="bg-paper border-b hairline">
+        <section className="bg-paper border-b hairline">
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-            <SectionLabel label="Domain Leadership" sub="Secretaries and Joint Secretaries across 5 domains." />
-            <div className={GRID_COMPACT}>
-              {domainLeaders.map(m => <ContextMemberCard key={m.id} member={m} compact />)}
-            </div>
+            <ColorRow>
+              <SectionLabel label="Domain Leadership" sub="Secretaries and Joint Secretaries across 5 domains." />
+              <div className={GRID_COMPACT}>
+                {domainLeaders.map(m => <ContextMemberCard key={m.id} member={m} compact />)}
+              </div>
+            </ColorRow>
           </div>
-        </ColorRow>
+        </section>
       )}
 
       {/* ── Division Wise Leadership ────────────────────────────────── */}
       {(divisionLeaders.length > 0) && (
-        <ColorRow style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
+        <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-            <SectionLabel label="Division Leadership" sub="Operations, management, and technical divisions." />
-            <div className={GRID_COMPACT}>
-              {divisionLeaders.map(m => <ContextMemberCard key={m.id} member={m} compact />)}
-            </div>
+            <ColorRow>
+              <SectionLabel label="Division Leadership" sub="Operations, management, and technical divisions." />
+              <div className={GRID_COMPACT}>
+                {divisionLeaders.map(m => <ContextMemberCard key={m.id} member={m} compact />)}
+              </div>
+            </ColorRow>
           </div>
-        </ColorRow>
+        </section>
       )}
 
       {/* ── Faculty Mentors & In-Charges ─────────────────────────────── */}
-      <ColorRow className="bg-paper border-b hairline">
+      <section className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
           <SectionLabel label="Club Mentors & In-Charges" sub="Faculty guiding our student clubs." />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div>
+            <ColorRow>
               <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty Mentors</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {mentors.length > 0
                   ? mentors.map(m => <ContextMemberCard key={m.id} member={m} compact />)
                   : Array.from({ length: 2 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Faculty Mentor" compact />)}
               </div>
-            </div>
-            <div>
+            </ColorRow>
+            <ColorRow>
               <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty In-Charges</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {incharges.length > 0
                   ? incharges.map(m => <ContextMemberCard key={m.id} member={m} compact />)
                   : Array.from({ length: 2 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Faculty In-Charge" compact />)}
               </div>
-            </div>
+            </ColorRow>
           </div>
         </div>
-      </ColorRow>
+      </section>
 
       {/* ── Club Leadership ─────────────────────────────────────────── */}
       {clubs.length > 0 && (
-        <ColorRow style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
+        <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-            <SectionLabel label="Club Leadership" sub="Leads and Co-Leads of all clubs." />
-            <div className={GRID_COMPACT}>
-              {clubs.map(club => {
-                // Find all leaders for this club
-                const leaders = clubLeads.filter(m => m.club_lead === club.name);
-                
-                if (leaders.length === 0) {
-                  return (
+            <ColorRow>
+              <SectionLabel label="Club Leadership" sub="Leads of all clubs across 5 domains." />
+              <div className={GRID_COMPACT}>
+                {clubs.map(club => {
+                  // Find all leaders for this club
+                  const leaders = clubLeads.filter(m => m.club_lead === club.name);
+                  
+                  if (leaders.length === 0) {
+                    return (
+                      <ContextMemberCard
+                        key={`${club.slug}-empty`}
+                        roleFallback="Club Lead"
+                        nameFallback={`${club.name} Lead`}
+                        compact
+                      />
+                    );
+                  }
+                  
+                  return leaders.map(lead => (
                     <ContextMemberCard
-                      key={`${club.slug}-empty`}
-                      roleFallback="Club Lead"
-                      nameFallback={`${club.name} Lead`}
+                      key={lead.id}
+                      member={lead}
+                      roleFallback={lead.role}
                       compact
                     />
-                  );
-                }
-                
-                return leaders.map(lead => (
-                  <ContextMemberCard
-                    key={lead.id}
-                    member={lead}
-                    roleFallback={lead.role}
-                    compact
-                  />
-                ));
-              })}
-            </div>
+                  ));
+                })}
+              </div>
+            </ColorRow>
           </div>
-        </ColorRow>
+        </section>
       )}
     </>
   );
