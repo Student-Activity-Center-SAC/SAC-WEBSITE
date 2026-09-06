@@ -1,6 +1,7 @@
 import { Camera } from 'lucide-react';
 import { db } from '@/lib/query-builder';
 import CouncilGrid from './_components/CouncilGrid';
+import { DirectorSection, DeputyDirectorsSection } from './_components/DirectorSections';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,90 +85,9 @@ export default async function LeadershipPage() {
         </div>
       </section>
 
-      {/* ─── Director SAC ─────────────────────────────────────────────── */}
-      <section className="bg-paper border-b hairline">
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
-          <p className="kicker mb-8" style={{ color: '#970003' }}>Director, Student Activity Centre</p>
+      <DirectorSection />
 
-          <div className="group grid overflow-hidden rounded-2xl border hairline bg-paper sm:grid-cols-[300px_1fr]">
-
-            {/* Photo — 4:3 on mobile, full height on desktop */}
-            <div className="aspect-[4/3] overflow-hidden sm:aspect-auto">
-              <img
-                loading="lazy"
-                decoding="async"
-                src="/sai vijay sir.png"
-                alt="Er. P Sai Vijay"
-                className="h-full w-full object-cover object-top transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0"
-              />
-            </div>
-
-            {/* Info */}
-            <div className="flex flex-col justify-center px-8 py-10 sm:px-12">
-              <p className="kicker text-red-700">Director</p>
-              <h3 className="font-display mt-3 text-3xl font-medium text-foreground sm:text-4xl">
-                Er. P Sai Vijay
-              </h3>
-              <p className="mt-2 text-base font-semibold text-red-700">
-                Director, Student Activity Centre
-              </p>
-              <p className="mt-5 max-w-lg text-sm leading-relaxed text-foreground/55">
-                The Director of the Student Activity Centre oversees all student clubs, domains, events, and
-                extracurricular programmes at KL University — guiding both the faculty leadership and student
-                council in fostering a vibrant campus community.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Deputy Directors SAC ─────────────────────────────────────── */}
-      <section className="bg-white border-b hairline">
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-16">
-          <p className="kicker mb-8" style={{ color: '#970003' }}>Deputy Directors, SAC</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center">
-            {/* Deputy 1 */}
-            <div className="flex flex-col items-center group">
-              <div className="w-56 md:w-64 aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative shadow-sm">
-                {!deputy1?.photo ? (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
-                    Deputy Director 1
-                  </div>
-                ) : (
-                  <img src={deputy1.photo} alt={deputy1.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              <h3 className="font-display text-xl font-medium text-foreground text-center">{deputy1?.name || 'Deputy Director Name'}</h3>
-              <p className="text-red-700 font-semibold text-sm text-center">Deputy Director, SAC</p>
-            </div>
-
-            {/* Message */}
-            <div className="text-center px-2 py-8 md:py-0">
-              <p className="text-lg leading-relaxed text-foreground/70 italic font-display" style={{ letterSpacing: '-0.01em' }}>
-                "Our Deputy Directors play a pivotal role in bridging the gap between student aspirations and institutional resources. They are the driving force behind our vibrant campus life, ensuring that every club, domain, and student initiative receives the guidance and support needed to thrive and create lasting impact."
-              </p>
-            </div>
-
-            {/* Deputy 2 */}
-            <div className="flex flex-col items-center group">
-              <div className="w-56 md:w-64 aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 mb-5 border hairline relative shadow-sm">
-                {!deputy2?.photo ? (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold uppercase tracking-widest text-xs">
-                    Deputy Director 2
-                  </div>
-                ) : (
-                  <img src={deputy2.photo} alt={deputy2.name} className="w-full h-full object-cover transition-[filter] duration-700 sm:grayscale sm:group-hover:grayscale-0" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              <h3 className="font-display text-xl font-medium text-foreground text-center">{deputy2?.name || 'Deputy Director Name'}</h3>
-              <p className="text-red-700 font-semibold text-sm text-center">Deputy Director, SAC</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <DeputyDirectorsSection deputy1={deputy1} deputy2={deputy2} />
 
       {/* ─── Interactive Council Grid ─────────────────────────────────── */}
       <CouncilGrid members={members ?? []} clubs={clubs ?? []} />
