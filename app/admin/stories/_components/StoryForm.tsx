@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Save, Upload } from 'lucide-react';
+import { compressImageIfTooLarge } from '../_utils/upload-helper';
 
 const DOMAINS = [
   { code: 'TEC', label: 'TEC — Technology' },
@@ -43,8 +44,9 @@ export default function StoryForm({ initial, mode }: Props) {
     if (!file) return;
     setUploading(true);
     try {
+      const processedFile = await compressImageIfTooLarge(file);
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', processedFile);
       fd.append('folder', 'stories');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const d = await res.json();

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Save, Upload } from 'lucide-react';
+import { compressImageIfTooLarge } from '../_utils/upload-helper';
 
 const LEVELS = ['International', 'National', 'State', 'University'] as const;
 const DOMAIN_CODES = ['TEC', 'LCH', 'ESO', 'HWB', 'IIE'] as const;
@@ -88,8 +89,9 @@ export default function AchievementForm({ achievement }: Props) {
     if (!file) return;
     setUploading(true);
     try {
+      const processedFile = await compressImageIfTooLarge(file);
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', processedFile);
       fd.append('folder', 'achievements');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const text = await res.text();

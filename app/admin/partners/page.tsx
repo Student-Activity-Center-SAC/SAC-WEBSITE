@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Trash2, Upload, X, ExternalLink, Pencil } from 'lucide-react';
+import { compressImageIfTooLarge } from '../_utils/upload-helper';
 
 export default function PartnersAdminPage() {
   const [partners, setPartners]   = useState<any[]>([]);
@@ -43,8 +44,9 @@ export default function PartnersAdminPage() {
     if (!file) return;
     setUploading(true);
     try {
+      const processedFile = await compressImageIfTooLarge(file);
       const fd = new FormData();
-      fd.append('file', file);
+      fd.append('file', processedFile);
       fd.append('folder', 'partners');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       const data = await res.json();

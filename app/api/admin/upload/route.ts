@@ -12,7 +12,6 @@ const IMAGE_EXTS = new Set([
 ]);
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;  // 5 MB for images
-const MAX_PDF_BYTES   = 25 * 1024 * 1024; // 25 MB for PDFs
 const SAFE_FOLDER = /^[a-zA-Z0-9_-]+$/;
 
 export async function POST(req: NextRequest) {
@@ -43,13 +42,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'SVG uploads are not allowed.' }, { status: 415 });
     }
 
-    const maxBytes = isPdf ? MAX_PDF_BYTES : MAX_IMAGE_BYTES;
-    if (file.size > maxBytes) {
-      const limitMB  = Math.round(maxBytes / 1024 / 1024);
+    if (isImage && file.size > MAX_IMAGE_BYTES) {
+      const limitMB  = Math.round(MAX_IMAGE_BYTES / 1024 / 1024);
       const sizeMB   = (file.size / 1024 / 1024).toFixed(1);
       return NextResponse.json(
-        { error: `File is ${sizeMB} MB — exceeds the ${limitMB} MB limit for ${isPdf ? 'PDFs' : 'images'}.` },
-        { status: 413 },
+        { error: `Image too large (${sizeMB} MB). Max allowed is ${limitMB} MB. Please compress it first.` },
+        { status: 400 }
       );
     }
 

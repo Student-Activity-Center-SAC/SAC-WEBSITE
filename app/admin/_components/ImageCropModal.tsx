@@ -23,15 +23,26 @@ function createImage(url: string): Promise<HTMLImageElement> {
 async function getCroppedBlob(imageSrc: string, cropPixels: Area): Promise<Blob> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement('canvas');
-  canvas.width = cropPixels.width;
-  canvas.height = cropPixels.height;
+  let width = cropPixels.width;
+  let height = cropPixels.height;
+  const MAX_DIM = 2000;
+  if (width > height && width > MAX_DIM) {
+    height *= MAX_DIM / width;
+    width = MAX_DIM;
+  } else if (height > MAX_DIM) {
+    width *= MAX_DIM / height;
+    height = MAX_DIM;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext('2d')!;
   ctx.drawImage(
     image,
     cropPixels.x, cropPixels.y, cropPixels.width, cropPixels.height,
-    0, 0, cropPixels.width, cropPixels.height,
+    0, 0, width, height,
   );
-  return new Promise(resolve => canvas.toBlob(b => resolve(b as Blob), 'image/jpeg', 0.92));
+  return new Promise(resolve => canvas.toBlob(b => resolve(b as Blob), 'image/jpeg', 0.85));
 }
 
 export default function ImageCropModal({ imageSrc, aspect, onCancel, onComplete }: Props) {
