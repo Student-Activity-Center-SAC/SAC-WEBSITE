@@ -32,6 +32,7 @@ function MemberCard({
   member?: Member;
   roleFallback?: string;
   nameFallback?: string;
+  compact?: boolean;
 }) {
   const isPlaceholder = !member;
   const initials = member?.name
@@ -67,11 +68,11 @@ function MemberCard({
       </div>
 
       {/* Info */}
-      <div className="px-5 py-5 flex flex-col gap-1 flex-1 relative bg-white">
-        <p className="font-display font-semibold text-base sm:text-lg leading-tight text-foreground">
+      <div className={`${compact ? 'px-4 py-4' : 'px-5 py-5'} flex flex-col gap-1 flex-1 relative bg-white`}>
+        <p className={`font-display font-semibold leading-tight text-foreground ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
           {member?.name ?? nameFallback ?? 'Name TBA'}
         </p>
-        <p className="text-xs sm:text-sm font-semibold tracking-wide" style={{ color: '#970003' }}>
+        <p className={`font-semibold tracking-wide ${compact ? 'text-[10px] sm:text-xs' : 'text-xs sm:text-sm'}`} style={{ color: '#970003' }}>
           {member?.role ?? roleFallback ?? '—'}
         </p>
         {(member?.subtitle || member?.club_lead || member?.designation) && (
@@ -116,6 +117,7 @@ function SectionLabel({ label, sub }: { label: string; sub?: string }) {
 
 // ─── Shared grid wrapper ──────────────────────────────────────────────────────
 const GRID = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8';
+const GRID_COMPACT = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6';
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function CouncilGrid({ members, clubs }: { members: Member[]; clubs: ClubRow[] }) {
@@ -151,10 +153,10 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
             style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: '#191313', letterSpacing: '-0.02em' }}>
             Vice Presidents of KL SAC.
           </h2>
-          <div className={GRID}>
+          <div className={GRID_COMPACT}>
             {vps.length > 0
-              ? vps.map(m => <MemberCard key={m.id} member={m} />)
-              : Array.from({ length: 12 }).map((_, i) => <MemberCard key={i} roleFallback="Vice President" />)}
+              ? vps.map(m => <MemberCard key={m.id} member={m} compact />)
+              : Array.from({ length: 12 }).map((_, i) => <MemberCard key={i} roleFallback="Vice President" compact />)}
           </div>
 
         </div>
@@ -165,8 +167,8 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
         <section className="bg-paper border-b hairline">
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
             <SectionLabel label="Domain Leadership" sub="Secretaries and Joint Secretaries across 5 domains." />
-            <div className={GRID}>
-              {domainLeaders.map(m => <MemberCard key={m.id} member={m} />)}
+            <div className={GRID_COMPACT}>
+              {domainLeaders.map(m => <MemberCard key={m.id} member={m} compact />)}
             </div>
           </div>
         </section>
@@ -177,8 +179,8 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
         <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
             <SectionLabel label="Division Leadership" sub="Operations, management, and technical divisions." />
-            <div className={GRID}>
-              {divisionLeaders.map(m => <MemberCard key={m.id} member={m} />)}
+            <div className={GRID_COMPACT}>
+              {divisionLeaders.map(m => <MemberCard key={m.id} member={m} compact />)}
             </div>
           </div>
         </section>
@@ -191,18 +193,18 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
               <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty Mentors</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {mentors.length > 0
-                  ? mentors.map(m => <MemberCard key={m.id} member={m} />)
-                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" />)}
+                  ? mentors.map(m => <MemberCard key={m.id} member={m} compact />)
+                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" compact />)}
               </div>
             </div>
             <div>
               <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty In-Charges</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {incharges.length > 0
-                  ? incharges.map(m => <MemberCard key={m.id} member={m} />)
-                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" />)}
+                  ? incharges.map(m => <MemberCard key={m.id} member={m} compact />)
+                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" compact />)}
               </div>
             </div>
           </div>
@@ -214,7 +216,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
         <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
             <SectionLabel label="Club Leadership" sub="Leads and Co-Leads of all clubs." />
-            <div className={GRID}>
+            <div className={GRID_COMPACT}>
               {clubs.map(club => {
                 // Find all leaders for this club
                 const leaders = clubLeads.filter(m => m.club_lead === club.name);
@@ -225,6 +227,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
                       key={`${club.slug}-empty`}
                       roleFallback="Club Lead"
                       nameFallback={`${club.name} Lead`}
+                      compact
                     />
                   );
                 }
@@ -234,6 +237,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
                     key={lead.id}
                     member={lead}
                     roleFallback={lead.role}
+                    compact
                   />
                 ));
               })}
