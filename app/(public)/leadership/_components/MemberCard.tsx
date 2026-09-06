@@ -43,9 +43,13 @@ export function MemberCard({
     if (!member?.linkedin) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     
-    // Start scanning effect after 3 seconds
+    // Start scanning effect immediately
+    setIsScanning(true);
+
+    // Open profile after 3 seconds of continuous hover
     hoverTimer.current = setTimeout(() => {
-      setIsScanning(true);
+      setIsScanning(false);
+      window.open(member.linkedin, '_blank');
     }, 3000);
   };
 
@@ -84,24 +88,32 @@ export function MemberCard({
       {/* Laser Scanner Overlay */}
       <AnimatePresence>
         {isScanning && (
-          <motion.div
-            initial={{ top: '-10%' }}
-            animate={{ top: '100%' }}
-            exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            transition={{ duration: 1.5, ease: 'linear' }}
-            onAnimationComplete={() => {
-              if (member?.linkedin) {
-                window.open(member.linkedin, '_blank');
-              }
-              setIsScanning(false);
-            }}
-            className="absolute left-0 right-0 h-16 z-50 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to bottom, transparent, rgba(151,0,3,0.3) 90%, rgba(216,0,6,0.8) 100%)',
-              borderBottom: '2px solid rgba(255, 50, 50, 0.9)',
-              boxShadow: '0 4px 15px rgba(216, 0, 6, 0.5)'
-            }}
-          />
+          <>
+            <motion.div
+              initial={{ top: '-10%' }}
+              animate={{ top: ['-10%', '100%', '-10%', '100%', '-10%', '100%'] }}
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              transition={{ duration: 3, ease: 'linear' }}
+              className="absolute left-0 right-0 h-16 z-50 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to bottom, transparent, rgba(151,0,3,0.3) 90%, rgba(216,0,6,0.8) 100%)',
+                borderBottom: '2px solid rgba(255, 50, 50, 0.9)',
+                boxShadow: '0 4px 15px rgba(216, 0, 6, 0.5)'
+              }}
+            />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-40 flex flex-col items-center justify-center pointer-events-none"
+              style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(2px)' }}
+            >
+              <div className="bg-white/95 px-4 py-2.5 rounded-full shadow-lg border border-red-100 flex items-center gap-2 transform transition-transform scale-110">
+                <Linkedin size={14} className="text-[#0A66C2]" />
+                <span className="text-[10px] font-black text-[#970003] uppercase tracking-widest mt-px">Opening Profile...</span>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
