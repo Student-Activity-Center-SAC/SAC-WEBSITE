@@ -40,10 +40,11 @@ export default async function LeadershipPage() {
             Official Council of KL SAC
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: 'rgba(25,19,19,0.55)', maxWidth: '60ch' }}>
-            A structured body of distinguished faculty advisors, executive leadership, domain and division heads,
-            club mentors, and student club leads — collectively shaping the vision, governance, and vibrant campus
-            experience of KL University across the University Advisory Board, Director &amp; Deputy Directors SAC,
-            Executive Leadership, Domain &amp; Division Leadership, Club Mentors &amp; In-Charges, and Clubs Leadership.
+            The Official Council of KL SAC is the central leadership body of KL University, bringing together the
+            University's esteemed institutional leadership, distinguished faculty members, and dedicated student leaders.
+            United by a shared vision, the Council provides strategic direction, strengthens governance, fosters leadership,
+            and drives meaningful initiatives that enrich the student experience while contributing to a vibrant, inclusive,
+            and dynamic campus culture.
           </p>
         </div>
       </section>
