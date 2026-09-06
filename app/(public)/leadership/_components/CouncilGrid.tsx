@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Linkedin } from 'lucide-react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 interface Member {
   id: string;
@@ -29,11 +30,13 @@ function MemberCard({
   roleFallback,
   nameFallback,
   compact = false,
+  colorized = false,
 }: {
   member?: Member;
   roleFallback?: string;
   nameFallback?: string;
   compact?: boolean;
+  colorized?: boolean;
 }) {
   const isPlaceholder = !member;
   const initials = member?.name
@@ -41,7 +44,10 @@ function MemberCard({
     : '?';
 
   return (
-    <div className={`group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${isPlaceholder ? 'opacity-50 grayscale' : ''}`}>
+    <div
+      className={`group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${isPlaceholder ? 'opacity-50' : ''}`}
+      style={{ filter: colorized ? 'grayscale(0%)' : 'grayscale(100%)', transition: 'filter 0.6s ease, box-shadow 0.3s ease, transform 0.3s ease' }}
+    >
       {/* Portrait photo — aspect-[4/5] */}
       <div className="relative w-full overflow-hidden bg-gray-50" style={{ aspectRatio: '4/5' }}>
         {member?.photo ? (
@@ -81,7 +87,7 @@ function MemberCard({
             {member.subtitle || member.club_lead || member.designation}
           </p>
         )}
-        
+
         {/* Spacer to push LinkedIn button to bottom if needed */}
         <div className="flex-1" />
 
@@ -116,6 +122,52 @@ function SectionLabel({ label, sub }: { label: string; sub?: string }) {
   );
 }
 
+// ─── Row Section with hover + scroll-reveal colorization ──────────────────────
+function ColorRow({ children, className = '', style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLElement>(null);
+  const [colorized, setColorized] = useState(false);
+
+  // Scroll-based: colorize when section is 25% visible
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setColorized(true);
+        else setColorized(false);
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      className={className}
+      style={style}
+      onMouseEnter={() => setColorized(true)}
+      onMouseLeave={() => setColorized(false)}
+    >
+      {/* Pass colorized down via CSS custom property on this element */}
+      <ColorContext.Provider value={colorized}>
+        {children}
+      </ColorContext.Provider>
+    </section>
+  );
+}
+
+// ─── Context for colorized state ─────────────────────────────────────────────
+import { createContext, useContext } from 'react';
+const ColorContext = createContext(false);
+
+// ─── Colorized MemberCard (reads from context) ────────────────────────────────
+function ContextMemberCard(props: Parameters<typeof MemberCard>[0]) {
+  const colorized = useContext(ColorContext);
+  return <MemberCard {...props} colorized={colorized} />;
+}
+
 // ─── Shared grid wrapper ──────────────────────────────────────────────────────
 const GRID = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8';
 const GRID_COMPACT = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6';
@@ -136,16 +188,16 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
 
   return (
     <>
-      {/* ── Executive Leadership: Presidents + Vice Presidents ─────── */}
-      <section className="bg-paper border-b hairline">
+      {/* ── Executive Leadership: Presidents ──────────────────────────── */}
+      <ColorRow className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
 
           {/* Presidents — with the red kicker */}
           <SectionLabel label="Executive Leadership" sub="Presidents of KL SAC." />
           <div className={GRID + ' mb-20'}>
             {presidents.length > 0
-              ? presidents.map(m => <MemberCard key={m.id} member={m} />)
-              : Array.from({ length: 4 }).map((_, i) => <MemberCard key={i} roleFallback="President" />)}
+              ? presidents.map(m => <ContextMemberCard key={m.id} member={m} />)
+              : Array.from({ length: 4 }).map((_, i) => <ContextMemberCard key={i} roleFallback="President" />)}
           </div>
 
           {/* Vice Presidents — plain sub-heading, no red kicker */}
@@ -156,39 +208,39 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
           </h2>
           <div className={GRID_COMPACT}>
             {vps.length > 0
-              ? vps.map(m => <MemberCard key={m.id} member={m} compact />)
-              : Array.from({ length: 12 }).map((_, i) => <MemberCard key={i} roleFallback="Vice President" compact />)}
+              ? vps.map(m => <ContextMemberCard key={m.id} member={m} compact />)
+              : Array.from({ length: 12 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Vice President" compact />)}
           </div>
 
         </div>
-      </section>
+      </ColorRow>
 
       {/* ── Domain Wise Leadership ──────────────────────────────────── */}
       {(domainLeaders.length > 0) && (
-        <section className="bg-paper border-b hairline">
+        <ColorRow className="bg-paper border-b hairline">
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
             <SectionLabel label="Domain Leadership" sub="Secretaries and Joint Secretaries across 5 domains." />
             <div className={GRID_COMPACT}>
-              {domainLeaders.map(m => <MemberCard key={m.id} member={m} compact />)}
+              {domainLeaders.map(m => <ContextMemberCard key={m.id} member={m} compact />)}
             </div>
           </div>
-        </section>
+        </ColorRow>
       )}
 
       {/* ── Division Wise Leadership ────────────────────────────────── */}
       {(divisionLeaders.length > 0) && (
-        <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
+        <ColorRow style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
             <SectionLabel label="Division Leadership" sub="Operations, management, and technical divisions." />
             <div className={GRID_COMPACT}>
-              {divisionLeaders.map(m => <MemberCard key={m.id} member={m} compact />)}
+              {divisionLeaders.map(m => <ContextMemberCard key={m.id} member={m} compact />)}
             </div>
           </div>
-        </section>
+        </ColorRow>
       )}
 
       {/* ── Faculty Mentors & In-Charges ─────────────────────────────── */}
-      <section className="bg-paper border-b hairline">
+      <ColorRow className="bg-paper border-b hairline">
         <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
           <SectionLabel label="Club Mentors & In-Charges" sub="Faculty guiding our student clubs." />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -196,25 +248,25 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
               <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty Mentors</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {mentors.length > 0
-                  ? mentors.map(m => <MemberCard key={m.id} member={m} compact />)
-                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty Mentor" compact />)}
+                  ? mentors.map(m => <ContextMemberCard key={m.id} member={m} compact />)
+                  : Array.from({ length: 2 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Faculty Mentor" compact />)}
               </div>
             </div>
             <div>
               <p className="kicker mb-8" style={{ color: '#A1A1AA' }}>Faculty In-Charges</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {incharges.length > 0
-                  ? incharges.map(m => <MemberCard key={m.id} member={m} compact />)
-                  : Array.from({ length: 2 }).map((_, i) => <MemberCard key={i} roleFallback="Faculty In-Charge" compact />)}
+                  ? incharges.map(m => <ContextMemberCard key={m.id} member={m} compact />)
+                  : Array.from({ length: 2 }).map((_, i) => <ContextMemberCard key={i} roleFallback="Faculty In-Charge" compact />)}
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </ColorRow>
 
       {/* ── Club Leadership ─────────────────────────────────────────── */}
       {clubs.length > 0 && (
-        <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
+        <ColorRow style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
             <SectionLabel label="Club Leadership" sub="Leads and Co-Leads of all clubs." />
             <div className={GRID_COMPACT}>
@@ -224,7 +276,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
                 
                 if (leaders.length === 0) {
                   return (
-                    <MemberCard
+                    <ContextMemberCard
                       key={`${club.slug}-empty`}
                       roleFallback="Club Lead"
                       nameFallback={`${club.name} Lead`}
@@ -234,7 +286,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
                 }
                 
                 return leaders.map(lead => (
-                  <MemberCard
+                  <ContextMemberCard
                     key={lead.id}
                     member={lead}
                     roleFallback={lead.role}
@@ -244,7 +296,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
               })}
             </div>
           </div>
-        </section>
+        </ColorRow>
       )}
     </>
   );
