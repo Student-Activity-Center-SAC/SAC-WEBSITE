@@ -12,24 +12,8 @@ interface Props {
 }
 
 function useRowColor() {
-  const ref = useRef<HTMLElement>(null);
   const [colorized, setColorized] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setColorized(true);
-        else setColorized(false);
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, colorized, setColorized };
+  return { colorized, setColorized };
 }
 
 const imgStyle = (colorized: boolean): React.CSSProperties => ({
@@ -42,10 +26,9 @@ const imgStyle = (colorized: boolean): React.CSSProperties => ({
 });
 
 export function DirectorSection() {
-  const { ref, colorized, setColorized } = useRowColor();
+  const { colorized, setColorized } = useRowColor();
   return (
     <section
-      ref={ref}
       className="bg-paper border-b hairline"
       onMouseEnter={() => setColorized(true)}
       onMouseLeave={() => setColorized(false)}
@@ -88,10 +71,9 @@ export function DirectorSection() {
 }
 
 export function DeputyDirectorsSection({ deputy1, deputy2 }: Props) {
-  const { ref, colorized, setColorized } = useRowColor();
+  const { colorized, setColorized } = useRowColor();
   return (
     <section
-      ref={ref}
       className="bg-white border-b hairline"
       onMouseEnter={() => setColorized(true)}
       onMouseLeave={() => setColorized(false)}
