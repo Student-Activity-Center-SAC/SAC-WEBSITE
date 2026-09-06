@@ -171,13 +171,15 @@ export function ActivityCard({ act, completed }: { act: Activity; completed: boo
             </a>
           )}
           {hasReport && (
-            <Link
-              href={`/activities/report/${encodeURIComponent(act.code)}`}
+            <a
+              href={`https://sacactivities.kluniversity.in/report/${encodeURIComponent(act.code)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-gray-50 border"
               style={{ borderColor: '#E4E4E7', color: '#52525B' }}>
               <FileText size={11} style={{ color }} />
-              View Report
-            </Link>
+              View Report & Download PDF
+            </a>
           )}
         </div>
       </div>
