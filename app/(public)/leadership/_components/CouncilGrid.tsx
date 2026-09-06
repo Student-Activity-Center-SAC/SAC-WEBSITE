@@ -28,6 +28,7 @@ function MemberCard({
   member,
   roleFallback,
   nameFallback,
+  compact = false,
 }: {
   member?: Member;
   roleFallback?: string;
