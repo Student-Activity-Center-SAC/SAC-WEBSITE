@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Official Council — KL SAC',
   description:
-    'The Official Council of KL SAC — a structured body of faculty leadership, executive officers, domain leads, club mentors, and student club leaders working together across 25+ clubs and 5 domains to enrich campus life.',
+    'The Official Council of KL SAC — a structured body of faculty leadership, executive officers, domain leads, club mentors, and student club leaders working together across 24+ clubs and 5 domains to enrich campus life.',
 };
 
 export default async function LeadershipPage() {
