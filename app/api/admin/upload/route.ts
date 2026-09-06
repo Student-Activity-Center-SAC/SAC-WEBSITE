@@ -5,14 +5,14 @@ import { putObject, makeKey } from '@/lib/storage';
 // SVG is deliberately excluded — no upload flow in the admin needs it, and
 // serving user-supplied SVGs back with an image content-type lets embedded
 // <script> run in the browser (stored XSS).
-const MIME_EXT: Record<string, string> = {
-  jpg: 'image/jpeg', jpeg: 'image/jpeg',
-  png: 'image/png',  gif: 'image/gif',
-  webp: 'image/webp',
-  pdf: 'application/pdf',
-};
 
-const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25MB — covers ebook PDFs and photos
+// For images: accept any format the browser reports as image/*
+const IMAGE_EXTS = new Set([
+  'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'tif', 'avif', 'heic', 'heif',
+]);
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;  // 5 MB for images
+const MAX_PDF_BYTES   = 25 * 1024 * 1024; // 25 MB for PDFs
 const SAFE_FOLDER = /^[a-zA-Z0-9_-]+$/;
 
 export async function POST(req: NextRequest) {
@@ -26,19 +26,40 @@ export async function POST(req: NextRequest) {
     const folder     = SAFE_FOLDER.test(rawFolder) ? rawFolder : 'misc';
 
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    if (file.size > MAX_FILE_BYTES) {
-      return NextResponse.json({ error: 'File exceeds the 25MB upload limit' }, { status: 413 });
+
+    const ext = (file.name.split('.').pop() ?? '').toLowerCase();
+    const isPdf = ext === 'pdf';
+    const isImage = file.type.startsWith('image/') || IMAGE_EXTS.has(ext);
+
+    if (!isPdf && !isImage) {
+      return NextResponse.json(
+        { error: `Unsupported file type: .${ext || '?'}. Allowed: images (jpg, png, webp, etc.) or pdf.` },
+        { status: 415 },
+      );
     }
 
-    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-    if (!(ext in MIME_EXT)) {
-      return NextResponse.json({ error: `Unsupported file type: .${ext}` }, { status: 415 });
+    // SVG blocked regardless
+    if (ext === 'svg' || file.type === 'image/svg+xml') {
+      return NextResponse.json({ error: 'SVG uploads are not allowed.' }, { status: 415 });
     }
 
-    const name        = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const key         = makeKey(folder, name);
-    const contentType = MIME_EXT[ext];
-    const buffer      = Buffer.from(await file.arrayBuffer());
+    const maxBytes = isPdf ? MAX_PDF_BYTES : MAX_IMAGE_BYTES;
+    if (file.size > maxBytes) {
+      const limitMB  = Math.round(maxBytes / 1024 / 1024);
+      const sizeMB   = (file.size / 1024 / 1024).toFixed(1);
+      return NextResponse.json(
+        { error: `File is ${sizeMB} MB — exceeds the ${limitMB} MB limit for ${isPdf ? 'PDFs' : 'images'}.` },
+        { status: 413 },
+      );
+    }
+
+    // Derive content-type: trust browser for images, force pdf mime for pdf
+    const contentType = isPdf ? 'application/pdf' : (file.type || 'image/jpeg');
+    // Normalise extension so stored keys are always lowercase
+    const safeExt = ext || (isPdf ? 'pdf' : 'jpg');
+    const name    = `${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt}`;
+    const key     = makeKey(folder, name);
+    const buffer  = Buffer.from(await file.arrayBuffer());
 
     await putObject(key, buffer, contentType);
 

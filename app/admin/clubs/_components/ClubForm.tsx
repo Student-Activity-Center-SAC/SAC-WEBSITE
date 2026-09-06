@@ -359,6 +359,18 @@ export default function ClubForm({ initial, mode }: Props) {
   async function openCrop(e: React.ChangeEvent<HTMLInputElement>, key: string) {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+
+    // ── 5 MB limit check ──────────────────────────────────────────────────────
+    const MAX_MB = 5;
+    const oversized = files.filter(f => f.size > MAX_MB * 1024 * 1024);
+    if (oversized.length > 0) {
+      oversized.forEach(f => {
+        const mb = (f.size / 1024 / 1024).toFixed(1);
+        toast.error(`"${f.name}" is ${mb} MB — max allowed is ${MAX_MB} MB`);
+      });
+      e.target.value = '';
+      return;
+    }
     
     // Auto-upload multiple gallery photos
     if (key === 'gallery' && files.length > 1) {

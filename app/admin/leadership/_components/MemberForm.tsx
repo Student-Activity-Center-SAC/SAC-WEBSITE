@@ -206,6 +206,13 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    const MAX_MB = 5;
+    if (file.size > MAX_MB * 1024 * 1024) {
+      const mb = (file.size / 1024 / 1024).toFixed(1);
+      toast.error(`"${file.name}" is ${mb} MB — max allowed is ${MAX_MB} MB`);
+      e.target.value = '';
+      return;
+    }
     pendingFile.current = file;
     const reader = new FileReader();
     reader.onload = ev => setCropSrc(ev.target?.result as string);

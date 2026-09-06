@@ -13,7 +13,7 @@ export const metadata = {
 export default async function LeadershipPage() {
   const [{ data: members }, { data: dbClubs }, { data: advisoryBoard }] = await Promise.all([
     db.from('council_members').select('*').order('sort_order', { ascending: true }),
-    db.from('clubs').select('*').order('club_name', { ascending: true }),
+    db.from('clubs').select('*').order('sort_order', { ascending: true }),
     db.from('advisory_board').select('*').order('sort_order', { ascending: true }),
   ]);
 

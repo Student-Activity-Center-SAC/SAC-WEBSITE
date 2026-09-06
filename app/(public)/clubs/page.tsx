@@ -8,7 +8,7 @@ export default async function ClubsPage() {
   const { data: dbClubs } = await db
     .from('clubs')
     .select('*')
-    .order('club_name', { ascending: true });
+    .order('sort_order', { ascending: true });
 
   const clubs = (dbClubs ?? []).map((c: any) => ({
     id: c.id,
