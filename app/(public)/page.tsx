@@ -16,11 +16,11 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'KL SAC — Student Activity Center, KL University',
   description:
-    'KL SAC is KL University\'s Student Activity Center — 25+ clubs, 5 domains, one mission: to develop the complete student.',
+    'KL SAC is KL University\'s Student Activity Center — 24+ clubs, 5 domains, one mission: to develop the complete student.',
 };
 
 const JOURNEY_STEPS = [
-  { title: 'Explorer',     description: 'Explore your interests across five domains and twenty-five clubs. Find the community that matches who you are — or who you want to become.' },
+  { title: 'Explorer',     description: 'Explore your interests across five domains and twenty-four clubs. Find the community that matches who you are — or who you want to become.' },
   { title: 'Foundation',   description: 'Join activities, competitions, workshops, and programmes that go beyond the curriculum. Every participation builds real-world experience.' },
   { title: 'Practitioner', description: 'Build competencies that employers and institutions recognise — technical, creative, leadership, and interpersonal skills that define the complete professional.' },
   { title: 'Leader',       description: 'Take responsibility within your club — as a coordinator, team leader, or domain representative. Leadership at SAC is earned through performance, not appointment.' },
@@ -104,7 +104,7 @@ export default async function HomePage() {
           {/* Body */}
           <p className="text-lg leading-relaxed mb-10 animate-fade-up delay-100"
             style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '48ch' }}>
-            KL SAC is where 25+ clubs, {domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
+            KL SAC is where 24+ clubs, {domains.length > 0 ? `${domains.length} domains` : 'five domains'}, and thousands of students come together to build something larger than a degree.
           </p>
 
           {/* CTAs */}
@@ -145,7 +145,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0"
             style={{ borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
             {[
-              { value: '25', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
+              { value: '24', label: 'Active Clubs',      borderCls: 'hairline border-r border-b lg:border-b-0' },
               { value: '5',   label: 'Learning Domains',  borderCls: 'hairline border-b lg:border-b-0 lg:border-r' },
               { value: statStudents   > 0 ? String(statStudents)       : '5868', label: 'Students Annually', borderCls: 'hairline border-r' },
               { value: statActivities > 0 ? String(statActivities)     : '437', label: 'Annual Activities', borderCls: '' },
@@ -303,7 +303,7 @@ export default async function HomePage() {
           <FadeIn className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
             <div>
               <p className="kicker mb-3" style={{ color: '#970003' }}>
-                {domains.length || 5} Domains · 25+ Clubs
+                {domains.length || 5} Domains · 24+ Clubs
               </p>
               <h2
                 className="font-display font-medium leading-[1.07]"
@@ -714,7 +714,7 @@ export default async function HomePage() {
               Ready to make your university years count?
             </h2>
             <p className="text-base mb-12 mx-auto" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '46ch' }}>
-              Join one of 25+ clubs, participate in activities, and build experiences that will define your career.
+              Join one of 24+ clubs, participate in activities, and build experiences that will define your career.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link href="/clubs"

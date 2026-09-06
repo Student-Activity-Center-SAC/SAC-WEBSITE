@@ -179,7 +179,7 @@ export default async function AboutPage() {
               </h2>
               <div className="flex flex-col gap-4 text-base leading-[1.75]" style={{ color: 'rgba(25,19,19,0.58)' }}>
                 <p>
-                  KL SAC is KL University's official co-curricular development body. It operates 25+ student clubs across{domainCount > 0 ? ` ${domainCount}` : ''} domains — Technology, Liberal Arts & Culture, Health & Wellbeing, Social Outreach, and Innovation & Entrepreneurship.
+                  KL SAC is KL University's official co-curricular development body. It operates 24+ student clubs across{domainCount > 0 ? ` ${domainCount}` : ''} domains — Technology, Liberal Arts & Culture, Health & Wellbeing, Social Outreach, and Innovation & Entrepreneurship.
                 </p>
                 <p>
                   SAC is distinct from the academic programme. Where the dashboard tracks your academic journey, SAC shapes who you become beyond it — through real activities, genuine leadership, and measurable impact.
@@ -194,7 +194,7 @@ export default async function AboutPage() {
             <FadeIn delay={0.1}>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: 25,  suffix: '', label: 'Active Clubs'      },
+                  { value: 24,  suffix: '', label: 'Active Clubs'      },
                   { value: 5,   suffix: '',  label: 'Learning Domains'  },
                   { value: statsMap.students   || 5868, suffix: '', label: 'Students Annually'  },
                   { value: statsMap.activities || 437,  suffix: '', label: 'Annual Activities' },
