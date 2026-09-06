@@ -4,106 +4,13 @@ import Link from 'next/link';
 import { Linkedin } from 'lucide-react';
 import { useRef, useState, useEffect, useCallback } from 'react';
 
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  subtitle?: string;
-  photo?: string;
-  linkedin?: string;
-  club_lead?: string;
-  is_faculty?: boolean;
-  designation?: string;
-  sort_order?: number;
-}
+import { Member, MemberCard } from './MemberCard';
 
-interface ClubRow {
+export interface ClubRow {
   id: string;
   slug: string;
   name: string;
   domain_code: string;
-}
-
-// ─── Member Card ──────────────────────────────────────────────────────────────
-function MemberCard({
-  member,
-  roleFallback,
-  nameFallback,
-  compact = false,
-  colorized = false,
-}: {
-  member?: Member;
-  roleFallback?: string;
-  nameFallback?: string;
-  compact?: boolean;
-  colorized?: boolean;
-}) {
-  const isPlaceholder = !member;
-  const initials = member?.name
-    ? member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-    : '?';
-
-  return (
-    <div
-      className={`group relative rounded-2xl overflow-hidden border hairline bg-white flex flex-col shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${!colorized ? 'sm:grayscale' : 'sm:grayscale-0'} ${isPlaceholder ? 'opacity-50' : ''}`}
-    >
-      {/* Portrait photo — aspect-[4/5] */}
-      <div className="relative w-full overflow-hidden bg-gray-50" style={{ aspectRatio: '4/5' }}>
-        {member?.photo ? (
-          <img
-            src={member.photo}
-            alt={member.name}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div
-            className="absolute inset-0 flex items-center justify-center font-black text-3xl"
-            style={{
-              background: isPlaceholder
-                ? '#F4F4F5'
-                : 'linear-gradient(135deg,#8B000010 0%,#8B000002 100%)',
-              color: isPlaceholder ? '#D4D4D8' : '#8B0000',
-            }}>
-            {isPlaceholder ? '' : initials}
-          </div>
-        )}
-        {/* Subtle gradient overlay for premium feel */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-      </div>
-
-      {/* Info */}
-      <div className={`${compact ? 'px-4 py-4' : 'px-5 py-5'} flex flex-col gap-1 flex-1 relative bg-white`}>
-        <p className={`font-display font-semibold leading-tight text-foreground ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
-          {member?.name ?? nameFallback ?? 'Name TBA'}
-        </p>
-        <p className={`font-semibold tracking-wide ${compact ? 'text-[10px] sm:text-xs' : 'text-xs sm:text-sm'}`} style={{ color: '#970003' }}>
-          {member?.role ?? roleFallback ?? '—'}
-        </p>
-        {(member?.subtitle || member?.club_lead || member?.designation) && (
-          <p className="text-xs mt-1 leading-relaxed text-foreground/60 line-clamp-2">
-            {member.subtitle || member.club_lead || member.designation}
-          </p>
-        )}
-
-        {/* Spacer to push LinkedIn button to bottom if needed */}
-        <div className="flex-1" />
-
-        {member?.linkedin && (
-          <Link
-            href={member.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-1.5 w-fit px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all hover:opacity-80"
-            style={{ background: '#0A66C215', color: '#0A66C2' }}
-            aria-label={`LinkedIn profile for ${member.name}`}>
-            <Linkedin size={12} fill="currentColor" /> LinkedIn
-          </Link>
-        )}
-      </div>
-    </div>
-  );
 }
 
 // ─── Section label ────────────────────────────────────────────────────────────
