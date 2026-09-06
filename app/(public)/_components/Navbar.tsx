@@ -63,6 +63,8 @@ export default function Navbar() {
               width={140}
               style={{
                 objectFit: 'contain',
+                width: 'auto',
+                height: 'auto',
                 filter: glass ? 'brightness(0) invert(1)' : 'none',
                 transition: 'filter 0.3s',
               }}
@@ -150,7 +152,7 @@ export default function Navbar() {
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 py-4 hairline-b" style={{ height: '64px' }}>
           <Image src="/logo.png" alt="KL SAC" height={26} width={120}
-            style={{ objectFit: 'contain' }} />
+            style={{ objectFit: 'contain', width: 'auto', height: 'auto' }} />
           <button onClick={() => setMenuOpen(false)} className="p-2 rounded-lg"
             style={{ background: 'rgba(25,19,19,0.06)' }}>
             <X size={18} style={{ color: '#71717A' }} />
