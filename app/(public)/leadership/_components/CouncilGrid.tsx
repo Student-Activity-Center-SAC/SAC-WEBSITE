@@ -213,7 +213,7 @@ export default function CouncilGrid({ members, clubs }: { members: Member[]; clu
       {clubs.length > 0 && (
         <section style={{ background: '#F7F7F8', borderBottom: '1px solid #E4E4E7' }}>
           <div className="w-full px-6 sm:px-12 xl:px-20 py-24">
-            <SectionLabel label="Club Leadership" sub={`Leads and Co-Leads of all ${clubs.length} clubs.`} />
+            <SectionLabel label="Club Leadership" sub="Leads and Co-Leads of all clubs." />
             <div className={GRID}>
               {clubs.map(club => {
                 // Find all leaders for this club
