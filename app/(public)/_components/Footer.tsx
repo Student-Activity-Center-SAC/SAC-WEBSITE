@@ -35,7 +35,7 @@ export default function Footer() {
                 alt="KL SAC — Student Activity Center, KL University"
                 height={32}
                 width={150}
-                style={{ objectFit: 'contain' }}
+                style={{ objectFit: 'contain', width: 'auto', height: 'auto' }}
               />
             </span>
           </div>
