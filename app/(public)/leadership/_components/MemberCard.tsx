@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { Linkedin } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
 
 export interface Member {
   id: string;
@@ -35,8 +36,35 @@ export function MemberCard({
     ? member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '?';
 
+  const [isScanning, setIsScanning] = useState(false);
+  const hoverTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (!member?.linkedin) return;
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    
+    // Start scanning effect after 3 seconds
+    hoverTimer.current = setTimeout(() => {
+      setIsScanning(true);
+    }, 3000);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    setIsScanning(false);
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    };
+  }, []);
+
   return (
     <motion.div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -53,6 +81,30 @@ export function MemberCard({
         boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.6)'
       }}
     >
+      {/* Laser Scanner Overlay */}
+      <AnimatePresence>
+        {isScanning && (
+          <motion.div
+            initial={{ top: '-10%' }}
+            animate={{ top: '100%' }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            transition={{ duration: 1.5, ease: 'linear' }}
+            onAnimationComplete={() => {
+              if (member?.linkedin) {
+                window.open(member.linkedin, '_blank');
+              }
+              setIsScanning(false);
+            }}
+            className="absolute left-0 right-0 h-16 z-50 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, transparent, rgba(151,0,3,0.3) 90%, rgba(216,0,6,0.8) 100%)',
+              borderBottom: '2px solid rgba(255, 50, 50, 0.9)',
+              boxShadow: '0 4px 15px rgba(216, 0, 6, 0.5)'
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Dynamic Hover Glow Background */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" 
            style={{ background: 'radial-gradient(circle at 50% 0%, rgba(151,0,3,0.06), transparent 70%)' }} />
@@ -66,10 +118,6 @@ export function MemberCard({
             loading="lazy"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-            style={{ 
-              maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
-            }}
           />
         ) : (
           <div
@@ -77,8 +125,6 @@ export function MemberCard({
             style={{
               background: isPlaceholder ? 'rgba(0,0,0,0.02)' : 'linear-gradient(135deg,#8B000010 0%,#8B000002 100%)',
               color: isPlaceholder ? '#D4D4D8' : '#8B0000',
-              maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
             }}>
             {isPlaceholder ? '' : initials}
           </div>
@@ -86,7 +132,8 @@ export function MemberCard({
       </div>
 
       {/* Info Content - Glassy */}
-      <div className={`${compact ? 'px-4 pb-5 pt-1' : 'px-5 pb-6 pt-2'} flex flex-col gap-1 flex-1 relative z-10`}>
+      <div className={`${compact ? 'px-4 pb-5 pt-3' : 'px-5 pb-6 pt-4'} flex flex-col gap-1 flex-1 relative z-10`}
+           style={{ borderTop: '1px solid rgba(255, 255, 255, 0.5)' }}>
         <h3 className={`font-display font-semibold leading-tight text-foreground tracking-tight drop-shadow-sm ${compact ? 'text-[15px] sm:text-[17px]' : 'text-[17px] sm:text-[19px]'}`}>
           {member?.name ?? nameFallback ?? 'Name TBA'}
         </h3>
