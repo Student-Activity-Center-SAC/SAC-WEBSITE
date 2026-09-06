@@ -62,15 +62,28 @@ export function UpcomingActivitiesHome() {
       fetchWithTimeout(UPSTREAM_COMPLETED).then(r => r.json()).catch(() => ({ activities: [] }))
     ])
       .then(([upcomingData, completedData]) => {
+        const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+        // Normalize today to midnight IST for date-only comparison
+        const todayIST = new Date(nowIST.getFullYear(), nowIST.getMonth(), nowIST.getDate());
+
         const upacts: Activity[] = Array.isArray(upcomingData.activities) ? upcomingData.activities : [];
         const comacts: Activity[] = Array.isArray(completedData.activities) ? completedData.activities : [];
-        
-        const up = upacts.map(a => ({ ...a, status: 'upcoming' as const }));
+
+        // For each upcoming activity, check if its date is actually in the past
+        const up = upacts.map(a => {
+          const d = new Date(a.activity_date?.slice(0, 10));
+          const actDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          // If date is strictly before today, treat as completed
+          const isActuallyPast = actDate < todayIST;
+          return { ...a, status: isActuallyPast ? 'completed' as const : 'upcoming' as const };
+        });
         const com = comacts.map(a => ({ ...a, status: 'completed' as const }));
         
         setActivities([...up, ...com]);
-        if (up.length > 0) {
-          const first = new Date(up[0].activity_date);
+        // Jump calendar to the first *truly upcoming* activity
+        const firstTrueUpcoming = up.find(a => a.status === 'upcoming');
+        if (firstTrueUpcoming) {
+          const first = new Date(firstTrueUpcoming.activity_date);
           if (!isNaN(first.getTime())) {
             setCalYear(first.getFullYear());
             setCalMonth(first.getMonth());
