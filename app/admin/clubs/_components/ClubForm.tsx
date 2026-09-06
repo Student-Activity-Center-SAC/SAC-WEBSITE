@@ -56,8 +56,12 @@ function autoCropAndUpload(file: File, options: CropOptions): Promise<string> {
         fd.append('folder', 'clubs');
         try {
           const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-          const d = await res.json();
-          if (!res.ok) throw new Error(d.error);
+          let d: any;
+          try { d = await res.json(); } catch {
+            if (res.status === 413) throw new Error('File too large — Nginx rejected it (>10 MB). Ask your server admin to increase client_max_body_size.');
+            throw new Error(`Server error ${res.status} — response was not JSON`);
+          }
+          if (!res.ok) throw new Error(d?.error ?? `Upload failed (${res.status})`);
           resolve(d.url);
         } catch (e) {
           reject(e);
@@ -409,8 +413,12 @@ export default function ClubForm({ initial, mode }: Props) {
       fd.append('file', blob, 'cropped.png');
       fd.append('folder', 'clubs');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-      const d = await res.json();
-      if (!res.ok) throw new Error(d.error);
+      let d: any;
+      try { d = await res.json(); } catch {
+        if (res.status === 413) throw new Error('File too large — ask your server admin to set client_max_body_size 10m in Nginx.');
+        throw new Error(`Server error ${res.status} — response was not JSON`);
+      }
+      if (!res.ok) throw new Error(d?.error ?? `Upload failed (${res.status})`);
       if (key === 'gallery') {
         setForm(f => ({ ...f, gallery: [...f.gallery, d.url] }));
         toast.success('Photo added to gallery');

@@ -237,7 +237,10 @@ export default function MemberForm({ initial, mode, clubs = [] }: Props) {
       fd.append('folder', 'council');
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
       let d: any;
-      try { d = await res.json(); } catch { throw new Error('Server error — check PM2 logs'); }
+      try { d = await res.json(); } catch {
+        if (res.status === 413) throw new Error('File too large — Nginx rejected it. Ask your server admin to set client_max_body_size 10m in Nginx.');
+        throw new Error(`Server error ${res.status} — check PM2 logs`);
+      }
       if (!res.ok) throw new Error(d?.error ?? 'Upload failed');
       setPhoto(d.url);
       setPreviewUrl(d.url);
