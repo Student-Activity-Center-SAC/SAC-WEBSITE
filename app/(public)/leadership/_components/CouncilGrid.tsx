@@ -124,27 +124,10 @@ function SectionLabel({ label, sub }: { label: string; sub?: string }) {
 
 // ─── Row Section with hover + scroll-reveal colorization ──────────────────────
 function ColorRow({ children, className = '', style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
-  const ref = useRef<HTMLElement>(null);
   const [colorized, setColorized] = useState(false);
-
-  // Scroll-based: colorize when section is 25% visible
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setColorized(true);
-        else setColorized(false);
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <section
-      ref={ref}
       className={className}
       style={style}
       onMouseEnter={() => setColorized(true)}
