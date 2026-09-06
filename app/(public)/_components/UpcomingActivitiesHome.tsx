@@ -52,9 +52,9 @@ export function UpcomingActivitiesHome() {
   const [loading, setLoading] = useState(true);
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
-  const today = new Date();
-  const [calYear, setCalYear]   = useState(today.getFullYear());
-  const [calMonth, setCalMonth] = useState(today.getMonth());
+  const [nowIST] = useState(() => new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })));
+  const [calYear, setCalYear]   = useState(nowIST.getFullYear());
+  const [calMonth, setCalMonth] = useState(nowIST.getMonth());
 
   useEffect(() => {
     Promise.all([
@@ -91,7 +91,7 @@ export function UpcomingActivitiesHome() {
   });
 
   const calDays = getCalendarDays(calYear, calMonth);
-  const todayKey = toDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayKey = toDateKey(nowIST.getFullYear(), nowIST.getMonth(), nowIST.getDate());
 
   function prevMonth() {
     if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); }
@@ -157,10 +157,15 @@ export function UpcomingActivitiesHome() {
                   const dateKey = toDateKey(calYear, calMonth, day);
                   const dayActs = actsByDate[dateKey] || [];
                   const hasAct  = dayActs.length > 0;
-                  const hasUpcoming = dayActs.some(a => a.status === 'upcoming');
-                  const hasCompleted = dayActs.some(a => a.status === 'completed');
                   const isToday = dateKey === todayKey;
                   const isPast  = dateKey < todayKey;
+                  let hasUpcoming = dayActs.some(a => a.status === 'upcoming');
+                  let hasCompleted = dayActs.some(a => a.status === 'completed');
+
+                  if (hasAct && isPast) {
+                    hasUpcoming = false;
+                    hasCompleted = true;
+                  }
 
                   return (
                     <div
