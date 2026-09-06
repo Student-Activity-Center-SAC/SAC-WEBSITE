@@ -92,8 +92,6 @@ export async function POST(req: NextRequest) {
     if (typeof username !== 'string' || typeof password !== 'string' || !username || !password)
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
 
-    if (password.length < 8)
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 
     const { data: admin } = await db
       .from('sac_admins')
