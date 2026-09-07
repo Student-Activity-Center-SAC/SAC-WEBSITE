@@ -108,6 +108,20 @@ export default function Navbar() {
           {/* ── Desktop CTA ── */}
           <div className="hidden lg:flex items-center gap-3 shrink-0">
             <Link
+              href="https://sacactivities.kluniversity.in/auth/register"
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
+              style={{
+                background:     'transparent',
+                color:          glass ? '#fff' : '#970003',
+                backdropFilter: glass ? 'blur(8px)' : 'none',
+                border:         glass ? '1px solid rgba(255,255,255,0.5)' : '1px solid #970003',
+              }}>
+              Register
+              <ArrowUpRight size={13} />
+            </Link>
+            <Link
               href="https://sacactivities.kluniversity.in/auth/login"
               target="_blank"
               rel="noopener"
@@ -118,7 +132,7 @@ export default function Navbar() {
                 backdropFilter: glass ? 'blur(8px)' : 'none',
                 border:         glass ? '1px solid rgba(255,255,255,0.25)' : 'none',
               }}>
-              Student Dashboard
+              Dashboard Login
               <ArrowUpRight size={13} />
             </Link>
           </div>
@@ -175,12 +189,19 @@ export default function Navbar() {
         </div>
 
         {/* Drawer footer */}
-        <div className="px-4 py-4 hairline-t">
+        <div className="px-4 py-4 hairline-t flex flex-col gap-3">
+          <Link href="https://sacactivities.kluniversity.in/auth/register" target="_blank" rel="noopener"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold"
+                style={{ background: 'transparent', color: '#970003', border: '1px solid #970003' }}>
+            Register
+            <ArrowUpRight size={14} />
+          </Link>
           <Link href="https://sacactivities.kluniversity.in/auth/login" target="_blank" rel="noopener"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold"
                 style={{ background: '#970003', color: '#fff' }}>
-            Student Dashboard
+            Dashboard Login
             <ArrowUpRight size={14} />
           </Link>
         </div>
