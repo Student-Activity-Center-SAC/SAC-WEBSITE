@@ -29,13 +29,13 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <div className="mb-6">
-            <span className="inline-flex items-center" style={{ background: '#fff', borderRadius: '0.875rem', padding: '8px 12px' }}>
+            <span className="inline-flex items-center" style={{ background: '#fff', borderRadius: '0.75rem', padding: '10px 16px' }}>
               <Image
                 src="/logo.png"
                 alt="KL SAC — Student Activity Center, KL University"
-                height={32}
-                width={150}
-                style={{ objectFit: 'contain', width: 'auto', height: 'auto' }}
+                width={140}
+                height={36}
+                style={{ width: 'auto', height: 'auto', maxHeight: '36px' }}
               />
             </span>
           </div>
