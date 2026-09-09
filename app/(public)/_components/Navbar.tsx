@@ -59,12 +59,12 @@ export default function Navbar() {
             <Image
               src="/logo.png"
               alt="KL SAC — Student Activity Center, KL University"
-              height={30}
-              width={140}
+              height={44}
+              width={180}
               style={{
-                objectFit: 'contain',
                 width: 'auto',
                 height: 'auto',
+                maxHeight: '44px',
                 filter: glass ? 'brightness(0) invert(1)' : 'none',
                 transition: 'filter 0.3s',
               }}
@@ -165,8 +165,8 @@ export default function Navbar() {
         }}>
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 py-4 hairline-b" style={{ height: '64px' }}>
-          <Image src="/logo.png" alt="KL SAC" height={26} width={120}
-            style={{ objectFit: 'contain', width: 'auto', height: 'auto' }} />
+          <Image src="/logo.png" alt="KL SAC" height={36} width={140}
+            style={{ width: 'auto', height: 'auto', maxHeight: '36px' }} priority />
           <button onClick={() => setMenuOpen(false)} className="p-2 rounded-lg"
             style={{ background: 'rgba(25,19,19,0.06)' }}>
             <X size={18} style={{ color: '#71717A' }} />
