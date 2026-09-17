@@ -652,13 +652,25 @@ export default async function HomePage() {
             </FadeIn>
           )}
 
-          <div className="mt-8 sm:hidden">
-            <Link href="/leadership"
-              className="inline-flex items-center gap-2 font-semibold text-sm"
-              style={{ color: '#970003' }}>
-              View full council <ArrowRight size={14} />
-            </Link>
-          </div>
+          <FadeIn delay={0.2} className="mt-16">
+            <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: '21/9', minHeight: '300px' }}>
+              <img 
+                src="/DSC03412%20(2).jpg" 
+                alt="SAC Team Group Photo" 
+                className="absolute inset-0 w-full h-full object-cover object-center" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white z-10">
+                <p className="font-display font-medium text-2xl sm:text-4xl mb-2">One Team. One Vision.</p>
+                <p className="text-sm sm:text-base opacity-90 mb-6 max-w-lg">The people behind Student Activity Center</p>
+                <Link href="/leadership"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm backdrop-blur-md bg-white/20 hover:bg-white/30 transition-all border border-white/30"
+                  style={{ color: '#fff' }}>
+                  View full council <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
