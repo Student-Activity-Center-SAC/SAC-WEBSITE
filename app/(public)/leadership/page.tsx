@@ -47,6 +47,14 @@ export default async function LeadershipPage() {
             and drives meaningful initiatives that enrich the student experience while contributing to a vibrant, inclusive,
             and dynamic campus culture.
           </p>
+
+          <div className="mt-16 relative w-full rounded-3xl overflow-hidden shadow-2xl border hairline" style={{ aspectRatio: '21/9', minHeight: '300px' }}>
+            <img 
+              src="/DSC03412%20(2).jpg" 
+              alt="SAC Leadership Team Group Photo" 
+              className="absolute inset-0 w-full h-full object-cover object-[center_30%]" 
+            />
+          </div>
         </div>
       </section>
 
