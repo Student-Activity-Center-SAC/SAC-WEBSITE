@@ -80,7 +80,7 @@ export function AchievementsCarousel({ achievements }: { achievements: Achieveme
       {/* Card */}
       <div
         key={ach.id}
-        className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl overflow-hidden"
+        className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl overflow-hidden min-h-[480px] sm:min-h-[400px] lg:min-h-[340px]"
         style={{ border: '1px solid var(--hairline)', background: '#faf6f1' }}>
 
         {/* Photo / placeholder */}
