@@ -18,6 +18,7 @@ const DOMAINS = ['all', 'TEC', 'LCH', 'HWB', 'ESO', 'IIE'];
 export default function ActivitiesPage() {
   const [tab, setTab]       = useState<'upcoming' | 'completed'>('completed');
   const [domain, setDomain] = useState('all');
+  const [category, setCategory] = useState<'sac' | 'dept' | 'mhs'>('sac');
   const [upcoming, setUpcoming] = useState<Activity[]>([]);
   const [completed, setCompleted] = useState<Activity[]>([]);
   const [loadingU, setLoadingU] = useState(true);
@@ -30,7 +31,16 @@ export default function ActivitiesPage() {
   }, []);
 
   useEffect(() => {
-    fetchWithTimeout(`${UPSTREAM}/upcoming`)
+    setLoadingU(true);
+    setLoadingC(true);
+    setErrorU(false);
+    setErrorC(false);
+
+    const base = 'https://sacactivities.kluniversity.in/api/public/activities';
+    const upUrl = category === 'sac' ? `${base}/upcoming` : `${base}/${category}-clubs/upcoming`;
+    const comUrl = category === 'sac' ? `${base}/completed` : `${base}/${category}-clubs/completed`;
+
+    fetchWithTimeout(upUrl)
       .then(r => r.json())
       .then(d => {
         if (d.error || !Array.isArray(d.activities)) { setErrorU(true); setUpcoming([]); }
@@ -39,7 +49,7 @@ export default function ActivitiesPage() {
       })
       .catch(() => { setErrorU(true); setLoadingU(false); });
 
-    fetchWithTimeout(`${UPSTREAM}/completed`)
+    fetchWithTimeout(comUrl)
       .then(r => r.json())
       .then(d => {
         if (d.error || !Array.isArray(d.activities)) { setErrorC(true); setCompleted([]); }
@@ -47,7 +57,7 @@ export default function ActivitiesPage() {
         setLoadingC(false);
       })
       .catch(() => { setErrorC(true); setLoadingC(false); });
-  }, []);
+  }, [category]);
 
   const list    = tab === 'upcoming' ? upcoming : completed;
   const loading = tab === 'upcoming' ? loadingU : loadingC;
@@ -73,8 +83,30 @@ export default function ActivitiesPage() {
       </section>
 
       {/* ── Tabs + Filter ── */}
-      <div className="sticky top-[64px] z-30" style={{ background: '#fff', borderBottom: '1px solid #E4E4E7' }}>
-        <div className="w-full px-6 sm:px-12 xl:px-20 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="sticky top-[64px] z-30 flex flex-col py-3 gap-3" style={{ background: '#fff', borderBottom: '1px solid #E4E4E7' }}>
+        
+        {/* Category Row */}
+        <div className="w-full px-6 sm:px-12 xl:px-20 flex flex-wrap gap-2">
+          {[
+            { id: 'sac', label: 'SAC (Central Clubs)' },
+            { id: 'dept', label: 'Engineering Dept. Clubs' },
+            { id: 'mhs', label: 'MHS Dept. Clubs' }
+          ].map(c => (
+            <button
+              key={c.id}
+              onClick={() => setCategory(c.id as any)}
+              className="px-4 py-1.5 rounded-lg text-sm font-bold transition-all border"
+              style={{
+                background: category === c.id ? '#970003' : 'transparent',
+                color: category === c.id ? '#fff' : '#52525B',
+                borderColor: category === c.id ? '#970003' : '#E4E4E7',
+              }}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-full px-6 sm:px-12 xl:px-20 flex flex-wrap items-center justify-between gap-3">
 
           {/* Tabs */}
           <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: '#F7F7F8' }}>

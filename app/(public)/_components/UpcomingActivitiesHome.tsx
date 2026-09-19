@@ -4,9 +4,6 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { FadeIn } from './FadeIn';
 
-const UPSTREAM_UPCOMING = 'https://sacactivities.kluniversity.in/api/public/activities/upcoming';
-const UPSTREAM_COMPLETED = 'https://sacactivities.kluniversity.in/api/public/activities/completed';
-
 const DOMAIN_COLORS: Record<string, string> = {
   TEC: '#3B82F6', LCH: '#8B5CF6', HWB: '#10B981', ESO: '#F59E0B', IIE: '#EF4444',
 };
@@ -51,15 +48,21 @@ export function UpcomingActivitiesHome() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+  const [category, setCategory] = useState<'sac' | 'dept' | 'mhs'>('sac');
 
   const [nowIST] = useState(() => new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })));
   const [calYear, setCalYear]   = useState(nowIST.getFullYear());
   const [calMonth, setCalMonth] = useState(nowIST.getMonth());
 
   useEffect(() => {
+    setLoading(true);
+    const base = 'https://sacactivities.kluniversity.in/api/public/activities';
+    const upUrl = category === 'sac' ? `${base}/upcoming` : `${base}/${category}-clubs/upcoming`;
+    const comUrl = category === 'sac' ? `${base}/completed` : `${base}/${category}-clubs/completed`;
+
     Promise.all([
-      fetchWithTimeout(UPSTREAM_UPCOMING).then(r => r.json()).catch(() => ({ activities: [] })),
-      fetchWithTimeout(UPSTREAM_COMPLETED).then(r => r.json()).catch(() => ({ activities: [] }))
+      fetchWithTimeout(upUrl).then(r => r.json()).catch(() => ({ activities: [] })),
+      fetchWithTimeout(comUrl).then(r => r.json()).catch(() => ({ activities: [] }))
     ])
       .then(([upcomingData, completedData]) => {
         const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
@@ -91,7 +94,7 @@ export function UpcomingActivitiesHome() {
         }
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [category]);
 
   // Index activities by date key
   const actsByDate: Record<string, Activity[]> = {};
@@ -125,10 +128,30 @@ export function UpcomingActivitiesHome() {
             <div>
               <p className="kicker mb-5" style={{ color: '#970003' }}>Calendar</p>
               <h2
-                className="font-display font-medium leading-[1.07] mb-8 whitespace-nowrap"
+                className="font-display font-medium leading-[1.07] mb-4 whitespace-nowrap"
                 style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', color: '#191313', letterSpacing: '-0.02em' }}>
                 Upcoming Activities
               </h2>
+
+              <div className="flex flex-wrap gap-2 mb-8">
+                {[
+                  { id: 'sac', label: 'SAC (Central Clubs)' },
+                  { id: 'dept', label: 'Engineering Dept. Clubs' },
+                  { id: 'mhs', label: 'MHS Dept. Clubs' }
+                ].map(c => (
+                  <button
+                    key={c.id}
+                    onClick={() => setCategory(c.id as any)}
+                    className="px-4 py-1.5 rounded-lg text-sm font-bold transition-all border"
+                    style={{
+                      background: category === c.id ? '#970003' : 'transparent',
+                      color: category === c.id ? '#fff' : '#52525B',
+                      borderColor: category === c.id ? '#970003' : '#E4E4E7',
+                    }}>
+                    {c.label}
+                  </button>
+                ))}
+              </div>
 
               <div className="rounded-2xl overflow-visible" style={{ background: '#fff', border: '1px solid var(--hairline)' }}>
 
