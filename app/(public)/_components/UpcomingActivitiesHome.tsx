@@ -336,7 +336,11 @@ export function UpcomingActivitiesHome() {
                 ) : activities.filter(a => a.status === 'upcoming').slice(0, 6).map(act => {
                   const date  = new Date(act.activity_date);
                   const color = DOMAIN_COLORS[act.domain] ?? '#970003';
-                  const meta  = [act.club_name || act.category, act.venue].filter(Boolean).join(' · ');
+                  
+                  // Avoid duplicating domain if club_name/category is identical
+                  const displayCat = (act.club_name || act.category) === act.domain ? null : (act.club_name || act.category);
+                  const meta  = [displayCat, act.venue].filter(Boolean).join(' · ');
+                  
                   return (
                     <div
                       key={act.code}

@@ -42,7 +42,7 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
       <Link
         href={`/news/${article.slug}`}
         key={article.slug}
-        className="group grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl overflow-hidden transition-shadow hover:shadow-lg min-h-[380px] sm:min-h-[320px] lg:min-h-[280px]"
+        className="group grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl overflow-hidden transition-shadow hover:shadow-lg h-[400px] sm:h-[320px] lg:h-[280px]"
         style={{ border: '1px solid var(--hairline)', background: '#faf6f1' }}>
 
         <div className="lg:col-span-2 h-56 lg:h-full overflow-hidden relative"
@@ -58,9 +58,9 @@ export function LatestNewsCarousel({ articles }: { articles: Article[] }) {
           )}
         </div>
 
-        <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-center">
+        <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-center overflow-hidden">
           <p
-            className="text-base sm:text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap"
+            className="text-base sm:text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap line-clamp-6"
             style={{ color: '#191313' }}>
             {article.title}
           </p>

@@ -101,7 +101,7 @@ export function ActivityCard({ act, completed }: { act: Activity; completed: boo
         {/* Badges row */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full" style={{ background: bg, color }}>
-            {act.domain} · {DOMAIN_LABEL[act.domain] ?? act.domain}
+            {DOMAIN_LABEL[act.domain] ? `${act.domain} · ${DOMAIN_LABEL[act.domain]}` : act.domain}
           </span>
           <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border"
                 style={{ borderColor: `${DIFF_COLOR[act.difficulty] ?? '#6B7280'}40`, color: DIFF_COLOR[act.difficulty] ?? '#6B7280' }}>
