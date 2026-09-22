@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, MapPin, Clock, Star, ExternalLink, FileText, ImageOff } from 'lucide-react';
+import { Calendar, MapPin, Clock, Star, ExternalLink, FileText, ImageOff, Search } from 'lucide-react';
 
 import { Activity, ActivityCard, DOMAIN_COLORS, DOMAIN_LABEL } from '../_components/ActivityCard';
 
@@ -19,6 +19,9 @@ export default function ActivitiesPage() {
   const [tab, setTab]       = useState<'upcoming' | 'completed'>('completed');
   const [domain, setDomain] = useState('all');
   const [category, setCategory] = useState<'sac' | 'dept' | 'mhs'>('sac');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [upcoming, setUpcoming] = useState<Activity[]>([]);
   const [completed, setCompleted] = useState<Activity[]>([]);
   const [loadingU, setLoadingU] = useState(true);
@@ -62,7 +65,30 @@ export default function ActivitiesPage() {
   const list    = tab === 'upcoming' ? upcoming : completed;
   const loading = tab === 'upcoming' ? loadingU : loadingC;
   const hasError = tab === 'upcoming' ? errorU : errorC;
-  const visible = domain === 'all' ? list : list.filter(a => a.domain === domain);
+  
+  let visible = list;
+  if (category === 'sac' && domain !== 'all') {
+    visible = visible.filter(a => a.domain === domain);
+  }
+  
+  if (searchQuery.trim() !== '') {
+    const q = searchQuery.toLowerCase();
+    visible = visible.filter(a => 
+      (a.title && a.title.toLowerCase().includes(q)) ||
+      (a.club_name && a.club_name.toLowerCase().includes(q)) ||
+      (a.category && a.category.toLowerCase().includes(q))
+    );
+  }
+  
+  if (startDate) {
+    const sDate = new Date(startDate);
+    visible = visible.filter(a => new Date(a.activity_date) >= sDate);
+  }
+  
+  if (endDate) {
+    const eDate = new Date(endDate);
+    visible = visible.filter(a => new Date(a.activity_date) <= eDate);
+  }
 
   return (
     <>
@@ -106,6 +132,38 @@ export default function ActivitiesPage() {
           ))}
         </div>
 
+        {/* Search & Dates Row */}
+        <div className="w-full px-6 sm:px-12 xl:px-20 flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[240px] max-w-md">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by title or club name..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 rounded-xl text-sm border focus:outline-none focus:border-[#970003] transition-colors bg-[#F7F7F8] hover:bg-[#F3F3F5] focus:bg-white"
+              style={{ borderColor: '#E4E4E7' }}
+            />
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="date"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              className="px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#970003] transition-colors bg-[#F7F7F8] hover:bg-[#F3F3F5] focus:bg-white"
+              style={{ borderColor: '#E4E4E7', color: startDate ? '#0D0D0D' : '#71717A' }}
+            />
+            <span className="font-medium text-xs uppercase" style={{ color: '#A1A1AA' }}>to</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              className="px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#970003] transition-colors bg-[#F7F7F8] hover:bg-[#F3F3F5] focus:bg-white"
+              style={{ borderColor: '#E4E4E7', color: endDate ? '#0D0D0D' : '#71717A' }}
+            />
+          </div>
+        </div>
+
         <div className="w-full px-6 sm:px-12 xl:px-20 flex flex-wrap items-center justify-between gap-3">
 
           {/* Tabs */}
@@ -135,25 +193,27 @@ export default function ActivitiesPage() {
           </div>
 
           {/* Domain filter */}
-          <div className="flex flex-wrap gap-1.5">
-            {DOMAINS.map(d => {
-              const color  = DOMAIN_COLORS[d] ?? '#970003';
-              const active = domain === d;
-              return (
-                <button
-                  key={d}
-                  onClick={() => setDomain(d)}
-                  className="px-3 py-1 rounded-full text-xs font-bold transition-all border"
-                  style={{
-                    background:  active ? (d === 'all' ? '#970003' : color) : 'transparent',
-                    color:       active ? '#fff' : (d === 'all' ? '#52525B' : color),
-                    borderColor: active ? 'transparent' : (d === 'all' ? '#E4E4E7' : `${color}50`),
-                  }}>
-                  {d === 'all' ? 'All' : d}
-                </button>
-              );
-            })}
-          </div>
+          {category === 'sac' && (
+            <div className="flex flex-wrap gap-1.5">
+              {DOMAINS.map(d => {
+                const color  = DOMAIN_COLORS[d] ?? '#970003';
+                const active = domain === d;
+                return (
+                  <button
+                    key={d}
+                    onClick={() => setDomain(d)}
+                    className="px-3 py-1 rounded-full text-xs font-bold transition-all border"
+                    style={{
+                      background:  active ? (d === 'all' ? '#970003' : color) : 'transparent',
+                      color:       active ? '#fff' : (d === 'all' ? '#52525B' : color),
+                      borderColor: active ? 'transparent' : (d === 'all' ? '#E4E4E7' : `${color}50`),
+                    }}>
+                    {d === 'all' ? 'All' : d}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -173,20 +233,20 @@ export default function ActivitiesPage() {
                 ? `Couldn't load ${tab} activities right now.`
                 : list.length === 0
                   ? (tab === 'upcoming' ? 'No upcoming activities scheduled yet.' : 'No completed activities yet.')
-                  : 'No activities in this domain.'}
+                  : 'No activities match your filters.'}
             </p>
             <p className="text-sm" style={{ color: '#A1A1AA' }}>
               {hasError
                 ? 'Please try again in a moment.'
                 : list.length === 0 && tab === 'upcoming'
                   ? 'Check back soon — activities are added regularly.'
-                  : 'Try selecting a different domain.'}
+                  : 'Try adjusting your search or date range.'}
             </p>
           </div>
         ) : (
           <>
             <p className="text-xs font-semibold mb-6" style={{ color: '#A1A1AA' }}>
-              {visible.length} {visible.length === 1 ? 'activity' : 'activities'}{domain !== 'all' ? ` · ${DOMAIN_LABEL[domain] ?? domain}` : ''}
+              {visible.length} {visible.length === 1 ? 'activity' : 'activities'}{(category === 'sac' && domain !== 'all') ? ` · ${DOMAIN_LABEL[domain] ?? domain}` : ''}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {visible.map((act, i) => (
