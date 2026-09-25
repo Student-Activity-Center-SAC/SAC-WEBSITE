@@ -33,6 +33,7 @@ export function fmtDate(d: string) {
 export interface Report {
   status: string;
   poster_url: string | null;
+  report_pdf_url?: string | null;
 }
 
 export interface Activity {
@@ -50,6 +51,7 @@ export interface Activity {
   poster_url: string | null;
   report: Report | null;
   club_name?: string;
+  report_pdf_url?: string | null;
 }
 
 export function ActivityCard({ act, completed }: { act: Activity; completed: boolean }) {
@@ -63,7 +65,13 @@ export function ActivityCard({ act, completed }: { act: Activity; completed: boo
   const poster = rawPoster
     ? (rawPoster.startsWith('http') ? rawPoster : `https://sacactivities.kluniversity.in${rawPoster}`)
     : null;
-  const hasReport = completed && !!act.report;
+
+  const rawPdf = act.report_pdf_url || act.report?.report_pdf_url;
+  const pdfUrl = rawPdf 
+    ? (rawPdf.startsWith('http') ? rawPdf : `https://sacactivities.kluniversity.in${rawPdf}`)
+    : `https://sacactivities.kluniversity.in/report/${encodeURIComponent(act.code)}`;
+
+  const hasReport = completed && (!!act.report || !!rawPdf);
 
   useLayoutEffect(() => {
     const el = descRef.current;
@@ -172,7 +180,7 @@ export function ActivityCard({ act, completed }: { act: Activity; completed: boo
           )}
           {hasReport && (
             <a
-              href={`https://sacactivities.kluniversity.in/report/${encodeURIComponent(act.code)}`}
+              href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-gray-50 border"
