@@ -46,8 +46,26 @@ export default function ActivitiesPage() {
     fetchWithTimeout(upUrl)
       .then(r => r.json())
       .then(d => {
-        if (d.error || !Array.isArray(d.activities)) { setErrorU(true); setUpcoming([]); }
-        else setUpcoming(d.activities);
+        if (d.error || !Array.isArray(d.activities)) { 
+          setErrorU(true); 
+          setUpcoming([]); 
+        } else {
+          const istString = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+          const todayIST = new Date(istString);
+          todayIST.setHours(0, 0, 0, 0);
+
+          const validUpcoming = d.activities.filter((a: Activity) => {
+            if (!a.activity_date) return true;
+            let actDate = new Date(a.activity_date);
+            if (typeof a.activity_date === 'string' && a.activity_date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              const [y, m, day] = a.activity_date.split('-');
+              actDate = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(day, 10));
+            }
+            actDate.setHours(0, 0, 0, 0);
+            return actDate.getTime() >= todayIST.getTime();
+          });
+          setUpcoming(validUpcoming);
+        }
         setLoadingU(false);
       })
       .catch(() => { setErrorU(true); setLoadingU(false); });
