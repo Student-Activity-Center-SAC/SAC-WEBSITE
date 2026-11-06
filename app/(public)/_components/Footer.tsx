@@ -148,20 +148,6 @@ export default function Footer() {
         <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
           © {new Date().getFullYear()} KL University — Student Activity Center. All rights reserved.
         </p>
-        <p className="text-xs text-center sm:text-right" style={{ color: 'rgba(255,255,255,0.28)' }}>
-          Designed &amp; Developed by{' '}
-          <a href="https://www.linkedin.com/in/rohith-venkata-sai-pinnamaneni/" target="_blank" rel="noopener"
-             className="transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255,255,255,0.2)' }}>
-            Rohith Pinnamaneni
-          </a>
-          {' '}&amp;{' '}
-          <a href="https://www.linkedin.com/in/singananischal/" target="_blank" rel="noopener"
-             className="transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255,255,255,0.2)' }}>
-            Nischal Singana
-          </a>
-        </p>
       </div>
     </footer>
   );
