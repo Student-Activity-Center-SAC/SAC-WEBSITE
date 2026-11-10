@@ -148,6 +148,15 @@ export default function Footer() {
         <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
           © {new Date().getFullYear()} KL University — Student Activity Center. All rights reserved.
         </p>
+        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
+          Designed &amp; developed by{' '}
+          <a href="https://www.linkedin.com/in/rohith-venkata-sai-pinnamaneni/"
+             target="_blank" rel="noopener noreferrer"
+             className="font-semibold transition-colors hover:text-white"
+             style={{ color: 'rgba(255,255,255,0.45)' }}>
+            Rohith Pinnamaneni
+          </a>
+        </p>
       </div>
     </footer>
   );
