@@ -145,17 +145,8 @@ export default function Footer() {
       {/* ── Bottom bar ── */}
       <div className="w-full px-5 sm:px-6 2xl:px-20 py-5 flex flex-col sm:flex-row items-center justify-between gap-3"
            style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
+        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
           © {new Date().getFullYear()} KL University — Student Activity Center. All rights reserved.
-        </p>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
-          Designed &amp; developed by{' '}
-          <a href="https://www.linkedin.com/in/rohith-venkata-sai-pinnamaneni/"
-             target="_blank" rel="noopener noreferrer"
-             className="font-semibold transition-colors hover:text-white"
-             style={{ color: 'rgba(255,255,255,0.45)' }}>
-            Rohith Pinnamaneni
-          </a>
         </p>
       </div>
     </footer>
